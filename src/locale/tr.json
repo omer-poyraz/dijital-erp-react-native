@@ -14,6 +14,7 @@
     "success": "Başarılı",
     "loading": "Yükleniyor...",
     "search": "Arama",
+    "search2": "Ara...",
     "settings": "Ayarlar",
     "settings2": "AYARLAR",
     "language": "Dil",
@@ -82,5 +83,14 @@
     "review_comment_3": "Kurulum biraz zordu ama performansı iyi.",
     "product_description_p1": "Ariston Çift Kaplı Kombi, yüksek verimli ısıtma teknolojisi ile evinizi ısıtırken enerji tasarrufu sağlar. Çift kapılı yapısı sayesinde dayanıklılık ve performans bir arada sunulur. Gelişmiş dijital kontrol paneli ile kullanımı kolaydır ve uzaktan erişim özellikleri ile konforunuzu artırır.",
     "product_description_p2": "24kW gücündeki bu kombi, orta ve büyük ebatlı evler için idealdir. Yenilikçi teknolojisi sayesinde minimum gaz tüketimi ile maksimum ısı üretimi sağlar. Aynı zamanda sıcak su ihtiyacınızı da hızlı ve verimli bir şekilde karşılar.",
-    "product_description_p3": "Akıllı enerji yönetim sistemi ile mevsim geçişlerinde otomatik olarak ayarlanır ve gereksiz enerji tüketimini önler. ErP direktiflerine uygun olarak üretilen bu kombi, düşük emisyon değerleri ile çevre dostudur."
+    "product_description_p3": "Akıllı enerji yönetim sistemi ile mevsim geçişlerinde otomatik olarak ayarlanır ve gereksiz enerji tüketimini önler. ErP direktiflerine uygun olarak üretilen bu kombi, düşük emisyon değerleri ile çevre dostudur.",
+    "assembly_manual": "Montaj Manueli",
+    "id_note_added": "ID'li projeye not eklendi",
+    "project_manager_list": "Proje Sorumluları Listesi",
+    "day_delay": "gün gecikme",
+    "day_left": "gün kaldı",
+    "add_note": "Not Ekle",
+    "save_note": "Notu Kaydet",
+    "result": "sonuç",
+    "not_result": "Sonuç bulunamadı"
 }

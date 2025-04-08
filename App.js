@@ -12,6 +12,7 @@ import LeftMenu from './src/components/header/leftMenu';
 import JobAndHold from './src/components/jobAndHold';
 import { changeLangs } from './src/redux/slices/langSlice';
 import './i18n';
+import { PaperProvider } from 'react-native-paper';
 
 enableScreens();
 
@@ -30,13 +31,15 @@ const App = () => {
     <ErrorBoundary>
       <StatusBar backgroundColor="#155675" barStyle="#155675" />
       <Provider store={store}>
-        <NavigationContainer>
-          <StatusBar hidden={false} backgroundColor="#145575" barStyle="light-content" />
-          <LanguageInitializer />
-          <StackNavigator />
-          <LeftMenu />
-          <JobAndHold />
-        </NavigationContainer>
+        <PaperProvider>
+          <NavigationContainer>
+            <StatusBar hidden={false} backgroundColor="#145575" barStyle="light-content" />
+            <LanguageInitializer />
+            <StackNavigator />
+            <LeftMenu />
+            <JobAndHold />
+          </NavigationContainer>
+        </PaperProvider>
       </Provider>
     </ErrorBoundary>
   );

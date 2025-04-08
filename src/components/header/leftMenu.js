@@ -1,12 +1,12 @@
 import React from 'react'
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { changeStatusLeftMenu, closeLeftMenu } from '../../redux/slices/leftMenuSlice'
-import { close, closeJobAndHold, openJobAndHold } from '../../redux/slices/jobAndHoldSlice'
-import logo from '../../images/logo2.png'
-import { Ionicons } from '@expo/vector-icons'
+import { closeJobAndHold, openJobAndHold } from '../../redux/slices/jobAndHoldSlice'
 import { useNavigation } from '@react-navigation/native'
+import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { Ionicons } from '@expo/vector-icons'
+import logo from '../../images/logo2.png'
 
 const LeftMenu = () => {
     const dispatch = useDispatch()
@@ -49,6 +49,7 @@ const LeftMenu = () => {
                     <LeftMenuItem icon='barcode-outline' text={t("count_slip_crop")} funct={() => { navigate.navigate("CountSlip"); closeModal() }} />
                     <LeftMenuItem icon='grid-outline' text={t("products")} funct={() => { navigate.navigate("Product"); closeModal() }} />
                     <LeftMenuItem icon='egg-outline' text={t("job_holder_info")} funct={holderModal} />
+                    <LeftMenuItem icon='construct-outline' text={t("assembly_manual")} funct={() => { navigate.navigate("AssemblyManual"); closeModal() }} />
 
                     <View style={style.space30}></View>
                     <Text style={style.leftMenuLabel}>{t("products2")}</Text>
@@ -76,7 +77,7 @@ export default LeftMenu
 
 const style = StyleSheet.create({
     space30: { width: '100%', height: 30 },
-    leftMenu: { width: '100%', height: '100%', backgroundColor: 'rgba(21, 86, 117, 0.4)', position: 'absolute', top: 100, left: 0, zIndex: 1, },
+    leftMenu: { width: '100%', height: '100%', backgroundColor: 'rgba(21, 86, 117, 0.4)', position: 'absolute', top: Platform.OS === "ios" ? 100 : 64, left: 0, zIndex: 1, },
     left: { backgroundColor: 'rgb(240, 240, 240)', paddingHorizontal: 20, width: '80%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 2, borderTopRightRadius: 20, borderBottomRightRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, },
     leftTop: { display: 'flex', paddingTop: 20, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', width: '100%', height: 70, },
     leftMenus: { marginTop: 20 },

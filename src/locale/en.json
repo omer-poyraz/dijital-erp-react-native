@@ -82,5 +82,14 @@
     "review_comment_3": "Installation was a bit difficult but performance is good.",
     "product_description_p1": "The Ariston Double-Cased Combi Boiler provides energy savings while heating your home with highly efficient heating technology. Its double-cased structure offers durability and performance together. It is easy to use with its advanced digital control panel and enhances your comfort with remote access features.",
     "product_description_p2": "This 24kW combi boiler is ideal for medium and large homes. Its innovative technology delivers maximum heat output with minimum gas consumption. It also provides hot water quickly and efficiently.",
-    "product_description_p3": "The smart energy management system automatically adjusts during seasonal transitions and prevents unnecessary energy consumption. Produced in compliance with ErP directives, this combi boiler is environmentally friendly with low emission values."
+    "product_description_p3": "The smart energy management system automatically adjusts during seasonal transitions and prevents unnecessary energy consumption. Produced in compliance with ErP directives, this combi boiler is environmentally friendly with low emission values.",
+    "assembly_manual": "Montaj Manueli",
+    "id_note_added": "ID with note added",
+    "project_manager_list": "Project Managers List",
+    "day_delay": "day delay",
+    "day_left": "day left",
+    "add_note": "Add Note",
+    "save_note": "Save Note",
+    "result": "result",
+    "not_result": "Result Undefined"
 }

@@ -1,18 +1,19 @@
-import React, { useMemo } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import 'react-native-gesture-handler';
-import HomePage from '../pages/home';
-import ErrorBoundary from '../utilities/errorBoundary';
-import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { changeStatusLeftMenu } from '../redux/slices/leftMenuSlice';
-import ProductPage from '../pages/product';
+import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import ProductDetailPage from '../pages/productDetail';
+import ErrorBoundary from '../utilities/errorBoundary';
 import CalculationPage from '../pages/calculation';
 import CountSlipPage from '../pages/countSlip';
-import ProductDetailPage from '../pages/productDetail';
-import LanguagePage from '../pages/language';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
+import LanguagePage from '../pages/language';
+import ProductPage from '../pages/product';
+import { useDispatch } from 'react-redux';
+import React, { useMemo } from 'react';
+import 'react-native-gesture-handler';
+import HomePage from '../pages/home';
+import AssemblyManualPage from '../pages/assemblyManual';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,7 @@ const StackNavigator = () => {
     const { t, i18n } = useTranslation();
 
     const screens = useMemo(() => [
+        { name: "AssemblyManual", title: t("assembly_manual"), component: AssemblyManualPage },
         { name: "Calculation", title: t("calculation"), component: CalculationPage },
         { name: "CountSlip", title: t("count_slip"), component: CountSlipPage },
         { name: "Home", title: t("home_page"), component: HomePage },
