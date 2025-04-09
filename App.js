@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { registerRootComponent } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider, useDispatch } from 'react-redux';
-import { StatusBar } from 'react-native';
+import { StatusBar, StyleSheet, SafeAreaView } from 'react-native';
 import 'react-native-gesture-handler';
 import StackNavigator from './src/navigation';
 import { store } from './src/redux/store';
@@ -29,21 +29,32 @@ const LanguageInitializer = () => {
 const App = () => {
   return (
     <ErrorBoundary>
-      <StatusBar backgroundColor="#155675" barStyle="#155675" />
       <Provider store={store}>
         <PaperProvider>
-          <NavigationContainer>
-            <StatusBar hidden={false} backgroundColor="#145575" barStyle="light-content" />
-            <LanguageInitializer />
-            <StackNavigator />
-            <LeftMenu />
-            <JobAndHold />
-          </NavigationContainer>
+          <SafeAreaView style={styles.container}>
+            <StatusBar backgroundColor="#00385b" barStyle="dark-content" />
+            <NavigationContainer>
+              <StatusBar hidden={false} backgroundColor="#145575" barStyle="light-content" />
+              <LanguageInitializer />
+              <StackNavigator />
+              <LeftMenu />
+              <JobAndHold />
+            </NavigationContainer>
+          </SafeAreaView>
         </PaperProvider>
       </Provider>
     </ErrorBoundary>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%', 
+    height: '100%', 
+    backgroundColor: '#f5f5f5' 
+  },
+});
 
 registerRootComponent(App);
 

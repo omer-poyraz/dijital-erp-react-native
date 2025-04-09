@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { changeStatusJobAndHold } from '../../redux/slices/jobAndHoldSlice'
 import { Ionicons } from '@expo/vector-icons'
@@ -22,6 +22,12 @@ const JobAndHold = () => {
         { label: 'Şube 3', value: '4' }
     ]);
     const { t } = useTranslation()
+
+    const { width } = useWindowDimensions();
+
+    const isTablet = width >= 600;
+
+    const popupWidth = isTablet ? '45%' : '80%';
 
     useEffect(() => {
         if (open) {
@@ -46,7 +52,7 @@ const JobAndHold = () => {
 
     return (
         <View style={[style.page, isShow ? { display: 'flex' } : { display: 'none' }]}>
-            <View style={style.popup}>
+            <View style={[style.popup, { width: popupWidth }]}>
                 <View style={style.popupHeader}>
                     <View>
                         <Text style={style.popupTitle}>{t("job_holder_info")}</Text>
@@ -111,7 +117,7 @@ export default JobAndHold
 
 const style = StyleSheet.create({
     page: { backgroundColor: 'rgba(21, 86, 117, 0.4)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 999, },
-    popup: { width: '80%', height: 400, padding: 20, backgroundColor: 'rgb(240, 240, 240)', borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, },
+    popup: { height: 400, padding: 20, backgroundColor: 'rgb(240, 240, 240)', borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, },
     popupHeader: { width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, alignItems: 'center', },
     popupTitle: { fontSize: 16, fontWeight: 'bold', color: 'rgb(41, 96, 121)', },
     popupSubTitle: { color: 'rgb(41, 96, 121)', fontSize: 12, marginTop: 5, },

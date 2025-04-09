@@ -401,13 +401,13 @@ const ProjectTable = () => {
 };
 
 const styles = StyleSheet.create({
-    page: { flex: 1, backgroundColor: '#f5f5f5', padding: 10, },
+    page: { flex: 1, backgroundColor: '#f5f5f5', padding: 10, width: '100%' },
     card: { marginBottom: 16, borderRadius: 8, overflow: 'hidden', borderWidth: 1, borderColor: colors.cardBorder, elevation: 3, },
     cardTitle: { color: colors.primary, fontSize: 16, fontWeight: 'bold', },
     cardSubtitle: { color: colors.primaryLight, marginTop: -5, fontSize: 14, },
     subCard: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.primaryLighter, },
     tableWrapper: { borderTopWidth: 1, borderColor: colors.rowBorder, },
-    table: { width: Dimensions.get('window').width > 600 ? '100%' : 1200, backgroundColor: colors.white, },
+    table: { width: '100%', backgroundColor: colors.white, },
     tableHeader: { backgroundColor: colors.headerBg, height: 48, },
     columnHeader: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start', paddingLeft: 8, },
     columnHeader2: { flex: 3, justifyContent: 'flex-start', alignItems: 'flex-start', paddingLeft: 8, },

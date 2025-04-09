@@ -272,7 +272,7 @@ export default ProductDetailPage;
 const styles = StyleSheet.create({
     page: { flex: 1, backgroundColor: '#f5f5f5', },
     imageContainer: { width: '100%', height: 200, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', padding: 15, },
-    productImage: { width: '100%', height: '100%', borderRadius: 10, resizeMode: 'contain', },
+    productImage: { width: '100%', height: '100%', borderRadius: 10, resizeMode: 'cover', },
     productHeader: { backgroundColor: 'white', padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee', },
     productTitle: { fontSize: 22, fontWeight: 'bold', color: '#333', marginBottom: 5, },
     productCode: { fontSize: 14, color: '#666', marginBottom: 10, },

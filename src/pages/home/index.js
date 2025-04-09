@@ -5,7 +5,7 @@ import { barData, chartConfig, lineData, pieData } from '../../utilities/chartDa
 import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
-const chartWidth = width - 40;
+const chartWidth = width - 80;
 
 const HomePage = () => {
     const { t } = useTranslation();

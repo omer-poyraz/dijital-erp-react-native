@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
 import { changeStatusLeftMenu, closeLeftMenu } from '../../redux/slices/leftMenuSlice'
 import { closeJobAndHold, openJobAndHold } from '../../redux/slices/jobAndHoldSlice'
 import { useNavigation } from '@react-navigation/native'
@@ -13,6 +13,12 @@ const LeftMenu = () => {
     const navigate = useNavigation()
     const isShow = useSelector(state => state.leftMenu.isOpen)
     const { t } = useTranslation()
+
+    const { width } = useWindowDimensions();
+
+    const isTablet = width >= 600;
+
+    const leftMenuWidth = isTablet ? '45%' : '80%';
 
     const LeftMenuItem = ({ icon, text, funct }) => {
         return (
@@ -35,7 +41,7 @@ const LeftMenu = () => {
 
     return (
         <View style={[style.leftMenu, isShow ? { display: 'flex' } : { display: 'none' }]}>
-            <View style={style.left}>
+            <View style={[style.left, { width: leftMenuWidth }]}>
                 <View style={style.leftTop}>
                     <Image source={logo} style={style.logo} />
                     <TouchableOpacity style={style.closeBtn} onPress={() => dispatch(changeStatusLeftMenu())}>
@@ -77,16 +83,16 @@ export default LeftMenu
 
 const style = StyleSheet.create({
     space30: { width: '100%', height: 30 },
-    leftMenu: { width: '100%', height: '100%', backgroundColor: 'rgba(21, 86, 117, 0.4)', position: 'absolute', top: Platform.OS === "ios" ? 100 : 64, left: 0, zIndex: 1, },
-    left: { backgroundColor: 'rgb(240, 240, 240)', paddingHorizontal: 20, width: '80%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 2, borderTopRightRadius: 20, borderBottomRightRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, },
+    leftMenu: { width: '100%', height: '100%', backgroundColor: 'rgba(21, 86, 117, 0.4)', position: 'absolute', top: Platform.OS === "ios" ? 163 : 64, left: 0, zIndex: 1, },
+    left: { backgroundColor: 'rgb(240, 240, 240)', paddingHorizontal: 20, height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 2, borderTopRightRadius: 20, borderBottomRightRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, },
     leftTop: { display: 'flex', paddingTop: 20, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', width: '100%', height: 70, },
-    leftMenus: { marginTop: 20 },
+    leftMenus: { marginTop: 20, marginBottom: 100 },
     leftMenuLabel: { fontSize: 12, color: 'rgb(41, 96, 121)', fontWeight: 'bold', marginBottom: 10 },
     leftMenuItem: { display: 'flex', paddingVertical: 10, flexDirection: 'row', alignItems: 'center' },
     leftMenuItemIcon: { color: 'rgb(41, 96, 121)', marginLeft: 10 },
     leftMenuItemText: { fontSize: 16, marginLeft: 10, color: 'rgb(41, 96, 121)' },
     space: { width: '20%', height: '100%', position: 'absolute', top: 0, left: '80%', zIndex: 2, },
-    logo: { width: '60%', objectFit: 'contain', tintColor: 'rgb(41, 96, 121)' },
+    logo: { width: 200, objectFit: 'contain', tintColor: 'rgb(41, 96, 121)' },
     closeBtn: { borderWidth: 1, borderRadius: '50%', borderColor: 'rgb(41, 96, 121)', padding: 5 },
     close: { color: '#rgb(41, 96, 121)', },
 })
