@@ -1,45 +1,27 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-export const authorization = createAsyncThunk(
-    'auth/authorization',
-    async () => {
-        
-    }
-)
+const initialState = {
+    isLoggedIn: false,
+    user: null,
+    token: null
+};
 
 const authSlice = createSlice({
     name: 'auth',
-    initialState: {
-        isLogged: false,
-        token: "",
-        name: "",
-        userId: "",
-        status: 'idle',
-    },
+    initialState,
     reducers: {
-        setIsLoggedIn(state, action) {
-            state.isLogged = !state.isLogged;
+        login: (state, action) => {
+            state.isLoggedIn = true;
+            state.user = action.payload.user;
+            state.token = action.payload.token;
         },
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(authorization.pending, (state) => {
-                state.status = 'loading';
-            })
-            .addCase(authorization.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.isLogged = true;
-                state.token = action.payload.accessToken;
-                state.name = action.payload.name;
-                state.userId = action.payload.userId;
-            })
-            .addCase(authorization.rejected, (state) => {
-                state.status = 'failed';
-                state.isLogged = false;
-            });
-    },
+        logout: (state) => {
+            state.isLoggedIn = false;
+            state.user = null;
+            state.token = null;
+        }
+    }
 });
 
-export const { setIsLoggedIn } = authSlice.actions;
-
+export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;

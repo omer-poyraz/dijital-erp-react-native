@@ -1,14 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView, Dimensions, Alert } from 'react-native';
 import { DataTable, Text, Card, Button, TextInput, Portal, Modal, Avatar } from 'react-native-paper';
-import { projectData } from '../../utilities/projectData';
 import { colors } from '../../utilities/colors';
+import { pickDocument } from '../../utilities/pickDocument';
 import { useTranslation } from 'react-i18next';
 import StatusTag from './statusTag';
 import ProgressBar from '../../components/chart/progressBar';
 import { Ionicons } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAssemblyManualGetAll } from '../../redux/slices/assemblyManualGetAllSlice';
+import { fetchAssemblySuccessGetAllByManual } from '../../redux/slices/assemblySuccessGetAllByManualSlice';
+import { fetchAssemblyFailureGetAllByManual } from '../../redux/slices/assemblyFailureGetAllByManualSlice';
+import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice';
+import { fetchAssemblyManualAddFile } from '../../redux/slices/assemblyManualAddFileSlice';
 
 const ProjectTable = () => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+
+    const { data: manuals, status: manualsStatus } = useSelector(state => state.assemblyManualGetAll);
+    const { data: successStates, status: successStatus } = useSelector(state => state.assemblySuccessGetAllByManual);
+    const { data: failureStates, status: failureStatus } = useSelector(state => state.assemblyFailureGetAllByManual);
+    const { status: addNoteStatus } = useSelector(state => state.assemblyNoteCreate);
+    const { status: addFileStatus } = useSelector(state => state.assemblyManualAddFile);
+
     const [selectedProject, setSelectedProject] = useState(null);
     const [showSuccessTable, setShowSuccessTable] = useState(false);
     const [showFailureTable, setShowFailureTable] = useState(false);
@@ -20,12 +35,21 @@ const ProjectTable = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [noteText, setNoteText] = useState('');
     const [searchText, setSearchText] = useState('');
-    const [filteredData, setFilteredData] = useState(projectData);
-
-    const { t } = useTranslation()
+    const [filteredData, setFilteredData] = useState([]);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const isTablet = Dimensions.get('window').width > 600;
     const today = new Date();
+
+    useEffect(() => {
+        dispatch(fetchAssemblyManualGetAll());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (manuals) {
+            applyFilters();
+        }
+    }, [manuals, searchText]);
 
     const parseDate = (dateStr) => {
         const parts = dateStr.split('.');
@@ -38,8 +62,9 @@ const ProjectTable = () => {
     };
 
     const calculateProgress = (project) => {
-        const startDate = parseDate(project.tarih);
-        const totalDays = project.sure;
+        const startDate = parseDate(project.date);
+        const totalDays = project.time;
+
         const endDate = new Date(startDate);
         endDate.setDate(endDate.getDate() + totalDays);
 
@@ -50,21 +75,19 @@ const ProjectTable = () => {
         return { progress, remainingDays, totalDays };
     };
 
-    useEffect(() => {
-        applyFilters();
-    }, [searchText]);
-
     const applyFilters = () => {
-        let result = [...projectData];
+        if (!manuals) return;
+
+        let result = [...manuals];
 
         if (searchText) {
             const searchLower = searchText.toLowerCase();
             result = result.filter(item =>
-                item.sorumlu.toLowerCase().includes(searchLower) ||
-                item.projeAdi.toLowerCase().includes(searchLower) ||
-                item.parcaKodu.toLowerCase().includes(searchLower) ||
-                item.sorumluKisi.toLowerCase().includes(searchLower) ||
-                item.aciklama.toLowerCase().includes(searchLower)
+                (item.responible || '').toLowerCase().includes(searchLower) ||
+                (item.projectName || '').toLowerCase().includes(searchLower) ||
+                (item.partCode || '').toLowerCase().includes(searchLower) ||
+                (item.personInCharge || '').toLowerCase().includes(searchLower) ||
+                (item.description || '').toLowerCase().includes(searchLower)
             );
         }
 
@@ -74,28 +97,92 @@ const ProjectTable = () => {
 
     const handleRowPress = (item) => {
         setSelectedProject(item);
-        setShowSuccessTable(item.basariliDurumlar.length > 0);
-        setShowFailureTable(item.basarisizDurumlar.length > 0);
+
+        dispatch(fetchAssemblySuccessGetAllByManual({ id: item.id }));
+        dispatch(fetchAssemblyFailureGetAllByManual({ id: item.id }));
+
+        setPage2(0);
+        setPage3(0);
     };
+
+    useEffect(() => {
+        if (selectedProject && successStatus === 'succeeded') {
+            setShowSuccessTable(successStates && successStates.length > 0);
+        }
+    }, [selectedProject, successStatus, successStates]);
+
+    useEffect(() => {
+        if (selectedProject && failureStatus === 'succeeded') {
+            setShowFailureTable(failureStates && failureStates.length > 0);
+        }
+    }, [selectedProject, failureStatus, failureStates]);
 
     const handleFileUpload = (item) => {
         setSelectedRow(item);
         setFileModalVisible(true);
     };
 
+    const uploadFile = () => {
+        if (!selectedFile || !selectedRow) {
+            Alert.alert(t('error'), t('please_select_file'));
+            return;
+        }
+
+        dispatch(fetchAssemblyManualAddFile({
+            formData: { file: [selectedFile] },
+            id: selectedRow.id
+        })).then(() => {
+            setFileModalVisible(false);
+            setSelectedFile(null);
+            Alert.alert(t('success'), t('file_uploaded'));
+            dispatch(fetchAssemblyManualGetAll());
+        });
+    };
+
     const handleSaveNote = (item) => {
-        alert(`${item.id} ${t("id_note_added")}: ${noteText}`);
-        setNoteText('');
+        if (!noteText.trim()) {
+            Alert.alert(t('error'), t('note_required'));
+            return;
+        }
+
+        dispatch(fetchAssemblyNoteCreate({
+            formData: {
+                note: noteText,
+                description: noteText,
+                status: true
+            },
+            manualId: item.id
+        })).then(() => {
+            if (addNoteStatus === 'succeeded') {
+                Alert.alert(t('success'), `${item.id} ${t("id_note_added")}: ${noteText}`);
+                setNoteText('');
+            }
+        });
+    };
+
+    const selectFile = async () => {
+        const file = await pickDocument();
+        if (file) {
+            setSelectedFile(file);
+        }
     };
 
     const from1 = page1 * itemsPerPage;
-    const to1 = Math.min((page1 + 1) * itemsPerPage, projectData.length);
+    const to1 = Math.min((page1 + 1) * itemsPerPage, filteredData.length);
 
     const from2 = selectedProject ? (page2 * itemsPerPage) : 0;
-    const to2 = selectedProject ? Math.min((page2 + 1) * itemsPerPage, selectedProject.basariliDurumlar.length) : 0;
+    const to2 = selectedProject && successStates ? Math.min((page2 + 1) * itemsPerPage, successStates.length) : 0;
 
     const from3 = selectedProject ? (page3 * itemsPerPage) : 0;
-    const to3 = selectedProject ? Math.min((page3 + 1) * itemsPerPage, selectedProject.basarisizDurumlar.length) : 0;
+    const to3 = selectedProject && failureStates ? Math.min((page3 + 1) * itemsPerPage, failureStates.length) : 0;
+
+    if (manualsStatus === 'loading' && !manuals) {
+        return (
+            <View style={styles.page}>
+                <Text style={styles.loadingText}>{t('loading')}...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.page}>
@@ -130,18 +217,42 @@ const ProjectTable = () => {
                     <ScrollView horizontal={!isTablet}>
                         <DataTable style={styles.table}>
                             <DataTable.Header style={styles.tableHeader}>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader2}>Proje Sorumlusu</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Proje Adı</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>DGT Kodu</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader2}>Sorumlu Kişi</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Seri No</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Üretim Adedi</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Süre</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Tarih</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>Kalan Süre</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>Dosya Yükle</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 3.5 }]}>Açıklama</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>Tarih/Saat</DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader2}>
+                                    {t("project_responsible")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                    {t("project_name")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                    {t("dgt_code")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader2}>
+                                    {t("person_in_charge")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                    {t("serial_no")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                    {t("production_qty")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                    {t("duration")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                    {t("date")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>
+                                    {t("remaining_time")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>
+                                    {t("upload_file")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 3.5 }]}>
+                                    {t("description")}
+                                </DataTable.Title>
+                                <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>
+                                    {t("date_time")}
+                                </DataTable.Title>
                             </DataTable.Header>
 
                             {filteredData.slice(from1, to1).map((item) => {
@@ -163,11 +274,15 @@ const ProjectTable = () => {
                                                     style={styles.avatar}
                                                     source={{ uri: `https://i.pravatar.cc/150?u=${item.id}` }}
                                                 />
-                                                <Text style={styles.cellText}>{item.sorumlu}</Text>
+                                                <Text style={styles.cellText}>{item.responible}</Text>
                                             </View>
                                         </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.projeAdi}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.parcaKodu}</Text></DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.projectName}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.partCode}</Text>
+                                        </DataTable.Cell>
                                         <DataTable.Cell style={styles.tableCell2}>
                                             <View style={styles.avatarContainer}>
                                                 <Avatar.Image
@@ -175,13 +290,21 @@ const ProjectTable = () => {
                                                     style={styles.avatar}
                                                     source={{ uri: `https://i.pravatar.cc/150?u=${item.id + 100}` }}
                                                 />
-                                                <Text style={styles.cellText}>{item.sorumluKisi}</Text>
+                                                <Text style={styles.cellText}>{item.personInCharge}</Text>
                                             </View>
                                         </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.seriNo}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.uretimAdedi}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.sure}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.tarih}</Text></DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.serialNumber}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.productionQuantity}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.time}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.date}</Text>
+                                        </DataTable.Cell>
                                         <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}>
                                             <ProgressBar
                                                 progress={progress}
@@ -200,14 +323,14 @@ const ProjectTable = () => {
                                                 textColor={colors.primary}
                                                 buttonColor="transparent"
                                             >
-                                                Yükle
+                                                {t("upload")}
                                             </Button>
                                         </DataTable.Cell>
                                         <DataTable.Cell style={[styles.tableCell, { flex: 3.5 }]}>
-                                            <Text style={styles.cellText}>{item.aciklama}</Text>
+                                            <Text style={styles.cellText}>{item.description}</Text>
                                         </DataTable.Cell>
                                         <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}>
-                                            <Text style={styles.cellText}>{item.teknisyenTarih}</Text>
+                                            <Text style={styles.cellText}>{item.technicianDate}</Text>
                                         </DataTable.Cell>
                                     </DataTable.Row>
                                 );
@@ -234,11 +357,11 @@ const ProjectTable = () => {
                 />
             </Card>
 
-            {showSuccessTable && selectedProject && (
+            {showSuccessTable && selectedProject && successStates && (
                 <Card style={[styles.card, styles.subCard]}>
                     <Card.Title
-                        title="Başarılı Durumlar Listesi"
-                        subtitle={`${selectedProject.projeAdi} - ${selectedProject.sorumlu}`}
+                        title={t("successful_states_list")}
+                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible}`}
                         titleStyle={styles.cardTitle}
                         subtitleStyle={styles.cardSubtitle}
                     />
@@ -246,40 +369,70 @@ const ProjectTable = () => {
                         <ScrollView horizontal={!isTablet}>
                             <DataTable style={styles.table}>
                                 <DataTable.Header style={styles.tableHeader}>
-                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>Açıklama Listesi</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Teknisyen Adı</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>DGT Parça Kodu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Durumu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Onay</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Bekleyen Adet</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>Açıklama</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Tarih</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>
+                                        {t("description_list")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("technician_name")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("dgt_part_code")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("status")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("approval")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("pending_qty")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>
+                                        {t("description")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("date")}
+                                    </DataTable.Title>
                                 </DataTable.Header>
 
-                                {selectedProject?.basariliDurumlar.slice(from2, to2).map((item) => (
+                                {successStates.slice(from2, to2).map((item) => (
                                     <DataTable.Row key={item.id} style={styles.tableRow}>
-                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}><Text style={styles.cellText}>{item.aciklama}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.teknisyen}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.parcaKodu}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}>
-                                            <StatusTag durum={item.durum} />
+                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}>
+                                            <Text style={styles.cellText}>{item.description}</Text>
                                         </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.onay}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.bekleyenAdet}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}><Text style={styles.cellText}>{item.kaliteAciklama}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.tarih}</Text></DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.technician}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.partCode}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <StatusTag durum={item.status ? 'Aktif' : 'Kapalı'} />
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.approval}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.pendingQuantity}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}>
+                                            <Text style={styles.cellText}>{item.qualityDescription}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.date}</Text>
+                                        </DataTable.Cell>
                                     </DataTable.Row>
                                 ))}
                             </DataTable>
                         </ScrollView>
                     </View>
 
-                    {selectedProject?.basariliDurumlar.length > 0 && (
+                    {successStates.length > 0 && (
                         <DataTable.Pagination
                             page={page2}
-                            numberOfPages={Math.ceil(selectedProject.basariliDurumlar.length / itemsPerPage)}
+                            numberOfPages={Math.ceil(successStates.length / itemsPerPage)}
                             onPageChange={(page) => setPage2(page)}
-                            label={`${from2 + 1}-${to2} / ${selectedProject.basariliDurumlar.length}`}
+                            label={`${from2 + 1}-${to2} / ${successStates.length}`}
                             showFastPaginationControls
                             numberOfItemsPerPage={itemsPerPage}
                             style={styles.pagination}
@@ -288,11 +441,11 @@ const ProjectTable = () => {
                 </Card>
             )}
 
-            {showFailureTable && selectedProject && (
+            {showFailureTable && selectedProject && failureStates && (
                 <Card style={[styles.card, styles.subCard]}>
                     <Card.Title
-                        title="Uygunsuzluk Tespit Listesi"
-                        subtitle={`${selectedProject.projeAdi} - ${selectedProject.sorumlu}`}
+                        title={t("inappropriateness_detection_list")}
+                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible}`}
                         titleStyle={styles.cardTitle}
                         subtitleStyle={styles.cardSubtitle}
                     />
@@ -300,38 +453,64 @@ const ProjectTable = () => {
                         <ScrollView horizontal={!isTablet}>
                             <DataTable style={styles.table}>
                                 <DataTable.Header style={styles.tableHeader}>
-                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>Uygunsuzluk Tespit</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Teknisyen Adı</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>DGT Parça Kodu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Durumu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Bekleyen Adet</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>Açıklama</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>Tarih</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>
+                                        {t("inappropriateness_detection")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("technician_name")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("dgt_part_code")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("status")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("pending_qty")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={[styles.columnHeader, { flex: 1.5 }]}>
+                                        {t("description")}
+                                    </DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader}>
+                                        {t("date")}
+                                    </DataTable.Title>
                                 </DataTable.Header>
 
-                                {selectedProject?.basarisizDurumlar.slice(from3, to3).map((item) => (
+                                {failureStates.slice(from3, to3).map((item) => (
                                     <DataTable.Row key={item.id} style={styles.tableRow}>
-                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}><Text style={styles.cellText}>{item.uygunsuzluk}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.teknisyen}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.parcaKodu}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}>
-                                            <StatusTag durum={item.durum} />
+                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}>
+                                            <Text style={styles.cellText}>{item.inappropriateness}</Text>
                                         </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.bekleyenAdet}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}><Text style={styles.cellText}>{item.kaliteAciklama}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell}><Text style={styles.cellText}>{item.tarih}</Text></DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.technician}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.partCode}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <StatusTag durum={item.status ? 'Aktif' : 'Kapalı'} />
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.pendingQuantity}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={[styles.tableCell, { flex: 1.5 }]}>
+                                            <Text style={styles.cellText}>{item.qualityDescription}</Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.tableCell}>
+                                            <Text style={styles.cellText}>{item.date}</Text>
+                                        </DataTable.Cell>
                                     </DataTable.Row>
                                 ))}
                             </DataTable>
                         </ScrollView>
                     </View>
 
-                    {selectedProject?.basarisizDurumlar.length > 0 && (
+                    {failureStates.length > 0 && (
                         <DataTable.Pagination
                             page={page3}
-                            numberOfPages={Math.ceil(selectedProject.basarisizDurumlar.length / itemsPerPage)}
+                            numberOfPages={Math.ceil(failureStates.length / itemsPerPage)}
                             onPageChange={(page) => setPage3(page)}
-                            label={`${from3 + 1}-${to3} / ${selectedProject.basarisizDurumlar.length}`}
+                            label={`${from3 + 1}-${to3} / ${failureStates.length}`}
                             showFastPaginationControls
                             numberOfItemsPerPage={itemsPerPage}
                             style={styles.pagination}
@@ -342,9 +521,9 @@ const ProjectTable = () => {
 
             <Portal>
                 <Modal visible={fileModalVisible} onDismiss={() => setFileModalVisible(false)} contentContainerStyle={styles.modal}>
-                    <Text style={styles.modalTitle}>Dosya Yükleme</Text>
-                    <Text style={styles.modalText}>Proje: {selectedRow?.projeAdi}</Text>
-                    <Text style={styles.modalText}>Parça Kodu: {selectedRow?.parcaKodu}</Text>
+                    <Text style={styles.modalTitle}>{t("file_upload")}</Text>
+                    <Text style={styles.modalText}>{t("project")}: {selectedRow?.projectName}</Text>
+                    <Text style={styles.modalText}>{t("part_code")}: {selectedRow?.partCode}</Text>
                     <View style={styles.modalButtons}>
                         <Button
                             mode="outlined"
@@ -352,18 +531,27 @@ const ProjectTable = () => {
                             style={styles.modalButton}
                             textColor={colors.primary}
                         >
-                            İptal
+                            {t("cancel")}
                         </Button>
                         <Button
                             mode="contained"
-                            onPress={() => {
-                                alert("Dosya yükleme simülasyonu");
-                                setFileModalVisible(false);
-                            }}
+                            onPress={selectFile}
                             style={styles.modalButton}
                             buttonColor={colors.primary}
+                            loading={addFileStatus === 'loading'}
+                            disabled={addFileStatus === 'loading'}
                         >
-                            Dosya Seç ve Yükle
+                            {selectedFile ? t("change_file") : t("select_file")}
+                        </Button>
+                        <Button
+                            mode="contained"
+                            onPress={uploadFile}
+                            style={[styles.modalButton, { marginLeft: 10 }]}
+                            buttonColor={selectedFile ? colors.primary : colors.primaryLight}
+                            disabled={!selectedFile || addFileStatus === 'loading'}
+                            loading={addFileStatus === 'loading'}
+                        >
+                            {t("upload_file")}
                         </Button>
                     </View>
                 </Modal>
@@ -372,7 +560,7 @@ const ProjectTable = () => {
             {selectedProject && (
                 <Card style={styles.noteCard}>
                     <Card.Content>
-                        <Text style={styles.noteTitle}>{t("add_note")} ({selectedProject.projeAdi})</Text>
+                        <Text style={styles.noteTitle}>{t("add_note")} ({selectedProject.projectName})</Text>
                         <TextInput
                             mode="outlined"
                             label={t("description")}
@@ -390,6 +578,8 @@ const ProjectTable = () => {
                             onPress={() => handleSaveNote(selectedProject)}
                             style={styles.saveButton}
                             buttonColor={colors.primary}
+                            loading={addNoteStatus === 'loading'}
+                            disabled={addNoteStatus === 'loading' || !noteText.trim()}
                         >
                             {t("save_note")}
                         </Button>
@@ -437,6 +627,7 @@ const styles = StyleSheet.create({
     resultCount: { marginRight: 14, color: colors.primaryLight, },
     emptyRow: { height: 100, borderBottomWidth: 1, borderBottomColor: colors.rowBorder, },
     emptyMessage: { textAlign: 'center', color: '#888', fontSize: 16, },
+    loadingText: { textAlign: 'center', marginTop: 20, fontSize: 16, color: colors.primary },
 });
 
 export default ProjectTable;

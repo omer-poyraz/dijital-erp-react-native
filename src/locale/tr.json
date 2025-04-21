@@ -92,5 +92,13 @@
     "add_note": "Not Ekle",
     "save_note": "Notu Kaydet",
     "result": "sonuç",
-    "not_result": "Sonuç bulunamadı"
+    "not_result": "Sonuç bulunamadı",
+    "welcome_back": "Hoş geldiniz. Eğer bir hesabınız varsa lütfen giriş yapın.",
+    "username": "Kullanıcı adı",
+    "password": "Şifre",
+    "forgot_password": "Şifremi unuttum",
+    "remember_me": "Beni hatırla",
+    "change_language": "Dil değiştir",
+    "login": "Giriş yap",
+    "login_successful": "Giriş başarılı"
 }

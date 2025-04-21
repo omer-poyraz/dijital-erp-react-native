@@ -91,5 +91,13 @@
     "add_note": "Add Note",
     "save_note": "Save Note",
     "result": "result",
-    "not_result": "Result Undefined"
+    "not_result": "Result Undefined",
+    "welcome_back": "Welcome back. If you have an account, please log in.",
+    "username": "Username",
+    "password": "Password",
+    "forgot_password": "Forgot my password",
+    "remember_me": "Remember me",
+    "change_language": "Change Language",
+    "login": "Log In",
+    "login_successful": "Login successful"
 }

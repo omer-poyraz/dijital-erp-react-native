@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Ionicons } from '@expo/vector-icons'
 import logo from '../../images/logo2.png'
+import { logoutUser } from '../../redux/slices/loginSlice'
 
 const LeftMenu = () => {
     const dispatch = useDispatch()
@@ -19,6 +20,11 @@ const LeftMenu = () => {
     const isTablet = width >= 600;
 
     const leftMenuWidth = isTablet ? '45%' : '80%';
+
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        dispatch(closeLeftMenu());
+    };
 
     const LeftMenuItem = ({ icon, text, funct }) => {
         return (
@@ -70,7 +76,7 @@ const LeftMenu = () => {
 
                     <LeftMenuItem icon='person-outline' text={t("my_account")} />
                     <LeftMenuItem icon='language-outline' text={t("language_sections")} funct={() => { navigate.navigate("Language"); closeModal() }} />
-                    <LeftMenuItem icon='log-out-outline' text={t("logout")} />
+                    <LeftMenuItem icon='log-out-outline' text={t("logout")} funct={handleLogout} />
                 </ScrollView>
             </View>
 
