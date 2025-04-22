@@ -11,4 +11,5 @@ export const colors = {
     cardBorder: 'rgba(21, 86, 117, 0.3)',
     modalBg: 'rgba(240, 245, 248, 1)',
     white: '#FFFFFF',
+    theme1: "#155675"
 };
