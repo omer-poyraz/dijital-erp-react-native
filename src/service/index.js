@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, LOGIN, RESET_PASSWORD_SERVICE } from "../api";
+import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE } from "../api";
 
 let token = "";
 let userId = "";
@@ -180,6 +180,30 @@ export function AssemblyNoteDeleteService(id) {
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 // ASSEMBLY_NOTE_END
+
+
+// EMPLOYEE
+export function EmployeeGetAllService() {
+    return axios.get(EMPLOYEE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function EmployeeGetService(id) {
+    return axios.get(`${EMPLOYEE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function EmployeeCreateService(data) {
+    return axios.post(EMPLOYEE_CREATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function EmployeeUpdateService(data) {
+    return axios.put(EMPLOYEE_UPDATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function EmployeeDeleteService(id) {
+    return axios.delete(`${EMPLOYEE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// EMPLOYEE_END
 
 
 // USER

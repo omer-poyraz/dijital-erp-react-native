@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Dimensions, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { DataTable, Text, Card, Button, TextInput, Portal, Modal, Avatar } from 'react-native-paper';
 import { colors } from '../../utilities/colors';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,8 @@ import AssemblySuccessModal from './assemblySuccessModal';
 import AssemblyFailureModal from './assemblyFailureModal';
 import { fetchAssemblyManualAddFile } from '../../redux/slices/assemblyManualAddFileSlice';
 import * as DocumentPicker from 'expo-document-picker';
+import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice';
+import AssemblyNoteModal from './assemblyNoteModal';
 
 const ProjectTable = () => {
     const [selectedProject, setSelectedProject] = useState(null);
@@ -31,6 +33,7 @@ const ProjectTable = () => {
     const [assemblyManualModal, setAssemblyManualModal] = useState(false);
     const [successModal, setSuccessModal] = useState(false);
     const [failureModal, setFailureModal] = useState(false);
+    const [noteModal, setNoteModal] = useState(false);
     const [filteredData, setFilteredData] = useState(null);
     const assemblyManualGetAll = useSelector(state => state.assemblyManualGetAll.data);
     const { t } = useTranslation()
@@ -132,11 +135,23 @@ const ProjectTable = () => {
 
             setIsUploading(true);
 
-            const files = result.assets;
+            const files = result.assets.map(file => {
+                const now = new Date();
+                return {
+                    uri: file.uri,
+                    name: file.name,
+                    type: file.mimeType || "application/octet-stream",
+                    lastModified: now.getTime(),
+                    lastModifiedDate: now.toString(),
+                    size: file.size || 0,
+                    webkitRelativePath: ""
+                };
+            });
 
-            console.log("Seçilen dosyalar:", files);
+            console.log("Hazırlanan dosyalar:", files);
 
-            const formData = { file: files }
+            const formData = { file: files };
+
             await dispatch(fetchAssemblyManualAddFile({
                 formData: formData,
                 id: selectedRow ? selectedRow.id : selectedProject?.id
@@ -162,7 +177,11 @@ const ProjectTable = () => {
         }
     };
 
-    const handleSaveNote = (item) => {
+    const handleSaveNote = async (item) => {
+        const formData = { note: noteText, description: "", status: true, }
+        console.log(item.id)
+        var data = await dispatch(fetchAssemblyNoteCreate({ formData: formData, manualId: item.id }));
+        console.log(data)
         alert(`${item.id} ${t("id_note_added")}: ${noteText}`);
         setNoteText('');
     };
@@ -422,7 +441,12 @@ const ProjectTable = () => {
             {selectedProject && (
                 <Card style={styles.noteCard}>
                     <Card.Content>
-                        <Text style={styles.noteTitle}>{t("add_note")} ({selectedProject.projectName})</Text>
+                        <View style={styles.noteHeader}>
+                            <Text style={styles.noteTitle}>{t("add_note")} ({selectedProject.projectName})</Text>
+                            <TouchableOpacity style={styles.noteModalBtn} onPress={() => setNoteModal(true)}>
+                                <Text style={styles.noteModalBtnTxt}>{t("notes")}</Text>
+                            </TouchableOpacity>
+                        </View>
                         <TextInput
                             mode="outlined"
                             label={t("description")}
@@ -450,6 +474,7 @@ const ProjectTable = () => {
             <AssemblyManualModal modal={assemblyManualModal} item={selectedProject} setModal={setAssemblyManualModal} />
             <AssemblySuccessModal modal={successModal} item={selectedSuccess} setModal={setSuccessModal} />
             <AssemblyFailureModal modal={failureModal} item={selectedFailure} setModal={setFailureModal} />
+            <AssemblyNoteModal modal={noteModal} item={selectedProject} setModal={setNoteModal} />
         </View>
     );
 };

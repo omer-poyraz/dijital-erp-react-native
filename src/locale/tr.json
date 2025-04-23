@@ -137,5 +137,6 @@
     "issue_resolved": "Sorun Çözüldü",
     "issue_has_been_resolved": "Sorun çözülmüştür",
     "mark_resolved": "Çözüldü Olarak İşaretle",
-    "reopen_issue": "Sorunu Yeniden Aç"
+    "reopen_issue": "Sorunu Yeniden Aç",
+    "project_notes": "Proje Notları"
 }

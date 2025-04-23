@@ -99,4 +99,7 @@ export const styles = StyleSheet.create({
     emptyMessage: { textAlign: 'center', color: '#888', fontSize: 16, },
     uploadingContainer: { alignItems: 'center', marginVertical: 20, padding: 15, },
     uploadingText: { marginTop: 10, fontSize: 16, color: colors.primary, },
+    noteModalBtn: { borderColor: colors.primary, borderWidth: 1, backgroundColor: 'transparent', borderRadius: 4, paddingVertical: 8, paddingHorizontal: 16, },
+    noteModalBtnTxt: { color: colors.primary, },
+    noteHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }
 });

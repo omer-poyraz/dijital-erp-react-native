@@ -31,6 +31,11 @@ import assemblyNoteGetReducer from './slices/assemblyNoteGetSlice'
 import assemblyNoteCreateReducer from './slices/assemblyNoteCreateSlice'
 import assemblyNoteUpdateReducer from './slices/assemblyNoteUpdateSlice'
 import assemblyNoteDeleteReducer from './slices/assemblyNoteDeleteSlice'
+import employeeGetAllReducer from './slices/employeeGetAllSlice'
+import employeeGetReducer from './slices/employeeGetSlice'
+import employeeCreateReducer from './slices/employeeCreateSlice'
+import employeeUpdateReducer from './slices/employeeUpdateSlice'
+import employeeDeleteReducer from './slices/employeeDeleteSlice'
 
 export const store = configureStore({
     reducer: {
@@ -60,6 +65,11 @@ export const store = configureStore({
         assemblySuccessUpdate: assemblySuccessUpdateReducer,
         assemblySuccessDelete: assemblySuccessDeleteReducer,
         auth: authReducer,
+        employeeGetAll: employeeGetAllReducer,
+        employeeGet: employeeGetReducer,
+        employeeCreate: employeeCreateReducer,
+        employeeUpdate: employeeUpdateReducer,
+        employeeDelete: employeeDeleteReducer,
         jobAndHold: jobAndHoldReducer,
         lang: langReducer,
         leftMenu: leftMenuReducer,

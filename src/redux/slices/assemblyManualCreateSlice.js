@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AssemblyManualCreateService } from '../../service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchAssemblyManualCreate = createAsyncThunk(
     'assemblyManualCreate/fetchAssemblyManualCreate',
     async ({ formData }) => {
-        const userId = localStorage.getItem("auth") === null ? null : JSON.parse(localStorage.getItem("auth")).user?.userId
+        const userId = await AsyncStorage.getItem("auth") === null ? null : JSON.parse(await AsyncStorage.getItem("auth")).user?.userId
 
         const data = new FormData();
-        console.log(formData.file)
         if (formData.file && formData.file.length > 0) {
             formData.file.forEach(file => {
                 data.append("file", file);

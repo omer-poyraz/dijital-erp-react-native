@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AssemblySuccessCreateService } from '../../service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchAssemblySuccessCreate = createAsyncThunk(
     'assemblySuccessCreate/fetchAssemblySuccessCreate',
     async ({ formData, manualId }) => {
-        const userId = localStorage.getItem("auth") === null ? null : JSON.parse(localStorage.getItem("auth")).user?.userId
+        const userId = await AsyncStorage.getItem("auth") === null ? null : JSON.parse(await AsyncStorage.getItem("auth")).user?.userId
 
         const data = {
             "description": formData.description,

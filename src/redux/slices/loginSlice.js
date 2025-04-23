@@ -6,13 +6,8 @@ export const loginData = createAsyncThunk(
   'login/loginData',
   async ({ data }, { rejectWithValue }) => {
     try {
-      const formData = {
-        "userName": data.userName,
-        "password": data.password
-      }
+      const formData = { "userName": data.userName, "password": data.password }
       const response = await login(formData);
-
-      console.log("response:::", response)
 
       if (response?.isSuccess && response?.statusCode === 200) {
         await AsyncStorage.setItem('auth', JSON.stringify(response.result));
@@ -65,7 +60,7 @@ const loginSlice = createSlice({
     isLoggedIn: false,
     status: 'idle',
     error: null,
-    loginSuccess: false 
+    loginSuccess: false
   },
   reducers: {
     resetLoginSuccess: (state) => {

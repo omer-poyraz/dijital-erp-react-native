@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AssemblyNoteUpdateService } from '../../service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchAssemblyNoteUpdate = createAsyncThunk(
     'assemblyNoteUpdate/fetchAssemblyNoteUpdate',
     async ({ formData, id, manualId }) => {
-        const userId = localStorage.getItem("auth") === null ? null : JSON.parse(localStorage.getItem("auth")).user?.userId
+        const userId = await AsyncStorage.getItem("auth") === null ? null : JSON.parse(await AsyncStorage.getItem("auth")).user?.userId
 
         const data = {
             "note": formData.note,

@@ -114,27 +114,6 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
                                 )}
                             </Card.Content>
                         </Card>
-
-                        <View style={styles.buttonsContainer}>
-                            <Button
-                                mode="contained"
-                                icon="file-document-edit"
-                                style={[styles.actionButton, { backgroundColor: colors.primary }]}
-                                onPress={() => { }}
-                            >
-                                {t('edit')}
-                            </Button>
-
-                            <Button
-                                mode="outlined"
-                                icon={item?.status ? "close-circle" : "check-circle"}
-                                style={styles.actionButton}
-                                textColor={item?.status ? colors.error : colors.success}
-                                onPress={() => { }}
-                            >
-                                {item?.status ? t('close_item') : t('reactivate')}
-                            </Button>
-                        </View>
                     </ScrollView>
                 </View>
             </View>

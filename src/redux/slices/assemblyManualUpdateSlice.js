@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AssemblyManualUpdateService } from '../../service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchAssemblyManualUpdate = createAsyncThunk(
     'assemblyManualUpdate/fetchAssemblyManualUpdate',
     async ({ formData, id }) => {
-        const userId = localStorage.getItem("auth") === null ? null : JSON.parse(localStorage.getItem("auth")).user?.userId
+        const userId = await AsyncStorage.getItem("auth") === null ? null : JSON.parse(await AsyncStorage.getItem("auth")).user?.userId
 
         const data = new FormData();
         console.log(formData.file)

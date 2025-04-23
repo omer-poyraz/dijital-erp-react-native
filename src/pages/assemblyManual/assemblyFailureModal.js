@@ -149,27 +149,6 @@ const AssemblyFailureModal = ({ item, modal, setModal }) => {
                                 </View>
                             </Card.Content>
                         </Card>
-
-                        <View style={styles.buttonsContainer}>
-                            <Button
-                                mode="contained"
-                                icon="file-document-edit"
-                                style={[styles.actionButton, { backgroundColor: colors.primary }]}
-                                onPress={() => { }}
-                            >
-                                {t('edit')}
-                            </Button>
-
-                            <Button
-                                mode="outlined"
-                                icon={item?.status ? "check-circle" : "refresh"}
-                                style={styles.actionButton}
-                                textColor={item?.status ? colors.success : colors.warning}
-                                onPress={() => { }}
-                            >
-                                {item?.status ? t('mark_resolved') : t('reopen_issue')}
-                            </Button>
-                        </View>
                     </ScrollView>
                 </View>
             </View>
