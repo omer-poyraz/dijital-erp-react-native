@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
 import { colors } from '../../utilities/colors'
-import { Button, Card, Divider, Badge, List } from 'react-native-paper'
+import { Card, Divider, List } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
 import StatusTag from './statusTag'
 
@@ -52,7 +52,7 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
                                 <List.Section>
                                     <List.Item
                                         title={t('technician')}
-                                        description={item?.technician || '-'}
+                                        description={`${item?.technician?.name} ${item?.technician?.surname}` || '-'}
                                         left={() => <List.Icon icon="account" color={colors.primary} />}
                                         titleStyle={styles.listTitle}
                                         descriptionStyle={styles.listDescription}

@@ -5,15 +5,15 @@ const StatusTag = ({ durum }) => {
     let bgColor, textColor;
 
     switch (durum) {
-        case 'Aktif':
-            bgColor = 'rgba(76, 175, 80, 0.15)'; 
+        case true:
+            bgColor = 'rgba(76, 175, 80, 0.15)';
             textColor = '#2e7d32';
             break;
-        case 'Kapalı':
+        case false:
             bgColor = 'rgba(244, 67, 54, 0.15)';
             textColor = '#d32f2f';
             break;
-        default: 
+        default:
             bgColor = 'rgba(255, 193, 7, 0.15)';
             textColor = '#f57c00';
     }

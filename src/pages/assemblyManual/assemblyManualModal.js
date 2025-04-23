@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, FlatList } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from 'react-native'
 import { colors } from '../../utilities/colors'
 import { Button, Card, Divider, Chip, ActivityIndicator } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
@@ -65,7 +65,7 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                                         <Text style={styles.infoLabel}>{t('responsible')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="person" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{item?.responible || '-'}</Text>
+                                            <Text style={styles.infoValue}>{`${item?.responible?.name} ${item?.responible?.surname}` || '-'}</Text>
                                         </View>
                                     </View>
 
@@ -73,7 +73,7 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                                         <Text style={styles.infoLabel}>{t('person_in_charge')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="people" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{item?.personInCharge || '-'}</Text>
+                                            <Text style={styles.infoValue}>{`${item?.personInCharge?.name} ${item?.personInCharge?.surname}` || '-'}</Text>
                                         </View>
                                     </View>
                                 </View>

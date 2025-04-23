@@ -15,6 +15,8 @@ import { fetchAssemblyManualAddFile } from '../../redux/slices/assemblyManualAdd
 import * as DocumentPicker from 'expo-document-picker';
 import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice';
 import AssemblyNoteModal from './assemblyNoteModal';
+import { URL } from '../../api';
+import { fetchAssemblyManualGetAll } from '../../redux/slices/assemblyManualGetAllSlice';
 
 const ProjectTable = () => {
     const [selectedProject, setSelectedProject] = useState(null);
@@ -38,7 +40,6 @@ const ProjectTable = () => {
     const assemblyManualGetAll = useSelector(state => state.assemblyManualGetAll.data);
     const { t } = useTranslation()
     const [isUploading, setIsUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
     const dispatch = useDispatch();
     const uploadStatus = useSelector(state => state.assemblyManualAddFile.status);
 
@@ -90,8 +91,10 @@ const ProjectTable = () => {
                 item.projectName.toLowerCase().includes(searchLower) ||
                 item.partCode.toLowerCase().includes(searchLower) ||
                 item.serialNumber.toLowerCase().includes(searchLower) ||
-                item.responible.toLowerCase().includes(searchLower) ||
-                item.personInCharge.toLowerCase().includes(searchLower) ||
+                item.responible?.name.toLowerCase().includes(searchLower) ||
+                item.responible?.surname.toLowerCase().includes(searchLower) ||
+                item.personInCharge?.name.toLowerCase().includes(searchLower) ||
+                item.personInCharge?.surname.toLowerCase().includes(searchLower) ||
                 item.description.toLowerCase().includes(searchLower)
             );
         }
@@ -156,6 +159,8 @@ const ProjectTable = () => {
                 formData: formData,
                 id: selectedRow ? selectedRow.id : selectedProject?.id
             }));
+
+            await dispatch(fetchAssemblyManualGetAll());
 
             setTimeout(() => {
                 const currentUploadStatus = uploadStatus;
@@ -242,16 +247,16 @@ const ProjectTable = () => {
                                     <DataTable.Row key={item.id} style={[styles.tableRow, selectedProject?.id === item.id && styles.selectedRow]} onPress={() => handleRowPress(item)}>
                                         <DataTable.Cell style={styles.tableCell1}>
                                             <View style={styles.avatarContainer}>
-                                                <Avatar.Image size={40} style={styles.avatar} source={{ uri: `https://i.pravatar.cc/150?u=1` }} />
-                                                <Text style={styles.cellText}>{item.responible}</Text>
+                                                <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.personInCharge?.file}` }} />
+                                                <Text style={styles.cellText}>{item.responible?.name} {item.responible?.surname}</Text>
                                             </View>
                                         </DataTable.Cell>
                                         <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item.projectName}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.tableCell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.tableCell4}>
                                             <View style={styles.avatarContainer}>
-                                                <Avatar.Image size={40} style={styles.avatar} source={{ uri: `https://i.pravatar.cc/150?u=1` }} />
-                                                <Text style={styles.cellText}>{item.personInCharge}</Text>
+                                                <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.personInCharge?.file}` }} />
+                                                <Text style={styles.cellText}>{item.personInCharge?.name} {item.personInCharge?.surname}</Text>
                                             </View>
                                         </DataTable.Cell>
                                         <DataTable.Cell style={styles.tableCell5}><Text style={styles.cellText}>{item.serialNumber}</Text></DataTable.Cell>
@@ -306,7 +311,7 @@ const ProjectTable = () => {
                 <Card style={[styles.card, styles.subCard]}>
                     <Card.Title
                         title="Başarılı Durumlar Listesi"
-                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible}`}
+                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
                         titleStyle={styles.cardTitle}
                         subtitleStyle={styles.cardSubtitle}
                     />
@@ -326,7 +331,7 @@ const ProjectTable = () => {
 
                                 {selectedProject?.basariliDurumlar.slice(from2, to2).map((item) => (
                                     <DataTable.Row key={item.id} style={styles.table2Row} onPress={() => handleSuccessRowPress(item)}>
-                                        <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.technician}</Text></DataTable.Cell>
+                                        <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.technician?.name} {item.technician?.surname}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.table2Cell2}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.table2Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.table2Cell4}><StatusTag durum={item.durum} /></DataTable.Cell>
@@ -358,7 +363,7 @@ const ProjectTable = () => {
                 <Card style={[styles.card, styles.subCard]}>
                     <Card.Title
                         title="Uygunsuzluk Tespit Listesi"
-                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible}`}
+                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
                         titleStyle={styles.cardTitle}
                         subtitleStyle={styles.cardSubtitle}
                     />
@@ -378,9 +383,9 @@ const ProjectTable = () => {
                                 {selectedProject?.basarisizDurumlar.slice(from3, to3).map((item) => (
                                     <DataTable.Row key={item.id} style={styles.table3Row} onPress={() => handleFailureRowPress(item)}>
                                         <DataTable.Cell style={styles.table3Cell1}><Text style={styles.cellText}>{item.inappropriateness}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.technician}</Text></DataTable.Cell>
+                                        <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.technician?.name} {item.technician?.surname}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.table3Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={item.durum} /></DataTable.Cell>
+                                        <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={item.status} /></DataTable.Cell>
                                         <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.pendingQuantity}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.qualityDescription}</Text></DataTable.Cell>
                                         <DataTable.Cell style={styles.table3Cell7}><Text style={styles.cellText}>{item.date}</Text></DataTable.Cell>

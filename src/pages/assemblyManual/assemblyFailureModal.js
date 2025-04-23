@@ -48,7 +48,7 @@ const AssemblyFailureModal = ({ item, modal, setModal }) => {
                                 <List.Section>
                                     <List.Item
                                         title={t('technician')}
-                                        description={item?.technician || '-'}
+                                        description={`${item?.technician?.name} ${item?.technician?.surname}` || '-'}
                                         left={() => <List.Icon icon="account" color={colors.primary} />}
                                         titleStyle={styles.listTitle}
                                         descriptionStyle={styles.listDescription}

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { EmployeeDeleteService } from '../../service';
 
-export const fetchemployeeDelete = createAsyncThunk(
+export const fetchEmployeeDelete = createAsyncThunk(
     'employeeDelete/fetchEmployeeDelete',
     async ({ id }) => {
         const response = await EmployeeDeleteService(id)
