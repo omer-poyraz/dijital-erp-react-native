@@ -16,6 +16,9 @@ import HomePage from '../pages/home';
 import LoginPage from '../pages/login';
 import AssemblyManualPage from '../pages/assemblyManual';
 import { checkAuthState } from '../redux/slices/loginSlice';
+import AssemblyManualDetailPage from '../pages/assemblyManual/assemblyManualModal';
+import AssemblySuccessDetailPage from '../pages/assemblyManual/assemblySuccessModal';
+import AssemblyFailureDetailPage from '../pages/assemblyManual/assemblyFailureModal';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +53,18 @@ const AuthStack = () => {
                     title: t("language_sections")
                 }}
             />
+            <Stack.Screen
+                name="AssemblyManualDetail"
+                component={AssemblyManualDetailPage}
+            />
+            <Stack.Screen
+                name="AssemblySuccessDetail"
+                component={AssemblySuccessDetailPage}
+            />
+            <Stack.Screen
+                name="AssemblyFailureDetail"
+                component={AssemblyFailureDetailPage}
+            />
         </Stack.Navigator>
     );
 };
@@ -66,6 +81,9 @@ const AppStack = () => {
         { name: "Language", title: t("language_sections"), component: LanguagePage },
         { name: "Product", title: t("products"), component: ProductPage },
         { name: "ProductDetail", title: t("product_detail"), component: ProductDetailPage },
+        { name: "AssemblyManualDetail", title: t("product_detail"), component: AssemblyManualDetailPage },
+        { name: "AssemblySuccessDetail", title: t("product_detail"), component: AssemblySuccessDetailPage },
+        { name: "AssemblyFailureDetail", title: t("product_detail"), component: AssemblyFailureDetailPage },
     ], [t, i18n.language]);
 
     return (
@@ -125,7 +143,7 @@ const AppStack = () => {
 const StackNavigator = () => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector(state => state.login?.isLoggedIn);
-    
+
     useEffect(() => {
         dispatch(checkAuthState());
     }, [dispatch]);

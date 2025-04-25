@@ -12,6 +12,8 @@
     "warning": "Warning",
     "info": "Info",
     "success": "Success",
+    "status": "Status",
+    "note": "Note",
     "loading": "Loading...",
     "search": "Search",
     "settings": "Settings",

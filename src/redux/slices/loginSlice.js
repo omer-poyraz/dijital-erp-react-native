@@ -10,7 +10,13 @@ export const loginData = createAsyncThunk(
       const response = await login(formData);
 
       if (response?.isSuccess && response?.statusCode === 200) {
-        await AsyncStorage.setItem('auth', JSON.stringify(response.result));
+        await AsyncStorage.setItem('auth', JSON.stringify({
+          ...response.result.user,
+          user: response.result.user,
+          accessToken: response.result.accessToken,
+          refreshToken: response.result.refreshToken,
+          refreshTokenExpireTime: response.result.user.refreshTokenExpireTime
+        }));
         return response.result;
       } else {
         return rejectWithValue(response?.message || 'Giriş başarısız');

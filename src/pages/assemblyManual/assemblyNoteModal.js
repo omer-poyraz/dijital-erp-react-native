@@ -3,15 +3,19 @@ import { StyleSheet, View, Text, TouchableOpacity, FlatList, ActivityIndicator }
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAssemblyNoteGetAllByManual } from '../../redux/slices/assemblyNoteGetAllByManualSlice'
 import { Ionicons } from '@expo/vector-icons'
-import { Card, Divider, Badge, Avatar, Chip } from 'react-native-paper'
+import { Card, Divider, TextInput, Badge, Avatar, Chip, Button, Switch } from 'react-native-paper'
 import { colors } from '../../utilities/colors'
 import { useTranslation } from 'react-i18next'
+import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice'
 
 const AssemblyNoteModal = ({ item, modal, setModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const { data: notes, status } = useSelector(state => state.assemblyNoteGetAllByManual);
     const [refreshing, setRefreshing] = useState(false);
+    const [noteText, setNoteText] = useState('');
+    const [formData, setFormData] = useState({ note: "", description: "", status: true });
+    const [tab, setTab] = useState(true);
 
     const getData = async () => {
         if (item?.id) {
@@ -25,11 +29,19 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
         setRefreshing(false);
     };
 
-    useEffect(() => { 
+    useEffect(() => {
         if (modal && item?.id) {
             getData();
         }
     }, [dispatch, modal, item?.id]);
+
+    const handleSaveNote = async () => {
+        await dispatch(fetchAssemblyNoteCreate({ formData: formData, manualId: item.id }));
+        setFormData({ note: "", description: "", status: true, })
+        getData();
+        setTab(true);
+        setNoteText('');
+    };
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -53,9 +65,9 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
             <Card.Content>
                 <View style={styles.noteHeader}>
                     <View style={styles.noteHeaderLeft}>
-                        <Avatar.Text 
-                            size={40} 
-                            label={getInitials(note.user)} 
+                        <Avatar.Text
+                            size={40}
+                            label={getInitials(note.user)}
                             style={styles.avatar}
                             labelStyle={styles.avatarLabel}
                         />
@@ -76,18 +88,18 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
                         <Ionicons name="document-text-outline" size={20} color={colors.primary} style={styles.noteIcon} />
                         <Text style={styles.noteTitle}>{note.note}</Text>
                     </View>
-                    
+
                     {note.description ? (
                         <Text style={styles.noteDescription}>{note.description}</Text>
                     ) : null}
                 </View>
 
                 <View style={styles.tagsContainer}>
-                    <Chip 
-                        icon={note.status ? "check-circle" : "alert-circle"} 
-                        mode="outlined" 
+                    <Chip
+                        icon={note.status ? "check-circle" : "alert-circle"}
+                        mode="outlined"
                         style={[
-                            styles.statusChip, 
+                            styles.statusChip,
                             note.status ? styles.activeStatus : styles.inactiveStatus
                         ]}
                     >
@@ -116,29 +128,81 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
                         </Text>
                         <Text style={styles.projectName}>{item?.projectName}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => setModal(false)} style={styles.closeBtn}>
-                        <Ionicons name='close' size={28} style={styles.close} />
-                    </TouchableOpacity>
+                    <View style={styles.headerRight}>
+                        <TouchableOpacity onPress={() => setTab(!tab)} style={styles.closeBtn}>
+                            <Ionicons name={tab ? 'add-outline' : 'list-outline'} size={28} style={styles.close} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setModal(false)} style={styles.closeBtn}>
+                            <Ionicons name='close' size={28} style={styles.close} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View style={styles.modalContent}>
-                    {status === 'loading' && !refreshing ? (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="large" color={colors.primary} />
-                            <Text style={styles.loadingText}>{t('loading_notes')}</Text>
-                        </View>
-                    ) : (
-                        <FlatList
-                            data={notes}
-                            renderItem={renderNoteItem}
-                            keyExtractor={item => item.id.toString()}
-                            contentContainerStyle={styles.notesList}
-                            showsVerticalScrollIndicator={false}
-                            ListEmptyComponent={renderEmptyList}
-                            onRefresh={onRefresh}
-                            refreshing={refreshing}
-                        />
-                    )}
+                    {tab ? <>
+                        {status === 'loading' && !refreshing ? (
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="large" color={colors.primary} />
+                                <Text style={styles.loadingText}>{t('loading_notes')}</Text>
+                            </View>
+                        ) : (
+                            <FlatList
+                                data={notes}
+                                renderItem={renderNoteItem}
+                                keyExtractor={item => item.id.toString()}
+                                contentContainerStyle={styles.notesList}
+                                showsVerticalScrollIndicator={false}
+                                ListEmptyComponent={renderEmptyList}
+                                onRefresh={onRefresh}
+                                refreshing={refreshing}
+                            />
+                        )}
+                    </> : <>
+                        <Card style={styles.noteCard}>
+                            <Card.Content>
+                                <TextInput
+                                    mode="outlined"
+                                    label={t("note")}
+                                    value={formData.note}
+                                    onChangeText={text => setFormData(prev => ({ ...prev, note: text }))}
+                                    multiline
+                                    numberOfLines={2}
+                                    style={styles.noteInput}
+                                    outlineColor={colors.primaryLight}
+                                    activeOutlineColor={colors.primary}
+                                    textColor={colors.primary}
+                                />
+                                <TextInput
+                                    mode="outlined"
+                                    label={t("description")}
+                                    value={formData.description}
+                                    onChangeText={text => setFormData(prev => ({ ...prev, description: text }))}
+                                    multiline
+                                    numberOfLines={2}
+                                    style={styles.noteInput}
+                                    outlineColor={colors.primaryLight}
+                                    activeOutlineColor={colors.primary}
+                                    textColor={colors.primary}
+                                />
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                                    <Text style={{ marginRight: 8 }}>{t('approval')}</Text>
+                                    <Switch
+                                        value={formData.status}
+                                        onValueChange={val => setFormData(prev => ({ ...prev, status: val }))}
+                                        color={colors.primary}
+                                    />
+                                </View>
+                                <Button
+                                    mode="contained"
+                                    onPress={() => handleSaveNote()}
+                                    style={styles.saveButton}
+                                    buttonColor={colors.primary}
+                                >
+                                    {t("save_note")}
+                                </Button>
+                            </Card.Content>
+                        </Card>
+                    </>}
                 </View>
             </View>
         </View>
@@ -146,168 +210,42 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
 };
 
 const styles = StyleSheet.create({
-    page: { 
-        position: 'absolute', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        bottom: 0, 
-        backgroundColor: 'rgba(0,0,0,0.6)', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        zIndex: 1000, 
-    },
-    modal: { 
-        width: '90%', 
-        maxWidth: 700, 
-        height: '90%', 
-        backgroundColor: '#fff', 
-        borderRadius: 12, 
-        overflow: 'hidden',
-    },
-    modalHeader: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        backgroundColor: colors.primary, 
-        paddingVertical: 12, 
-        paddingHorizontal: 16, 
-    },
-    headerContent: {
-        flex: 1,
-    },
-    modalTitle: { 
-        color: '#fff', 
-        fontSize: 20, 
-        fontWeight: 'bold', 
-    },
-    serialText: { 
-        fontSize: 16, 
-        fontWeight: 'normal', 
-    },
-    projectName: {
-        color: 'rgba(255,255,255,0.8)',
-        fontSize: 14,
-        marginTop: 4,
-    },
-    closeBtn: { 
-        padding: 4, 
-    },
-    close: { 
-        color: '#fff', 
-    },
-    modalContent: {
-        flex: 1,
-        backgroundColor: '#f5f5f5',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 16,
-        color: colors.primary,
-    },
-    notesList: {
-        padding: 12,
-        paddingBottom: 20,
-    },
-    noteCard: {
-        marginBottom: 12,
-        borderRadius: 8,
-        borderLeftWidth: 4,
-        borderLeftColor: colors.primary,
-    },
-    noteHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    noteHeaderLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    avatar: {
-        backgroundColor: colors.primary,
-    },
-    avatarLabel: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    userInfo: {
-        marginLeft: 12,
-        flex: 1,
-    },
-    userName: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#333',
-    },
-    userTitle: {
-        fontSize: 12,
-        color: '#666',
-        marginTop: 2,
-    },
-    statusBadge: {
-        backgroundColor: '#f0f0f0',
-        color: '#555',
-        fontWeight: 'normal',
-    },
-    divider: {
-        marginVertical: 12,
-    },
-    noteContent: {
-        marginBottom: 12,
-    },
-    noteTitleContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    noteIcon: {
-        marginRight: 8,
-    },
-    noteTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        flex: 1,
-    },
-    noteDescription: {
-        fontSize: 14,
-        color: '#555',
-        lineHeight: 20,
-        marginLeft: 28,
-    },
-    tagsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    statusChip: {
-        marginRight: 6,
-        marginBottom: 4,
-    },
-    activeStatus: {
-        borderColor: colors.success,
-    },
-    inactiveStatus: {
-        borderColor: colors.warning,
-    },
-    emptyContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 40,
-    },
-    emptyText: {
-        marginTop: 16,
-        fontSize: 16,
-        color: '#888',
-        textAlign: 'center',
-    },
+    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', zIndex: 1000, },
+    modal: { width: '90%', maxWidth: 700, height: '90%', backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', },
+    modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, paddingVertical: 12, paddingHorizontal: 16, },
+    headerContent: { flex: 1, },
+    modalTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold', },
+    serialText: { fontSize: 16, fontWeight: 'normal', },
+    projectName: { color: 'rgba(255,255,255,0.8)', fontSize: 14, marginTop: 4, },
+    headerRight: { flexDirection: 'row', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' },
+    closeBtn: { padding: 4, },
+    close: { color: '#fff', },
+    modalContent: { flex: 1, backgroundColor: '#f5f5f5', },
+    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', },
+    loadingText: { marginTop: 12, fontSize: 16, color: colors.primary, },
+    notesList: { padding: 12, paddingBottom: 20, },
+    noteCard: { marginBottom: 12, margin: 20, borderRadius: 8, borderLeftWidth: 4, borderLeftColor: colors.primary, },
+    noteInput: { marginBottom: 16, backgroundColor: colors.white, },
+    noteHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', },
+    noteHeaderLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, },
+    avatar: { backgroundColor: colors.primary, },
+    avatarLabel: { fontSize: 14, fontWeight: 'bold', },
+    userInfo: { marginLeft: 12, flex: 1, },
+    userName: { fontSize: 14, fontWeight: '600', color: '#333', },
+    userTitle: { fontSize: 12, color: '#666', marginTop: 2, },
+    statusBadge: { backgroundColor: '#f0f0f0', color: '#555', fontWeight: 'normal', },
+    divider: { marginVertical: 12, },
+    noteContent: { marginBottom: 12, },
+    noteTitleContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, },
+    noteIcon: { marginRight: 8, },
+    noteTitle: { fontSize: 16, fontWeight: '600', color: '#333', flex: 1, },
+    noteDescription: { fontSize: 14, color: '#555', lineHeight: 20, marginLeft: 28, },
+    tagsContainer: { flexDirection: 'row', flexWrap: 'wrap', },
+    statusChip: { marginRight: 6, marginBottom: 4, },
+    activeStatus: { borderColor: colors.success, },
+    inactiveStatus: { borderColor: colors.warning, },
+    emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, },
+    emptyText: { marginTop: 16, fontSize: 16, color: '#888', textAlign: 'center', },
 });
 
 export default AssemblyNoteModal;

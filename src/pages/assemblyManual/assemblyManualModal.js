@@ -1,24 +1,30 @@
 import { Ionicons } from '@expo/vector-icons'
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList, Alert } from 'react-native'
 import { colors } from '../../utilities/colors'
-import { Button, Card, Divider, Chip, ActivityIndicator } from 'react-native-paper'
+import { Card, Divider, Chip, ActivityIndicator } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
 import { URL } from '../../api'
-import Pdf from 'react-native-pdf'
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchAssemblyManualGet } from '../../redux/slices/assemblyManualGetSlice'
+import { useNavigation } from '@react-navigation/native'
+import AssemblyNoteModal from './assemblyNoteModal'
+import PdfRendererView from 'react-native-pdf-renderer'
+import RNFS from 'react-native-fs'
 
-const AssemblyManualModal = ({ item, modal, setModal }) => {
+const AssemblyManualDetailPage = ({ route }) => {
+    const { id } = route.params;
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('details');
     const [selectedImage, setSelectedImage] = useState(null);
+    const [noteModal, setNoteModal] = useState(false);
+    const data = useSelector(state => state.assemblyManualGet.data);
     const [imageLoading, setImageLoading] = useState({});
-
-    useEffect(() => {
-        if (!modal) {
-            setSelectedImage(null);
-        }
-    }, [modal]);
+    const [downloading, setDownloading] = useState(false);
+    const [localPdfPath, setLocalPdfPath] = useState(null);
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -26,15 +32,44 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
         return date.toLocaleDateString('tr-TR');
     };
 
-    const isPdfFile = (fileUrl) => {
-        if (!fileUrl) return false;
-        return fileUrl.toLowerCase().endsWith('.pdf');
+    const isPdfFile = (fileName) => {
+        if (!fileName) return false;
+        return fileName.toLowerCase().endsWith('.pdf');
+    };
+
+    const downloadAndShowPdf = async (remoteUrl) => {
+        try {
+            setDownloading(true);
+            const localPath = `${RNFS.DocumentDirectoryPath}/assembly_temp_${Date.now()}.pdf`;
+            const downloadResult = await RNFS.downloadFile({
+                fromUrl: remoteUrl,
+                toFile: localPath,
+            }).promise;
+            setDownloading(false);
+            if (downloadResult.statusCode === 200) {
+                setLocalPdfPath(`file://${localPath}`);
+            } else {
+                Alert.alert('PDF indirilemedi', t('no_files'));
+            }
+        } catch (e) {
+            setDownloading(false);
+            Alert.alert('PDF indirme hatası', e.message);
+        }
+    };
+
+    const handleFileSelect = async (file) => {
+        setLocalPdfPath(null);
+        setSelectedImage(file);
+        if (isPdfFile(file)) {
+            const remoteUrl = file.startsWith('http') ? file : `${URL}${file}`;
+            await downloadAndShowPdf(remoteUrl);
+        }
     };
 
     const DetailsContent = () => (
         <KeyboardAwareFlatList
             data={[{ key: 'details' }]}
-            keyExtractor={item => item.key}
+            keyExtractor={data => data.key}
             renderItem={() => (
                 <View>
                     <Card style={styles.card} elevation={2}>
@@ -44,103 +79,93 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                                     <Ionicons name="airplane" size={36} color={colors.primary} />
                                 </View>
                                 <View style={styles.headerInfo}>
-                                    <Text style={styles.projectNameText}>{item?.projectName}</Text>
-                                    <Text style={styles.codeText}>{item?.partCode}</Text>
+                                    <Text style={styles.projectNameText}>{data?.projectName}</Text>
+                                    <Text style={styles.codeText}>{data?.partCode}</Text>
                                     <Chip
                                         mode="outlined"
                                         style={styles.serialChip}
                                         textStyle={styles.serialChipText}
                                         icon="barcode-scan"
                                     >
-                                        {item?.serialNumber}
+                                        {data?.serialNumber}
                                     </Chip>
                                 </View>
                             </View>
-
                             <Divider style={styles.divider} />
-
                             <View style={styles.infoGrid}>
                                 <View style={styles.infoRow}>
                                     <View style={styles.infoItem}>
                                         <Text style={styles.infoLabel}>{t('responsible')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="person" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{`${item?.responible?.name} ${item?.responible?.surname}` || '-'}</Text>
+                                            <Text style={styles.infoValue}>{`${data?.responible?.name} ${data?.responible?.surname}` || '-'}</Text>
                                         </View>
                                     </View>
-
                                     <View style={styles.infoItem}>
                                         <Text style={styles.infoLabel}>{t('person_in_charge')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="people" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{`${item?.personInCharge?.name} ${item?.personInCharge?.surname}` || '-'}</Text>
+                                            <Text style={styles.infoValue}>{`${data?.personInCharge?.name} ${data?.personInCharge?.surname}` || '-'}</Text>
                                         </View>
                                     </View>
                                 </View>
-
                                 <View style={styles.infoRow}>
                                     <View style={styles.infoItem}>
                                         <Text style={styles.infoLabel}>{t('production_quantity')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="cube" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{item?.productionQuantity || '-'}</Text>
+                                            <Text style={styles.infoValue}>{data?.productionQuantity || '-'}</Text>
                                         </View>
                                     </View>
-
                                     <View style={styles.infoItem}>
                                         <Text style={styles.infoLabel}>{t('time_days')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="time" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{item?.time || '-'} gün</Text>
+                                            <Text style={styles.infoValue}>{data?.time || '-'} gün</Text>
                                         </View>
                                     </View>
                                 </View>
                             </View>
-
                             <View style={styles.statsRow}>
                                 <View style={styles.statItem}>
                                     <Ionicons name="checkmark-done-circle" size={24} color={colors.success} />
-                                    <Text style={styles.statCount}>{item?.basariliDurumlar?.length || 0}</Text>
+                                    <Text style={styles.statCount}>{data?.basariliDurumlar?.length || 0}</Text>
                                     <Text style={styles.statLabel}>{t('success_states')}</Text>
                                 </View>
-
                                 <View style={styles.statItem}>
                                     <Ionicons name="alert-circle" size={24} color={colors.error} />
-                                    <Text style={styles.statCount}>{item?.basarisizDurumlar?.length || 0}</Text>
+                                    <Text style={styles.statCount}>{data?.basarisizDurumlar?.length || 0}</Text>
                                     <Text style={styles.statLabel}>{t('issues')}</Text>
                                 </View>
-
                                 <View style={styles.statItem}>
                                     <Ionicons name="document-text" size={24} color={colors.warning} />
-                                    <Text style={styles.statCount}>{item?.assemblyNotes?.length || 0}</Text>
+                                    <Text style={styles.statCount}>{data?.assemblyNotes?.length || 0}</Text>
                                     <Text style={styles.statLabel}>{t('notes')}</Text>
                                 </View>
                             </View>
                         </Card.Content>
                     </Card>
-
                     <Card style={styles.card} elevation={2}>
                         <Card.Content>
                             <Text style={styles.sectionTitle}>{t('description')}</Text>
-                            <Text style={styles.description}>{item?.description || t('no_description')}</Text>
+                            <Text style={styles.description}>{data?.description || t('no_description')}</Text>
                         </Card.Content>
                     </Card>
-
                     <Card style={styles.card} elevation={2}>
                         <Card.Content>
                             <Text style={styles.sectionTitle}>{t('user_info')}</Text>
                             <View style={styles.userSection}>
                                 <View style={styles.userAvatar}>
                                     <Text style={styles.avatarText}>
-                                        {item?.user?.firstName?.[0]}{item?.user?.lastName?.[0]}
+                                        {data?.user?.firstName?.[0]}{data?.user?.lastName?.[0]}
                                     </Text>
                                 </View>
                                 <View style={styles.userInfo}>
-                                    <Text style={styles.userName}>{item?.user?.firstName} {item?.user?.lastName}</Text>
-                                    <Text style={styles.userTitle}>{item?.user?.title}</Text>
+                                    <Text style={styles.userName}>{data?.user?.firstName} {data?.user?.lastName}</Text>
+                                    <Text style={styles.userTitle}>{data?.user?.title}</Text>
                                     <Text style={styles.userDate}>
                                         <Ionicons name="calendar" size={14} color="#666" />
-                                        {' '}{formatDate(item?.createdAt)}
+                                        {' '}{formatDate(data?.createdAt)}
                                     </Text>
                                 </View>
                             </View>
@@ -159,7 +184,7 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
         return (
             <TouchableOpacity
                 style={styles.imageItem}
-                onPress={() => setSelectedImage(file)}
+                onPress={() => handleFileSelect(file)}
                 activeOpacity={0.8}
             >
                 <View style={styles.imageContainer}>
@@ -181,7 +206,6 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                             }}
                         />
                     )}
-
                     {imageLoading[index] && (
                         <View style={styles.imageLoading}>
                             <ActivityIndicator color={colors.primary} size="small" />
@@ -193,27 +217,41 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
         );
     };
 
-    return (
-        <View style={[styles.page, modal ? { display: 'flex' } : { display: 'none' }]}>
-            <View style={styles.modal}>
-                <View style={styles.modalHeader}>
-                    <View style={styles.headerContent}>
-                        <Text style={styles.modalTitle}>
-                            {item?.projectName}
-                            <Text style={styles.serialText}> ({item?.serialNumber})</Text>
-                        </Text>
-                    </View>
-                    <TouchableOpacity onPress={() => setModal(false)} style={styles.closeBtn}>
-                        <Ionicons name='close' size={28} style={styles.close} />
-                    </TouchableOpacity>
-                </View>
+    const getData = async () => {
+        await dispatch(fetchAssemblyManualGet({ id: id }))
+    }
 
+    useEffect(() => { getData() }, [dispatch])
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: `${data?.projectName} (${data?.serialNumber})`,
+            headerRight: () => {
+                return (
+                    <View style={styles.headerRight}>
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
+                            <Ionicons name='chevron-back-outline' size={28} style={styles.close} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setNoteModal(true)} style={styles.closeBtn}>
+                            <Ionicons name='chatbox-outline' size={28} style={styles.close} />
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
+        })
+    }, [navigation, id, data])
+
+    return (
+        <View style={styles.page}>
+            <View style={styles.modal}>
                 <View style={styles.tabBar}>
                     <TouchableOpacity
                         style={[styles.tab, activeTab === 'details' && styles.activeTab]}
                         onPress={() => {
                             setActiveTab('details');
                             setSelectedImage(null);
+                            setLocalPdfPath(null);
                         }}>
                         <Ionicons
                             name="information-circle-outline"
@@ -225,12 +263,12 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                             {t('details')}
                         </Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         style={[styles.tab, activeTab === 'files' && styles.activeTab]}
                         onPress={() => {
                             setActiveTab('files');
                             setSelectedImage(null);
+                            setLocalPdfPath(null);
                         }}>
                         <Ionicons
                             name="images-outline"
@@ -239,48 +277,53 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                             style={styles.tabIcon}
                         />
                         <Text style={[styles.tabText, activeTab === 'files' && styles.activeTabText]}>
-                            {t('files')} {item?.files?.length > 0 && `(${item.files.length})`}
+                            {t('files')} {data?.files?.length > 0 && `(${data.files.length})`}
                         </Text>
                     </TouchableOpacity>
                 </View>
-
                 <View style={styles.modalContent}>
                     {activeTab === 'details' ? (
                         <DetailsContent />
                     ) : (
                         <View style={styles.filesContainer}>
-                            {item?.files?.length > 0 ? (
+                            {data?.files?.length > 0 ? (
                                 selectedImage ? (
                                     <View style={styles.selectedImageContainer}>
                                         <View style={styles.previewHeader}>
                                             <Text style={styles.previewTitle}>{t('file_preview')}</Text>
                                             <TouchableOpacity
-                                                onPress={() => setSelectedImage(null)}
+                                                onPress={() => {
+                                                    setSelectedImage(null);
+                                                    setLocalPdfPath(null);
+                                                }}
                                                 style={styles.closePreviewBtn}
                                             >
                                                 <Ionicons name="close-circle" size={24} color="#fff" />
                                             </TouchableOpacity>
                                         </View>
-
                                         <View style={styles.pdfContainer}>
-                                            {isPdfFile(selectedImage) ? (
-                                                <Pdf
-                                                    source={{ uri: `${URL}${selectedImage}` }}
-                                                    style={styles.selectedImage}
-                                                    onLoadComplete={(numberOfPages, filePath) => {
-                                                        console.log(`PDF yüklendi: ${numberOfPages} sayfa`);
-                                                    }}
-                                                    onError={(error) => {
-                                                        console.log('PDF yükleme hatası:', error);
-                                                    }}
-                                                    onPageChanged={(page, numberOfPages) => {
-                                                        console.log(`Sayfa değişti: ${page}/${numberOfPages}`);
-                                                    }}
-                                                    enablePaging={true}
-                                                    activityIndicator={() => (
+                                            {downloading ? (
+                                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <ActivityIndicator color={colors.primary} size="large" />
+                                                    <Text style={{ color: '#fff', marginTop: 10 }}>{t('downloading')}</Text>
+                                                </View>
+                                            ) : isPdfFile(selectedImage) ? (
+                                                localPdfPath ? (
+                                                    <PdfRendererView
+                                                        style={{ flex: 1, backgroundColor: '#000' }}
+                                                        source={localPdfPath}
+                                                        distanceBetweenPages={16}
+                                                        maxZoom={5}
+                                                        onPageChange={(current, total) => {
+                                                            // Sayfa değişimi logu
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                                         <ActivityIndicator color={colors.primary} size="large" />
-                                                    )}
-                                                />
+                                                        <Text style={{ color: '#fff', marginTop: 10 }}>{t('preparing_pdf')}</Text>
+                                                    </View>
+                                                )
                                             ) : (
                                                 <Image
                                                     source={{ uri: `${URL}${selectedImage}` }}
@@ -289,30 +332,10 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                                                 />
                                             )}
                                         </View>
-
-                                        <View style={styles.previewActions}>
-                                            <Button
-                                                mode="contained"
-                                                icon="download"
-                                                style={styles.downloadButton}
-                                            >
-                                                {t('download')}
-                                            </Button>
-
-                                            <Button
-                                                mode="outlined"
-                                                icon="close"
-                                                onPress={() => setSelectedImage(null)}
-                                                style={styles.closeButton}
-                                                textColor="#fff"
-                                            >
-                                                {t('close')}
-                                            </Button>
-                                        </View>
                                     </View>
                                 ) : (
                                     <FlatList
-                                        data={item.files}
+                                        data={data.files}
                                         renderItem={renderImageItem}
                                         keyExtractor={(item, index) => index.toString()}
                                         numColumns={3}
@@ -337,18 +360,20 @@ const AssemblyManualModal = ({ item, modal, setModal }) => {
                     )}
                 </View>
             </View>
+            <AssemblyNoteModal modal={noteModal} item={data} setModal={setNoteModal} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', zIndex: 1000, },
-    modal: { width: '90%', maxWidth: 700, height: '90%', backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', },
+    page: { backgroundColor: '#f5f5f5', flex: 1, padding: 10, justifyContent: 'center', alignItems: 'center', },
+    modal: { width: '100%', height: '95%', backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', },
+    headerRight: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, },
     modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.primary, paddingVertical: 12, paddingHorizontal: 16, },
     headerContent: { flex: 1, },
     modalTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold', },
     serialText: { fontSize: 16, fontWeight: 'normal', },
-    closeBtn: { padding: 4, },
+    closeBtn: { marginRight: 20, marginTop: 10 },
     close: { color: '#fff', },
     tabBar: { flexDirection: 'row', backgroundColor: '#f5f5f5', borderBottomWidth: 1, borderBottomColor: '#e0e0e0', },
     tab: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, },
@@ -410,4 +435,4 @@ const styles = StyleSheet.create({
     pdfLabel: { marginTop: 5, color: colors.primary, fontSize: 12, fontWeight: 'bold', },
 });
 
-export default AssemblyManualModal;
+export default AssemblyManualDetailPage;

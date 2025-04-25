@@ -1,13 +1,20 @@
 import { Ionicons } from '@expo/vector-icons'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
 import { colors } from '../../utilities/colors'
 import { Card, Divider, List } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
 import StatusTag from './statusTag'
+import { fetchAssemblySuccessGet } from '../../redux/slices/assemblySuccessGetSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
 
-const AssemblySuccessModal = ({ item, modal, setModal }) => {
+const AssemblySuccessDetailPage = ({ route }) => {
+    const { id } = route.params
     const { t } = useTranslation();
+    const data = useSelector(state => state.assemblySuccessGet.data);
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -15,8 +22,30 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
         return date.toLocaleDateString('tr-TR');
     };
 
+    const getData = async () => {
+        await dispatch(fetchAssemblySuccessGet({ id: id }))
+    }
+
+    useEffect(() => { getData() }, [dispatch])
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: `${data?.partCode}`,
+            headerRight: () => {
+                return (
+                    <View style={styles.headerRight}>
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
+                            <Ionicons name='chevron-back-outline' size={28} style={styles.close} />
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
+        })
+    }, [id, data, navigation])
+
     return (
-        <View style={[styles.page, modal ? { display: 'flex' } : { display: 'none' }]}>
+        <View style={styles.page}>
             <View style={styles.modal}>
                 <View style={styles.modalHeader}>
                     <View style={styles.headerContent}>
@@ -24,9 +53,6 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
                             {t('success_detail')}
                         </Text>
                     </View>
-                    <TouchableOpacity onPress={() => setModal(false)} style={styles.closeBtn}>
-                        <Ionicons name='close' size={28} style={styles.close} />
-                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.modalContent}>
@@ -39,10 +65,10 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
                                     </View>
 
                                     <View style={styles.headerText}>
-                                        <Text style={styles.successTitle}>{item?.description}</Text>
+                                        <Text style={styles.successTitle}>{data?.description}</Text>
                                         <View style={styles.statusContainer}>
-                                            <StatusTag durum={item?.status ? 'Aktif' : 'Kapalı'} />
-                                            <Text style={styles.dateText}>{formatDate(item?.createdAt)}</Text>
+                                            <StatusTag durum={data?.status ? 'Aktif' : 'Kapalı'} />
+                                            <Text style={styles.dateText}>{formatDate(data?.createdAt)}</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -52,7 +78,7 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
                                 <List.Section>
                                     <List.Item
                                         title={t('technician')}
-                                        description={`${item?.technician?.name} ${item?.technician?.surname}` || '-'}
+                                        description={`${data?.technician?.name} ${data?.technician?.surname}` || '-'}
                                         left={() => <List.Icon icon="account" color={colors.primary} />}
                                         titleStyle={styles.listTitle}
                                         descriptionStyle={styles.listDescription}
@@ -62,7 +88,7 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
 
                                     <List.Item
                                         title={t('part_code')}
-                                        description={item?.partCode || '-'}
+                                        description={data?.partCode || '-'}
                                         left={() => <List.Icon icon="barcode" color={colors.primary} />}
                                         titleStyle={styles.listTitle}
                                         descriptionStyle={styles.listDescription}
@@ -72,7 +98,7 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
 
                                     <List.Item
                                         title={t('approval')}
-                                        description={item?.approval || '-'}
+                                        description={data?.approval || '-'}
                                         left={() => <List.Icon icon="check-decagram" color={colors.success} />}
                                         titleStyle={styles.listTitle}
                                         descriptionStyle={styles.listDescription}
@@ -82,7 +108,7 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
 
                                     <List.Item
                                         title={t('pending_qty')}
-                                        description={item?.pendingQuantity || '0'}
+                                        description={data?.pendingQuantity || '0'}
                                         left={() => <List.Icon icon="cube" color={colors.primary} />}
                                         titleStyle={styles.listTitle}
                                         descriptionStyle={styles.listDescription}
@@ -93,21 +119,21 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
 
                                 <Text style={styles.sectionTitle}>{t('quality_description')}</Text>
                                 <Text style={styles.description}>
-                                    {item?.qualityDescription || t('no_description')}
+                                    {data?.qualityDescription || t('no_description')}
                                 </Text>
 
-                                {item?.user && (
+                                {data?.user && (
                                     <>
                                         <Divider style={styles.divider} />
                                         <View style={styles.userSection}>
                                             <View style={styles.userAvatarContainer}>
                                                 <Text style={styles.avatarText}>
-                                                    {item?.user?.firstName?.[0]}{item?.user?.lastName?.[0]}
+                                                    {data?.user?.firstName?.[0]}{data?.user?.lastName?.[0]}
                                                 </Text>
                                             </View>
                                             <View style={styles.userInfo}>
-                                                <Text style={styles.userName}>{item?.user?.firstName} {item?.user?.lastName}</Text>
-                                                <Text style={styles.userTitle}>{item?.user?.title || '-'}</Text>
+                                                <Text style={styles.userName}>{data?.user?.firstName} {data?.user?.lastName}</Text>
+                                                <Text style={styles.userTitle}>{data?.user?.title || '-'}</Text>
                                             </View>
                                         </View>
                                     </>
@@ -122,14 +148,14 @@ const AssemblySuccessModal = ({ item, modal, setModal }) => {
 };
 
 const styles = StyleSheet.create({
-    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', zIndex: 1000, },
-    modal: { width: '90%', maxWidth: 600, height: '90%', backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', },
+    page: { backgroundColor: '#f5f5f5', flex: 1, padding: 10, justifyContent: 'center', alignItems: 'center', },
+    modal: { width: '100%', height: '95%', backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', },
     modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.success, paddingVertical: 12, paddingHorizontal: 16, },
     headerContent: { flex: 1, flexDirection: 'row', alignItems: 'center', },
     modalTitle: { color: '#000', fontSize: 18, fontWeight: 'bold', flex: 1, },
     statusBadge: { backgroundColor: 'rgba(255,255,255,0.3)', color: '#000', },
-    closeBtn: { padding: 4, },
-    close: { color: '#000', },
+    closeBtn: { marginRight: 20, marginTop: 10 },
+    close: { color: '#fff', },
     modalContent: { flex: 1, backgroundColor: '#f9f9f9', },
     contentScroll: { flex: 1, padding: 12, },
     card: { borderRadius: 8, },
@@ -155,4 +181,4 @@ const styles = StyleSheet.create({
     actionButton: { flex: 1, marginHorizontal: 4, },
 });
 
-export default AssemblySuccessModal;
+export default AssemblySuccessDetailPage;

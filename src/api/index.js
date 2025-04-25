@@ -1,8 +1,9 @@
-export const URL = 'http://192.168.1.5:5254/api'
+export const URL = 'http://10.0.2.2:5254/api'
 
 // AUTHENTICATION
 export const LOGIN = `${URL}/Authentication/Login`
 export const REGISTER = `${URL}/Authentication/Register`
+export const REFRESH = `${URL}/Authentication/Refresh`
 
 // ASSEMBLY_MANUAL
 export const ASSEMBLY_MANUAL_GETALL = `${URL}/AssemblyManuel/GetAll`;

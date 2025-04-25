@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Dimensions, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { DataTable, Text, Card, Button, TextInput, Portal, Modal, Avatar } from 'react-native-paper';
 import { colors } from '../../utilities/colors';
 import { useTranslation } from 'react-i18next';
@@ -8,20 +8,15 @@ import ProgressBar from '../../components/chart/progressBar';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { styles } from './styles';
-import AssemblyManualModal from './assemblyManualModal';
-import AssemblySuccessModal from './assemblySuccessModal';
-import AssemblyFailureModal from './assemblyFailureModal';
 import { fetchAssemblyManualAddFile } from '../../redux/slices/assemblyManualAddFileSlice';
 import * as DocumentPicker from 'expo-document-picker';
-import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice';
-import AssemblyNoteModal from './assemblyNoteModal';
 import { URL } from '../../api';
 import { fetchAssemblyManualGetAll } from '../../redux/slices/assemblyManualGetAllSlice';
+import { useNavigation } from '@react-navigation/native';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 const ProjectTable = () => {
     const [selectedProject, setSelectedProject] = useState(null);
-    const [selectedSuccess, setSelectedSuccess] = useState(null);
-    const [selectedFailure, setSelectedFailure] = useState(null);
     const [showSuccessTable, setShowSuccessTable] = useState(false);
     const [showFailureTable, setShowFailureTable] = useState(false);
     const [page1, setPage1] = useState(0);
@@ -30,20 +25,16 @@ const ProjectTable = () => {
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [fileModalVisible, setFileModalVisible] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [noteText, setNoteText] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState('');
-    const [assemblyManualModal, setAssemblyManualModal] = useState(false);
-    const [successModal, setSuccessModal] = useState(false);
-    const [failureModal, setFailureModal] = useState(false);
-    const [noteModal, setNoteModal] = useState(false);
     const [filteredData, setFilteredData] = useState(null);
     const assemblyManualGetAll = useSelector(state => state.assemblyManualGetAll.data);
     const { t } = useTranslation()
     const [isUploading, setIsUploading] = useState(false);
     const dispatch = useDispatch();
     const uploadStatus = useSelector(state => state.assemblyManualAddFile.status);
+    const navigation = useNavigation();
 
-    const isTablet = Dimensions.get('window').width > 600;
     const today = new Date();
 
     const parseDate = (dateStr) => {
@@ -57,6 +48,13 @@ const ProjectTable = () => {
         const diffTime = date2.getTime() - date1.getTime();
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     };
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await dispatch(fetchAssemblyManualGetAll());
+        getData();
+        setRefreshing(false);
+    }, [dispatch]);
 
     const calculateProgress = (project) => {
         const startDate = parseDate(project.date);
@@ -105,7 +103,7 @@ const ProjectTable = () => {
 
     const handleRowPress = (item) => {
         if (selectedProject?.id === item.id) {
-            setAssemblyManualModal(true);
+            navigation.navigate('AssemblyManualDetail', { id: item.id });
         }
         setSelectedProject(item);
         setShowSuccessTable(item.basariliDurumlar.length > 0);
@@ -113,20 +111,18 @@ const ProjectTable = () => {
     };
 
     const handleSuccessRowPress = (item) => {
-        if (selectedProject?.id === item.id) {
-            setSuccessModal(true);
-        }
-        setSelectedSuccess(item);
+        navigation.navigate('AssemblySuccessDetail', { id: item.id });
     };
 
     const handleFailureRowPress = (item) => {
-        if (selectedProject?.id === item.id) {
-            setFailureModal(true);
-        }
-        setSelectedFailure(item);
+        navigation.navigate('AssemblyFailureDetail', { id: item.id });
     };
 
     const handleFileUpload = async () => {
+        if (!selectedRow) {
+            alert("Lütfen önce bir satır seçin!");
+            return;
+        }
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: ["image/*", "application/pdf"],
@@ -151,13 +147,11 @@ const ProjectTable = () => {
                 };
             });
 
-            console.log("Hazırlanan dosyalar:", files);
-
             const formData = { file: files };
 
             await dispatch(fetchAssemblyManualAddFile({
                 formData: formData,
-                id: selectedRow ? selectedRow.id : selectedProject?.id
+                id: selectedRow.id
             }));
 
             await dispatch(fetchAssemblyManualGetAll());
@@ -182,15 +176,6 @@ const ProjectTable = () => {
         }
     };
 
-    const handleSaveNote = async (item) => {
-        const formData = { note: noteText, description: "", status: true, }
-        console.log(item.id)
-        var data = await dispatch(fetchAssemblyNoteCreate({ formData: formData, manualId: item.id }));
-        console.log(data)
-        alert(`${item.id} ${t("id_note_added")}: ${noteText}`);
-        setNoteText('');
-    };
-
     const from1 = page1 * itemsPerPage;
     const to1 = Math.min((page1 + 1) * itemsPerPage, assemblyManualGetAll?.length);
 
@@ -202,284 +187,263 @@ const ProjectTable = () => {
 
     return (
         <View style={styles.page}>
-            <View style={styles.filterContainer}>
-                <Ionicons name='search-outline' size={20} style={styles.inputIcon} />
-                <TextInput
-                    mode="outlined"
-                    placeholder={t("search2")}
-                    value={searchText}
-                    onChangeText={setSearchText}
-                    style={styles.searchInput}
-                    right={searchText ? <TextInput.Icon icon="close" color={colors.primary} onPress={() => setSearchText('')} /> : null}
-                />
-            </View>
-
-            <Card style={[styles.card, styles.subCard]}>
-                <Card.Title
-                    title={t("project_manager_list")}
-                    titleStyle={styles.cardTitle}
-                    right={(props) => (
-                        <Text style={styles.resultCount}>{filteredData?.length} {t("result")}</Text>
-                    )}
-                />
-                <View style={styles.tableWrapper}>
-                    <ScrollView horizontal={!isTablet}>
-                        <DataTable style={styles.table}>
-                            <DataTable.Header style={styles.tableHeader}>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader1}>Proje Sorumlusu</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader2}>Proje Adı</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader3}>DGT Kodu</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader4}>Sorumlu Kişi</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader5}>Seri No</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader6}>Üretim Adedi</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader7}>Süre</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader8}>Tarih</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader9}>Kalan Süre</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader10}>Dosya Yükle</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader11}>Açıklama</DataTable.Title>
-                                <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader12}>Tarih/Saat</DataTable.Title>
-                            </DataTable.Header>
-
-                            {filteredData?.slice(from1, to1).map((item) => {
-                                const { progress, remainingDays, totalDays } = calculateProgress(item);
-
-                                return (
-                                    <DataTable.Row key={item.id} style={[styles.tableRow, selectedProject?.id === item.id && styles.selectedRow]} onPress={() => handleRowPress(item)}>
-                                        <DataTable.Cell style={styles.tableCell1}>
-                                            <View style={styles.avatarContainer}>
-                                                <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.personInCharge?.file}` }} />
-                                                <Text style={styles.cellText}>{item.responible?.name} {item.responible?.surname}</Text>
-                                            </View>
-                                        </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item.projectName}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell4}>
-                                            <View style={styles.avatarContainer}>
-                                                <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.personInCharge?.file}` }} />
-                                                <Text style={styles.cellText}>{item.personInCharge?.name} {item.personInCharge?.surname}</Text>
-                                            </View>
-                                        </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell5}><Text style={styles.cellText}>{item.serialNumber}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell6}><Text style={styles.cellText}>{item.productionQuantity}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell7}><Text style={styles.cellText}>{item.time}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell8}><Text style={styles.cellText}>{item.date}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell9}>
-                                            <ProgressBar progress={progress} totalDays={totalDays} remainingDays={remainingDays} />
-                                        </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell10}>
-                                            <Button
-                                                mode="outlined"
-                                                compact
-                                                onPress={() => { setSelectedRow(item); setFileModalVisible(true); }}
-                                                icon="file-upload"
-                                                style={styles.tableButton}
-                                                labelStyle={styles.tableButtonLabel}
-                                                textColor={colors.primary}
-                                                buttonColor="transparent"
-                                            >
-                                                Yükle
-                                            </Button>
-                                        </DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell11}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.tableCell12}><Text style={styles.cellText}>{item.technicianDate}</Text></DataTable.Cell>
-                                    </DataTable.Row>
-                                );
-                            })}
-
-                            {filteredData?.length === 0 && (
-                                <DataTable.Row style={styles.emptyRow}>
-                                    <DataTable.Cell style={{ flex: 12, alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={styles.emptyMessage}>{t("not_result")}</Text>
-                                    </DataTable.Cell>
-                                </DataTable.Row>
-                            )}
-                        </DataTable>
-                    </ScrollView>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={[colors.primary]}
+                        tintColor={colors.primary}
+                    />
+                }
+                contentContainerStyle={{ flexGrow: 1, minHeight: '100%' }}
+            >
+                <View style={styles.filterContainer}>
+                    <Ionicons name='search-outline' size={20} style={styles.inputIcon} />
+                    <TextInput
+                        mode="outlined"
+                        placeholder={t("search2")}
+                        value={searchText}
+                        onChangeText={setSearchText}
+                        style={styles.searchInput}
+                        right={searchText ? <TextInput.Icon icon="close" color={colors.primary} onPress={() => setSearchText('')} /> : null}
+                    />
                 </View>
 
-                <DataTable.Pagination
-                    page={page1}
-                    numberOfPages={Math.ceil(filteredData?.length / itemsPerPage)}
-                    onPageChange={(page) => setPage1(page)}
-                    label={`${from1 + 1}-${to1} / ${filteredData?.length}`}
-                    showFastPaginationControls
-                    style={{ margin: 0, padding: 0 }}
-                />
-            </Card>
-
-            {showSuccessTable && selectedProject && (
                 <Card style={[styles.card, styles.subCard]}>
                     <Card.Title
-                        title="Başarılı Durumlar Listesi"
-                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
+                        title={t("project_manager_list")}
                         titleStyle={styles.cardTitle}
-                        subtitleStyle={styles.cardSubtitle}
+                        right={(props) => (
+                            <Text style={styles.resultCount}>{filteredData?.length} {t("result")}</Text>
+                        )}
                     />
                     <View style={styles.tableWrapper}>
-                        <ScrollView horizontal={!isTablet}>
+                        <ScrollView horizontal>
                             <DataTable style={styles.table}>
-                                <DataTable.Header style={styles.table2Header}>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header1}>Teknisyen Adı</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header2}>Açıklama</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header3}>DGT Parça Kodu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header4}>Durumu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header5}>Onay</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header6}>Bekleyen Adet</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header7}>Açıklama</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column2Header8}>Tarih</DataTable.Title>
+                                <DataTable.Header style={styles.tableHeader}>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader1}>Proje Sorumlusu</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader2}>Proje Adı</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader3}>DGT Kodu</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader4}>Sorumlu Kişi</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader5}>Seri No</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader6}>Üretim Adedi</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader7}>Süre</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader8}>Tarih</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader9}>Kalan Süre</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader10}>Dosya Yükle</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader11}>Açıklama</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader12}>Tarih/Saat</DataTable.Title>
                                 </DataTable.Header>
 
-                                {selectedProject?.basariliDurumlar.slice(from2, to2).map((item) => (
-                                    <DataTable.Row key={item.id} style={styles.table2Row} onPress={() => handleSuccessRowPress(item)}>
-                                        <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.technician?.name} {item.technician?.surname}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table2Cell2}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table2Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table2Cell4}><StatusTag durum={item.durum} /></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table2Cell5}><Text style={styles.cellText}>{item.approval}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table2Cell6}><Text style={styles.cellText}>{item.pendingQuantity}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table2Cell7}><Text style={styles.cellText}>{item.qualityDescription}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table2Cell8}><Text style={styles.cellText}>{item.date}</Text></DataTable.Cell>
+                                {filteredData?.slice(from1, to1).map((item) => {
+                                    const { progress, remainingDays, totalDays } = calculateProgress(item);
+
+                                    return (
+                                        <DataTable.Row key={item.id} style={[styles.tableRow, selectedProject?.id === item.id && styles.selectedRow]} onPress={() => handleRowPress(item)}>
+                                            <DataTable.Cell style={styles.tableCell1}>
+                                                <View style={styles.avatarContainer}>
+                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.responible?.file}` }} />
+                                                    <Text style={styles.cellText}>{item.responible?.name} {item.responible?.surname}</Text>
+                                                </View>
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item.projectName}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell4}>
+                                                <View style={styles.avatarContainer}>
+                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.personInCharge?.file}` }} />
+                                                    <Text style={styles.cellText}>{item.personInCharge?.name} {item.personInCharge?.surname}</Text>
+                                                </View>
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell5}><Text style={styles.cellText}>{item.serialNumber}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell6}><Text style={styles.cellText}>{item.productionQuantity}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell7}><Text style={styles.cellText}>{item.time}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell8}><Text style={styles.cellText}>{item.date}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell9}>
+                                                <ProgressBar progress={progress} totalDays={totalDays} remainingDays={remainingDays} />
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell10}>
+                                                <Button
+                                                    mode="outlined"
+                                                    compact
+                                                    onPress={() => {
+                                                        if (!selectedRow && filteredData?.length > 0) {
+                                                            setSelectedRow(filteredData[0]);
+                                                        }
+                                                        setFileModalVisible(true);
+                                                    }}
+                                                    icon="file-upload"
+                                                    style={styles.tableButton}
+                                                    labelStyle={styles.tableButtonLabel}
+                                                    textColor={colors.primary}
+                                                    buttonColor="transparent"
+                                                >
+                                                    Yükle
+                                                </Button>
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell11}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell12}><Text style={styles.cellText}>{item.technicianDate}</Text></DataTable.Cell>
+                                        </DataTable.Row>
+                                    );
+                                })}
+
+                                {filteredData?.length === 0 && (
+                                    <DataTable.Row style={styles.emptyRow}>
+                                        <DataTable.Cell style={{ flex: 12, alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={styles.emptyMessage}>{t("not_result")}</Text>
+                                        </DataTable.Cell>
                                     </DataTable.Row>
-                                ))}
+                                )}
                             </DataTable>
                         </ScrollView>
                     </View>
 
-                    {selectedProject?.basariliDurumlar.length > 0 && (
-                        <DataTable.Pagination
-                            page={page2}
-                            numberOfPages={Math.ceil(selectedProject.basariliDurumlar.length / itemsPerPage)}
-                            onPageChange={(page) => setPage2(page)}
-                            label={`${from2 + 1}-${to2} / ${selectedProject.basariliDurumlar.length}`}
-                            showFastPaginationControls
-                            numberOfItemsPerPage={itemsPerPage}
-                            style={styles.pagination}
-                        />
-                    )}
-                </Card>
-            )}
-
-            {showFailureTable && selectedProject && (
-                <Card style={[styles.card, styles.subCard]}>
-                    <Card.Title
-                        title="Uygunsuzluk Tespit Listesi"
-                        subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
-                        titleStyle={styles.cardTitle}
-                        subtitleStyle={styles.cardSubtitle}
+                    <DataTable.Pagination
+                        page={page1}
+                        numberOfPages={Math.ceil(filteredData?.length / itemsPerPage)}
+                        onPageChange={(page) => setPage1(page)}
+                        label={`${from1 + 1}-${to1} / ${filteredData?.length}`}
+                        showFastPaginationControls
+                        style={{ margin: 0, padding: 0 }}
                     />
-                    <View style={styles.tableWrapper}>
-                        <ScrollView horizontal={!isTablet}>
-                            <DataTable style={styles.table}>
-                                <DataTable.Header style={styles.table3Header}>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column3Header1}>Uygunsuzluk Tespit</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column3Header2}>Teknisyen Adı</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column3Header3}>DGT Parça Kodu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column3Header4}>Durumu</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column3Header5}>Bekleyen Adet</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>Açıklama</DataTable.Title>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>Tarih</DataTable.Title>
-                                </DataTable.Header>
-
-                                {selectedProject?.basarisizDurumlar.slice(from3, to3).map((item) => (
-                                    <DataTable.Row key={item.id} style={styles.table3Row} onPress={() => handleFailureRowPress(item)}>
-                                        <DataTable.Cell style={styles.table3Cell1}><Text style={styles.cellText}>{item.inappropriateness}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.technician?.name} {item.technician?.surname}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={item.status} /></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.pendingQuantity}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.qualityDescription}</Text></DataTable.Cell>
-                                        <DataTable.Cell style={styles.table3Cell7}><Text style={styles.cellText}>{item.date}</Text></DataTable.Cell>
-                                    </DataTable.Row>
-                                ))}
-                            </DataTable>
-                        </ScrollView>
-                    </View>
-
-                    {selectedProject?.basarisizDurumlar.length > 0 && (
-                        <DataTable.Pagination
-                            page={page3}
-                            numberOfPages={Math.ceil(selectedProject.basarisizDurumlar.length / itemsPerPage)}
-                            onPageChange={(page) => setPage3(page)}
-                            label={`${from3 + 1}-${to3} / ${selectedProject.basarisizDurumlar.length}`}
-                            showFastPaginationControls
-                            numberOfItemsPerPage={itemsPerPage}
-                            style={styles.pagination}
-                        />
-                    )}
                 </Card>
-            )}
 
-            <Portal>
-                <Modal visible={fileModalVisible} onDismiss={() => !isUploading && setFileModalVisible(false)} contentContainerStyle={styles.modal}>
-                    <Text style={styles.modalTitle}>Dosya Yükleme</Text>
-                    <Text style={styles.modalText}>Proje: {selectedRow?.projectName}</Text>
-                    <Text style={styles.modalText}>Parça Kodu: {selectedRow?.partCode}</Text>
-
-                    {isUploading ? (
-                        <View style={styles.uploadingContainer}>
-                            <ActivityIndicator size="large" color={colors.primary} />
-                            <Text style={styles.uploadingText}>Dosyalar Yükleniyor...</Text>
-                        </View>
-                    ) : (
-                        <View style={styles.modalButtons}>
-                            <Button
-                                mode="outlined"
-                                onPress={() => setFileModalVisible(false)}
-                                style={styles.modalButton}
-                                textColor={colors.primary}
-                            >
-                                İptal
-                            </Button>
-                            <Button
-                                mode="contained"
-                                onPress={handleFileUpload}
-                                style={styles.modalButton}
-                                buttonColor={colors.primary}
-                            >
-                                Dosya Seç ve Yükle
-                            </Button>
-                        </View>
-                    )}
-                </Modal>
-            </Portal>
-
-            {selectedProject && (
-                <Card style={styles.noteCard}>
-                    <Card.Content>
-                        <View style={styles.noteHeader}>
-                            <Text style={styles.noteTitle}>{t("add_note")} ({selectedProject.projectName})</Text>
-                            <TouchableOpacity style={styles.noteModalBtn} onPress={() => setNoteModal(true)}>
-                                <Text style={styles.noteModalBtnTxt}>{t("notes")}</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <TextInput
-                            mode="outlined"
-                            label={t("description")}
-                            value={noteText}
-                            onChangeText={setNoteText}
-                            multiline
-                            numberOfLines={2}
-                            style={styles.noteInput}
-                            outlineColor={colors.primaryLight}
-                            activeOutlineColor={colors.primary}
-                            textColor={colors.primary}
+                {showSuccessTable && selectedProject && (
+                    <Card style={[styles.card, styles.subCard]}>
+                        <Card.Title
+                            title="Başarılı Durumlar Listesi"
+                            subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
+                            titleStyle={styles.cardTitle}
+                            subtitleStyle={styles.cardSubtitle}
                         />
-                        <Button
-                            mode="contained"
-                            onPress={() => handleSaveNote(selectedProject)}
-                            style={styles.saveButton}
-                            buttonColor={colors.primary}
-                        >
-                            {t("save_note")}
-                        </Button>
-                    </Card.Content>
-                </Card>
-            )}
+                        <View style={styles.tableWrapper}>
+                            <ScrollView horizontal>
+                                <DataTable style={styles.table}>
+                                    <DataTable.Header style={styles.table2Header}>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header1}>Teknisyen Adı</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header2}>Açıklama</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header3}>DGT Parça Kodu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header4}>Durumu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header5}>Onay</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header6}>Bekleyen Adet</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header7}>Açıklama</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column2Header8}>Tarih</DataTable.Title>
+                                    </DataTable.Header>
 
-            <AssemblyManualModal modal={assemblyManualModal} item={selectedProject} setModal={setAssemblyManualModal} />
-            <AssemblySuccessModal modal={successModal} item={selectedSuccess} setModal={setSuccessModal} />
-            <AssemblyFailureModal modal={failureModal} item={selectedFailure} setModal={setFailureModal} />
-            <AssemblyNoteModal modal={noteModal} item={selectedProject} setModal={setNoteModal} />
+                                    {selectedProject?.basariliDurumlar.slice(from2, to2).map((item) => (
+                                        <DataTable.Row key={item.id} style={styles.table2Row} onPress={() => handleSuccessRowPress(item)}>
+                                            <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.technician?.name} {item.technician?.surname}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell2}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell4}><StatusTag durum={item.durum} /></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell5}><Text style={styles.cellText}>{item.approval}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell6}><Text style={styles.cellText}>{item.pendingQuantity}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell7}><Text style={styles.cellText}>{item.qualityDescription}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell8}><Text style={styles.cellText}>{item.date}</Text></DataTable.Cell>
+                                        </DataTable.Row>
+                                    ))}
+                                </DataTable>
+                            </ScrollView>
+                        </View>
+
+                        {selectedProject?.basariliDurumlar.length > 0 && (
+                            <DataTable.Pagination
+                                page={page2}
+                                numberOfPages={Math.ceil(selectedProject.basariliDurumlar.length / itemsPerPage)}
+                                onPageChange={(page) => setPage2(page)}
+                                label={`${from2 + 1}-${to2} / ${selectedProject.basariliDurumlar.length}`}
+                                showFastPaginationControls
+                                numberOfItemsPerPage={itemsPerPage}
+                                style={styles.pagination}
+                            />
+                        )}
+                    </Card>
+                )}
+
+                {showFailureTable && selectedProject && (
+                    <Card style={[styles.card, styles.subCard]}>
+                        <Card.Title
+                            title="Uygunsuzluk Tespit Listesi"
+                            subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
+                            titleStyle={styles.cardTitle}
+                            subtitleStyle={styles.cardSubtitle}
+                        />
+                        <View style={styles.tableWrapper}>
+                            <ScrollView horizontal>
+                                <DataTable style={styles.table}>
+                                    <DataTable.Header style={styles.table3Header}>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column3Header1}>Uygunsuzluk Tespit</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column3Header2}>Teknisyen Adı</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column3Header3}>DGT Parça Kodu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column3Header4}>Durumu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column3Header5}>Bekleyen Adet</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>Açıklama</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>Tarih</DataTable.Title>
+                                    </DataTable.Header>
+
+                                    {selectedProject?.basarisizDurumlar.slice(from3, to3).map((item) => (
+                                        <DataTable.Row key={item.id} style={styles.table3Row} onPress={() => handleFailureRowPress(item)}>
+                                            <DataTable.Cell style={styles.table3Cell1}><Text style={styles.cellText}>{item.inappropriateness}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.technician?.name} {item.technician?.surname}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={item.status} /></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.pendingQuantity}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.qualityDescription}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell7}><Text style={styles.cellText}>{item.date}</Text></DataTable.Cell>
+                                        </DataTable.Row>
+                                    ))}
+                                </DataTable>
+                            </ScrollView>
+                        </View>
+
+                        {selectedProject?.basarisizDurumlar.length > 0 && (
+                            <DataTable.Pagination
+                                page={page3}
+                                numberOfPages={Math.ceil(selectedProject.basarisizDurumlar.length / itemsPerPage)}
+                                onPageChange={(page) => setPage3(page)}
+                                label={`${from3 + 1}-${to3} / ${selectedProject.basarisizDurumlar.length}`}
+                                showFastPaginationControls
+                                numberOfItemsPerPage={itemsPerPage}
+                                style={styles.pagination}
+                            />
+                        )}
+                    </Card>
+                )}
+
+                <Portal>
+                    <Modal visible={fileModalVisible} onDismiss={() => !isUploading && setFileModalVisible(false)} contentContainerStyle={styles.modal}>
+                        <Text style={styles.modalTitle}>Dosya Yükleme</Text>
+                        <Text style={styles.modalText}>Proje: {selectedRow?.projectName}</Text>
+                        <Text style={styles.modalText}>Parça Kodu: {selectedRow?.partCode}</Text>
+
+                        {isUploading ? (
+                            <View style={styles.uploadingContainer}>
+                                <ActivityIndicator size="large" color={colors.primary} />
+                                <Text style={styles.uploadingText}>Dosyalar Yükleniyor...</Text>
+                            </View>
+                        ) : (
+                            <View style={styles.modalButtons}>
+                                <Button
+                                    mode="outlined"
+                                    onPress={() => setFileModalVisible(false)}
+                                    style={styles.modalButton}
+                                    textColor={colors.primary}
+                                >
+                                    İptal
+                                </Button>
+                                <Button
+                                    mode="contained"
+                                    onPress={handleFileUpload}
+                                    style={styles.modalButton}
+                                    buttonColor={colors.primary}
+                                >
+                                    Dosya Seç ve Yükle
+                                </Button>
+                            </View>
+                        )}
+                    </Modal>
+                </Portal>
+            </ScrollView>
         </View>
     );
 };

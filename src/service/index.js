@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE } from "../api";
+import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE } from "../api";
 
 let token = "";
 let userId = "";
@@ -41,25 +41,59 @@ const useInit = async () => {
 useInit();
 
 
+const refreshTokenIfNeeded = async () => {
+    const authData = await AsyncStorage.getItem('auth');
+    if (!authData) return;
+    const user = JSON.parse(authData);
+    const accessToken = user.accessToken;
+    const refreshToken = user.refreshToken;
+    const refreshTokenExpireTime = user.refreshTokenExpireTime;
+
+    const expireDate = new Date(refreshTokenExpireTime);
+    const now = new Date();
+    if (expireDate - now < 2 * 60 * 1000) {
+        try {
+            const res = await axios.post(REFRESH, {
+                accessToken,
+                refreshToken
+            });
+            if (res.data?.result) {
+                await AsyncStorage.setItem('auth', JSON.stringify({
+                    ...user,
+                    accessToken: res.data.result.accessToken,
+                    refreshToken: res.data.result.refreshToken,
+                    refreshTokenExpireTime: res.data.result.user.refreshTokenExpireTime
+                }));
+                token = res.data.result.accessToken;
+                header = { headers: { "Authorization": `Bearer ${token}` } };
+                headerFormData = { headers: { "Authorization": `Bearer ${token}`, "Content-Type": "multipart/form-data" } };
+            }
+        } catch (err) {
+            console.log("Refresh token hatası:", err);
+        }
+    }
+};
+
+axios.interceptors.request.use(
+    async (config) => {
+        await refreshTokenIfNeeded();
+        const authData = await AsyncStorage.getItem('auth');
+        if (authData) {
+            const user = JSON.parse(authData);
+            config.headers["Authorization"] = `Bearer ${user.accessToken}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+
 // AUTHENTICATION
 export async function login(formData) {
     try {
-        console.log("Login isteği yapılıyor:", LOGIN);
-        console.log("Gönderilen veri:", formData);
-
         const response = await axios.post(LOGIN, formData);
-        console.log("Login başarılı, yanıt:", response.data);
         return response.data;
     } catch (error) {
-        console.log("Login hatası:", error.message);
-        if (error.code === 'ERR_NETWORK') {
-            console.log("Ağ hatası - API'ye erişim sağlanamıyor");
-        }
-        if (error.response) {
-            console.log("API yanıt durum kodu:", error.response.status);
-            console.log("API yanıt detayları:", error.response.data);
-            return error.response.data;
-        }
         return { isSuccess: false, message: "Bağlantı hatası: " + error.message };
     }
 }
@@ -136,7 +170,7 @@ export function AssemblySuccessGetAllByManualService(id) {
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 export function AssemblySuccessGetService(id) {
-    return axios.get(`${ASSEMBLY_SUCCESS_GETALL}/${id}`, header)
+    return axios.get(`${ASSEMBLY_SUCCESS_GET}/${id}`, header)
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 export function AssemblySuccessCreateService(data) {

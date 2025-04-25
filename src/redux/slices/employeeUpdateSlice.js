@@ -8,7 +8,6 @@ export const fetchEmployeeUpdate = createAsyncThunk(
         const userId = await AsyncStorage.getItem("auth") === null ? null : JSON.parse(await AsyncStorage.getItem("auth")).user?.userId
 
         const data = new FormData();
-        console.log(formData.file)
         if (formData.file) {
             data.append("file", formData.file);
         }
