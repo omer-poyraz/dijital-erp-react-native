@@ -14,6 +14,7 @@
     "success": "Success",
     "status": "Status",
     "note": "Note",
+    "inappropriateness": "Inappropriateness",
     "loading": "Loading...",
     "search": "Search",
     "settings": "Settings",
@@ -127,6 +128,7 @@
     "pending_qty": "Pending Quantity",
     "quality_description": "Quality Description",
     "edit": "Edit",
+    "operator": "Operator",
     "close_item": "Close Item",
     "reactivate": "Reactivate",
     "failure_detail": "Failure Detail",
@@ -139,5 +141,6 @@
     "issue_has_been_resolved": "The issue has been resolved",
     "mark_resolved": "Mark as Resolved",
     "reopen_issue": "Reopen Issue",
+    "technical_drawing": "Teknik Çizim",
     "project_notes": "Project Notes"
 }

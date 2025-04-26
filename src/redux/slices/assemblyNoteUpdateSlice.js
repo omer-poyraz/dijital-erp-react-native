@@ -9,6 +9,7 @@ export const fetchAssemblyNoteUpdate = createAsyncThunk(
 
         const data = {
             "note": formData.note,
+            "partCode": formData.partCode,
             "description": formData.description,
             "status": formData.status,
             "assemblyManuelID": parseInt(manualId),

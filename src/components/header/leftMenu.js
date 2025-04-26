@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Ionicons } from '@expo/vector-icons'
 import logo from '../../images/logo2.png'
+import logo2 from '../../images/logo3.png'
 import { logoutUser } from '../../redux/slices/loginSlice'
 
 const LeftMenu = () => {
@@ -49,7 +50,10 @@ const LeftMenu = () => {
         <View style={[style.leftMenu, isShow ? { display: 'flex' } : { display: 'none' }]}>
             <View style={[style.left, { width: leftMenuWidth }]}>
                 <View style={style.leftTop}>
-                    <Image source={logo} style={style.logo} />
+                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                        <Image source={logo2} style={isTablet ? { width: 60, height: 60, marginRight: 10 } : { width: 35, height: 35, marginRight: 5 }} />
+                        <Image source={logo} style={isTablet ? { width: 300, height: 45, marginTop: -10 } : { width: 170, height: 25, marginTop: -8 }} />
+                    </View>
                     <TouchableOpacity style={style.closeBtn} onPress={() => dispatch(changeStatusLeftMenu())}>
                         <Ionicons name='close' size={28} style={style.close} />
                     </TouchableOpacity>
@@ -62,6 +66,7 @@ const LeftMenu = () => {
                     <LeftMenuItem icon='grid-outline' text={t("products")} funct={() => { navigate.navigate("Product"); closeModal() }} />
                     <LeftMenuItem icon='egg-outline' text={t("job_holder_info")} funct={holderModal} />
                     <LeftMenuItem icon='construct-outline' text={t("assembly_manual")} funct={() => { navigate.navigate("AssemblyManual"); closeModal() }} />
+                    <LeftMenuItem icon='color-palette-outline' text={t("technical_drawing")} funct={() => { navigate.navigate("TechnicalDrawing"); closeModal() }} />
 
                     <View style={style.space30}></View>
                     <Text style={style.leftMenuLabel}>{t("products2")}</Text>

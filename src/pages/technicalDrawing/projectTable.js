@@ -8,13 +8,13 @@ import ProgressBar from '../../components/chart/progressBar';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { styles } from './styles';
-import { fetchAssemblyManualAddFile } from '../../redux/slices/assemblyManualAddFileSlice';
 import * as DocumentPicker from 'expo-document-picker';
 import { URL } from '../../api';
-import { fetchAssemblyManualGetAll } from '../../redux/slices/assemblyManualGetAllSlice';
+import { fetchTechnicalDrawingGetAll } from '../../redux/slices/technicalDrawingGetAllSlice';
 import { useNavigation } from '@react-navigation/native';
-import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice';
-import { fetchAssemblyManualGet } from '../../redux/slices/assemblyManualGetSlice';
+import { fetchTechnicalDrawingNoteCreate } from '../../redux/slices/technicalDrawingNoteCreateSlice';
+import { fetchTechnicalDrawingGet } from '../../redux/slices/technicalDrawingGetSlice';
+import { fetchTechnicalDrawingAddFile } from '../../redux/slices/technicalDrawingAddFileSlice';
 
 const ProjectTable = () => {
     const [selectedProject, setSelectedProject] = useState(null);
@@ -28,12 +28,12 @@ const ProjectTable = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [searchText, setSearchText] = useState('');
     const [filteredData, setFilteredData] = useState(null);
-    const assemblyManualGetAll = useSelector(state => state.assemblyManualGetAll.data);
+    const technicalDrawingGetAll = useSelector(state => state.technicalDrawingGetAll.data);
     const [formData, setFormData] = useState({ note: "", description: "", status: true, partCode: "" });
     const { t } = useTranslation()
     const [isUploading, setIsUploading] = useState(false);
     const dispatch = useDispatch();
-    const uploadStatus = useSelector(state => state.assemblyManualAddFile.status);
+    const uploadStatus = useSelector(state => state.technicalDrawingAddFile.status);
     const navigation = useNavigation();
 
     const parseDate = (dateStr) => {
@@ -71,7 +71,7 @@ const ProjectTable = () => {
     };
 
     const getData = () => {
-        setFilteredData(assemblyManualGetAll);
+        setFilteredData(technicalDrawingGetAll);
     }
 
     useEffect(() => { getData() }, [])
@@ -104,7 +104,7 @@ const ProjectTable = () => {
 
     const handleRowPress = (item) => {
         if (selectedProject?.id === item.id) {
-            navigation.navigate('AssemblyManualDetail', { id: item.id });
+            navigation.navigate('TechnicalDrawingDetail', { id: item.id });
         }
         setSelectedProject(item);
         setShowSuccessTable(item.basariliDurumlar.length > 0);
@@ -112,11 +112,11 @@ const ProjectTable = () => {
     };
 
     const handleSuccessRowPress = (item) => {
-        navigation.navigate('AssemblySuccessDetail', { id: item.id });
+        navigation.navigate('TechnicalDrawingSuccessDetail', { id: item.id });
     };
 
     const handleFailureRowPress = (item) => {
-        navigation.navigate('AssemblyFailureDetail', { id: item.id });
+        navigation.navigate('TechnicalDrawingFailureDetail', { id: item.id });
     };
 
     const handleFileUpload = async () => {
@@ -125,15 +125,23 @@ const ProjectTable = () => {
             return;
         }
         try {
+            setIsUploading(true);
+
+            if (!fileModalVisible) {
+                setIsUploading(false);
+                return;
+            }
+
             const result = await DocumentPicker.getDocumentAsync({
                 type: ["image/*", "application/pdf"],
                 multiple: true,
                 copyToCacheDirectory: true
             });
 
-            if (result.canceled) return;
-
-            setIsUploading(true);
+            if (result.canceled) {
+                setIsUploading(false);
+                return;
+            }
 
             const files = result.assets.map(file => {
                 const now = new Date();
@@ -150,8 +158,8 @@ const ProjectTable = () => {
 
             const formData = { file: files };
 
-            await dispatch(fetchAssemblyManualAddFile({ formData: formData, id: selectedRow.id }));
-            await dispatch(fetchAssemblyManualGetAll());
+            await dispatch(fetchTechnicalDrawingAddFile({ formData: formData, id: selectedRow.id }));
+            await dispatch(fetchTechnicalDrawingGetAll());
 
             setTimeout(() => {
                 const currentUploadStatus = uploadStatus;
@@ -167,15 +175,15 @@ const ProjectTable = () => {
 
         } catch (error) {
             console.error("Dosya yükleme hatası:", error);
-            alert(`Dosya yükleme sırasında bir hata oluştu: ${error.message}`);
             setIsUploading(false);
             setFileModalVisible(false);
         }
     };
 
     const handleSaveNote = async () => {
-        await dispatch(fetchAssemblyNoteCreate({ formData: formData, manualId: selectedProject.id }));
-        var data = await dispatch(fetchAssemblyManualGet({ id: selectedProject.id }));
+        console.log("Form Data:", formData);
+        await dispatch(fetchTechnicalDrawingNoteCreate({ formData: formData, manualId: selectedProject.id }));
+        var data = await dispatch(fetchTechnicalDrawingGet({ id: selectedProject.id }));
         if (data.payload) {
             setSelectedProject(data.payload);
             setShowSuccessTable(data.payload.basariliDurumlar.length > 0);
@@ -188,7 +196,7 @@ const ProjectTable = () => {
     };
 
     const from1 = page1 * itemsPerPage;
-    const to1 = Math.min((page1 + 1) * itemsPerPage, assemblyManualGetAll?.length);
+    const to1 = Math.min((page1 + 1) * itemsPerPage, technicalDrawingGetAll?.length);
 
     const from2 = selectedProject ? (page2 * itemsPerPage) : 0;
     const to2 = selectedProject ? Math.min((page2 + 1) * itemsPerPage, selectedProject.basariliDurumlar.length) : 0;
@@ -281,7 +289,7 @@ const ProjectTable = () => {
                                                 </Button>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={styles.tableCell11}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
-                                            <DataTable.Cell style={styles.tableCell12}><Text style={styles.cellText}>{new Date(item.technicianDate).toLocaleDateString("tr-TR")}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell12}><Text style={styles.cellText}>{new Date(item.operatorDate).toLocaleDateString("tr-TR")}</Text></DataTable.Cell>
                                         </DataTable.Row>
                                     );
                                 })}
@@ -330,12 +338,12 @@ const ProjectTable = () => {
 
                                     {selectedProject?.basariliDurumlar.slice(from2, to2).map((item) => (
                                         <DataTable.Row key={item.id} style={styles.table2Row} onPress={() => handleSuccessRowPress(item)}>
-                                            <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.technician ? item.technician?.name : item.user?.firstName} {item.technician ? item.technician?.surname : item.user?.lastName}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.operator ? item.operator?.name : item.user?.firstName} {item.operator ? item.operator?.surname : item.user?.lastName}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell2}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell4}><StatusTag durum={Boolean(item.status)} /></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell5}><Text style={styles.cellText}>{item.approval}</Text></DataTable.Cell>
-                                            <DataTable.Cell style={styles.table2Cell6}><Text style={styles.cellText}>{item.pendingQuantity}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell6}><Text style={styles.cellText}>{item.productionQuantity}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell8}><Text style={styles.cellText}>{new Date(item.date).toLocaleDateString("tr-TR")}</Text></DataTable.Cell>
                                         </DataTable.Row>
                                     ))}
@@ -381,11 +389,11 @@ const ProjectTable = () => {
                                     {selectedProject?.basarisizDurumlar.slice(from3, to3).map((item) => (
                                         <DataTable.Row key={item.id} style={styles.table3Row} onPress={() => handleFailureRowPress(item)}>
                                             {/* <DataTable.Cell style={styles.table3Cell1}><Text style={styles.cellText}>{item.inappropriateness}</Text></DataTable.Cell> */}
-                                            <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.technician ? item.technician?.name : item.user?.firstName} {item.technician ? item.technician?.surname : item.user?.lastName}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.operator ? item.operator?.name : item.user?.firstName} {item.operator ? item.operator?.surname : item.user?.lastName}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={Boolean(item.status)} /></DataTable.Cell>
-                                            <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.pendingQuantity}</Text></DataTable.Cell>
-                                            <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.qualityDescription}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.productionQuantity}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.quantityDescription}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell7}><Text style={styles.cellText}>{new Date(item.date).toLocaleDateString("tr-TR")}</Text></DataTable.Cell>
                                         </DataTable.Row>
                                     ))}

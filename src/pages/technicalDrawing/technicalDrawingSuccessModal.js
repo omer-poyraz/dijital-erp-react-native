@@ -5,14 +5,14 @@ import { colors } from '../../utilities/colors'
 import { Card, Divider, List } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
 import StatusTag from './statusTag'
-import { fetchAssemblySuccessGet } from '../../redux/slices/assemblySuccessGetSlice'
+import { fetchTechnicalDrawingSuccessGet } from '../../redux/slices/technicalDrawingSuccessGetSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 
-const AssemblySuccessDetailPage = ({ route }) => {
+const TechnicalDrawingSuccessDetailPage = ({ route }) => {
     const { id } = route.params
     const { t } = useTranslation();
-    const data = useSelector(state => state.assemblySuccessGet.data);
+    const data = useSelector(state => state.technicalDrawingSuccessGet.data);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -23,7 +23,7 @@ const AssemblySuccessDetailPage = ({ route }) => {
     };
 
     const getData = async () => {
-        await dispatch(fetchAssemblySuccessGet({ id: id }))
+        await dispatch(fetchTechnicalDrawingSuccessGet({ id: id }))
     }
 
     useEffect(() => { getData() }, [dispatch])
@@ -77,10 +77,10 @@ const AssemblySuccessDetailPage = ({ route }) => {
 
                                 <List.Section>
                                     <List.Item
-                                        title={t('technician')}
+                                        title={t('operator')}
                                         description={
-                                            data?.technician
-                                                ? `${data.technician.name || ''} ${data.technician.surname || ''}`.trim()
+                                            data?.operator
+                                                ? `${data.operator.name || ''} ${data.operator.surname || ''}`.trim()
                                                 : data?.user
                                                     ? `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim()
                                                     : '-'
@@ -187,4 +187,4 @@ const styles = StyleSheet.create({
     actionButton: { flex: 1, marginHorizontal: 4, },
 });
 
-export default AssemblySuccessDetailPage;
+export default TechnicalDrawingSuccessDetailPage;

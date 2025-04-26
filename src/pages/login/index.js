@@ -85,12 +85,18 @@ const LoginPage = () => {
             >
                 <View style={[styles.loginCard, isTablet && styles.tabletCard]}>
                     <View style={styles.logoContainer}>
-                        <Image
-                            source={require('../../images/product.jpg')}
-                            style={styles.logo}
-                            resizeMode="contain"
-                        />
-                        <Text style={styles.appTitle}>Dijital ERP</Text>
+                        <View style={isTablet ? { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', display: 'flex' } : { textAlign: 'centeer', justifyContent:'center', alignItems: 'center' }}>
+                            <Image
+                                source={require('../../images/logo3.png')}
+                                style={isTablet ? { height: 60, width: 60, marginRight: 10 } : { height: 150, width: 150 }}
+                                resizeMode="contain"
+                            />
+                            <Image
+                                source={require('../../images/logo2.png')}
+                                style={isTablet ? { height: 100, width: 330, marginTop: -10 } : { height: 100, width: 280, marginTop: -10 }}
+                                resizeMode="contain"
+                            />
+                        </View>
                         <Text style={styles.appSubtitle}>{t('welcome_back')}</Text>
                     </View>
 
@@ -207,7 +213,6 @@ const LoginPage = () => {
 export default LoginPage
 
 const styles = StyleSheet.create({
-    // Mevcut stilleriniz
     container: { flex: 1, backgroundColor: '#f5f5f5', },
     scrollContainer: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 20, },
     loginCard: { width: '100%', maxWidth: 420, backgroundColor: 'white', borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 5, overflow: 'hidden', },

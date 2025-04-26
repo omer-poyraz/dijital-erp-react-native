@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAssemblyNoteGetAllByManual } from '../../redux/slices/assemblyNoteGetAllByManualSlice'
+import { fetchTechnicalDrawingNoteGetAllByDrawing } from '../../redux/slices/technicalDrawingNoteGetAllByDrawingSlice'
 import { Ionicons } from '@expo/vector-icons'
 import { Card, Divider, TextInput, Badge, Avatar, Chip, Button, Switch } from 'react-native-paper'
 import { colors } from '../../utilities/colors'
 import { useTranslation } from 'react-i18next'
-import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice'
-import { fetchAssemblyManualGet } from '../../redux/slices/assemblyManualGetSlice'
+import { fetchTechnicalDrawingNoteCreate } from '../../redux/slices/technicalDrawingNoteCreateSlice'
+import { fetchTechnicalDrawingGet } from '../../redux/slices/technicalDrawingGetSlice'
 
-const AssemblyNoteModal = ({ item, modal, setModal }) => {
+const TechnicalDrawingNoteModal = ({ item, modal, setModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const { data: notes, status } = useSelector(state => state.assemblyNoteGetAllByManual);
+    const { data: notes, status } = useSelector(state => state.technicalDrawingNoteGetAllByDrawing);
     const [refreshing, setRefreshing] = useState(false);
     const [noteText, setNoteText] = useState('');
     const [formData, setFormData] = useState({ note: "", description: "", status: true });
@@ -20,7 +20,7 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
 
     const getData = async () => {
         if (item?.id) {
-            await dispatch(fetchAssemblyNoteGetAllByManual({ id: item.id }));
+            await dispatch(fetchTechnicalDrawingNoteGetAllByDrawing({ id: item.id }));
         }
     };
 
@@ -37,8 +37,8 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
     }, [dispatch, modal, item?.id]);
 
     const handleSaveNote = async () => {
-        await dispatch(fetchAssemblyNoteCreate({ formData: formData, manualId: item.id }));
-        await dispatch(fetchAssemblyManualGet({ id: item.id }));
+        await dispatch(fetchTechnicalDrawingNoteCreate({ formData: formData, manualId: item.id }));
+        await dispatch(fetchTechnicalDrawingGet({ id: item.id }));
         setFormData({ note: "", description: "", status: true, })
         getData();
         setTab(true);
@@ -250,4 +250,4 @@ const styles = StyleSheet.create({
     emptyText: { marginTop: 16, fontSize: 16, color: '#888', textAlign: 'center', },
 });
 
-export default AssemblyNoteModal;
+export default TechnicalDrawingNoteModal;

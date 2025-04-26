@@ -74,7 +74,13 @@ const AssemblyFailureDetailPage = ({ route }) => {
                                 <List.Section>
                                     <List.Item
                                         title={t('technician')}
-                                        description={`${data?.technician?.name} ${data?.technician?.surname}` || '-'}
+                                        description={
+                                            data?.technician
+                                                ? `${data.technician.name || ''} ${data.technician.surname || ''}`.trim()
+                                                : data?.user
+                                                    ? `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim()
+                                                    : '-'
+                                        }
                                         left={() => <List.Icon icon="account" color={colors.primary} />}
                                         titleStyle={styles.listTitle}
                                         descriptionStyle={styles.listDescription}

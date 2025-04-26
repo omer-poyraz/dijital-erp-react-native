@@ -1,27 +1,31 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { AssemblyNoteCreateService } from '../../service';
+import { TechnicalDrawingNoteCreateService } from '../../service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const fetchAssemblyNoteCreate = createAsyncThunk(
-    'assemblyNoteCreate/fetchAssemblyNoteCreate',
+export const fetchTechnicalDrawingNoteCreate = createAsyncThunk(
+    'technicalDrawingNoteCreate/fetchTechnicalDrawingNoteCreate',
     async ({ formData, manualId }) => {
         const userId = await AsyncStorage.getItem("auth") === null ? null : JSON.parse(await AsyncStorage.getItem("auth")).user?.userId
 
+        console.log(userId)
         const data = {
             "note": formData.note,
             "partCode": formData.partCode,
             "description": formData.description,
-            "status": formData.status,
-            "assemblyManuelID": parseInt(manualId),
+            "status": Boolean(formData.status),
+            "technicalDrawingID": parseInt(manualId),
             "userId": userId
         }
-        const response = await AssemblyNoteCreateService(data)
+
+        console.log(data)
+
+        const response = await TechnicalDrawingNoteCreateService(data)
         return response.result
     }
 );
 
-const assemblyNoteCreateSlice = createSlice({
-    name: 'assemblyNoteCreate',
+const technicalDrawingNoteCreateSlice = createSlice({
+    name: 'technicalDrawingNoteCreate',
     initialState: {
         data: null,
         status: 'idle',
@@ -29,17 +33,17 @@ const assemblyNoteCreateSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(fetchAssemblyNoteCreate.pending, (state) => {
+            .addCase(fetchTechnicalDrawingNoteCreate.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(fetchAssemblyNoteCreate.fulfilled, (state, action) => {
+            .addCase(fetchTechnicalDrawingNoteCreate.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.data = action.payload;
             })
-            .addCase(fetchAssemblyNoteCreate.rejected, (state) => {
+            .addCase(fetchTechnicalDrawingNoteCreate.rejected, (state) => {
                 state.status = 'failed';
             });
     },
 });
 
-export default assemblyNoteCreateSlice.reducer;
+export default technicalDrawingNoteCreateSlice.reducer;

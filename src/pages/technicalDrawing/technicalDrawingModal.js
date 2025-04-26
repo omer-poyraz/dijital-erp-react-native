@@ -7,19 +7,19 @@ import { useTranslation } from 'react-i18next'
 import { URL } from '../../api'
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAssemblyManualGet } from '../../redux/slices/assemblyManualGetSlice'
+import { fetchTechnicalDrawingGet } from '../../redux/slices/technicalDrawingGetSlice'
 import { useNavigation } from '@react-navigation/native'
-import AssemblyNoteModal from './assemblyNoteModal'
+import TechnicalDrawingNoteModal from './technicalDrawingNoteModal'
 import PdfRendererView from 'react-native-pdf-renderer'
 import RNFS from 'react-native-fs'
 
-const AssemblyManualDetailPage = ({ route }) => {
+const TechnicalDrawingDetailPage = ({ route }) => {
     const { id } = route.params;
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('details');
     const [selectedImage, setSelectedImage] = useState(null);
     const [noteModal, setNoteModal] = useState(false);
-    const data = useSelector(state => state.assemblyManualGet.data);
+    const data = useSelector(state => state.technicalDrawingGet.data);
     const [imageLoading, setImageLoading] = useState({});
     const [downloading, setDownloading] = useState(false);
     const [localPdfPath, setLocalPdfPath] = useState(null);
@@ -40,7 +40,7 @@ const AssemblyManualDetailPage = ({ route }) => {
     const downloadAndShowPdf = async (remoteUrl) => {
         try {
             setDownloading(true);
-            const localPath = `${RNFS.DocumentDirectoryPath}/assembly_temp_${Date.now()}.pdf`;
+            const localPath = `${RNFS.DocumentDirectoryPath}/technicalDrawing_temp_${Date.now()}.pdf`;
             const downloadResult = await RNFS.downloadFile({
                 fromUrl: remoteUrl,
                 toFile: localPath,
@@ -95,7 +95,7 @@ const AssemblyManualDetailPage = ({ route }) => {
                             <View style={styles.infoGrid}>
                                 <View style={styles.infoRow}>
                                     <View style={styles.infoItem}>
-                                        <Text style={styles.infoLabel}>{t('technician')}</Text>
+                                        <Text style={styles.infoLabel}>{t('operator')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="person" size={16} color={colors.primary} />
                                             <Text style={styles.infoValue}>{`${data?.responible?.name} ${data?.responible?.surname}` || '-'}</Text>
@@ -139,7 +139,7 @@ const AssemblyManualDetailPage = ({ route }) => {
                                 </View>
                                 <View style={styles.statItem}>
                                     <Ionicons name="document-text" size={24} color={colors.warning} />
-                                    <Text style={styles.statCount}>{data?.assemblyNotes?.length || 0}</Text>
+                                    <Text style={styles.statCount}>{data?.technicalDrawingNotes?.length || 0}</Text>
                                     <Text style={styles.statLabel}>{t('notes')}</Text>
                                 </View>
                             </View>
@@ -218,7 +218,7 @@ const AssemblyManualDetailPage = ({ route }) => {
     };
 
     const getData = async () => {
-        await dispatch(fetchAssemblyManualGet({ id: id }))
+        await dispatch(fetchTechnicalDrawingGet({ id: id }))
     }
 
     useEffect(() => { getData() }, [dispatch])
@@ -359,7 +359,7 @@ const AssemblyManualDetailPage = ({ route }) => {
                     )}
                 </View>
             </View>
-            <AssemblyNoteModal modal={noteModal} item={data} setModal={setNoteModal} />
+            <TechnicalDrawingNoteModal modal={noteModal} item={data} setModal={setNoteModal} />
         </View>
     );
 };
@@ -434,4 +434,4 @@ const styles = StyleSheet.create({
     pdfLabel: { marginTop: 5, color: colors.primary, fontSize: 12, fontWeight: 'bold', },
 });
 
-export default AssemblyManualDetailPage;
+export default TechnicalDrawingDetailPage;

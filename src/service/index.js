@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE } from "../api";
+import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE, TECHNICALDRAWING_ADDFILE, TECHNICALDRAWING_CREATE, TECHNICALDRAWING_DELETE, TECHNICALDRAWING_FAILURE_CREATE, TECHNICALDRAWING_FAILURE_DELETE, TECHNICALDRAWING_FAILURE_GET, TECHNICALDRAWING_FAILURE_GETALL, TECHNICALDRAWING_FAILURE_GETALLBYDRAWING, TECHNICALDRAWING_FAILURE_UPDATE, TECHNICALDRAWING_GET, TECHNICALDRAWING_GETALL, TECHNICALDRAWING_NOTE_CREATE, TECHNICALDRAWING_NOTE_DELETE, TECHNICALDRAWING_NOTE_GET, TECHNICALDRAWING_NOTE_GETALL, TECHNICALDRAWING_NOTE_GETALLBYDRAWING, TECHNICALDRAWING_NOTE_UPDATE, TECHNICALDRAWING_SUCCESS_CREATE, TECHNICALDRAWING_SUCCESS_DELETE, TECHNICALDRAWING_SUCCESS_GET, TECHNICALDRAWING_SUCCESS_GETALL, TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING, TECHNICALDRAWING_SUCCESS_UPDATE, TECHNICALDRAWING_UPDATE } from "../api";
 
 let token = "";
 let userId = "";
@@ -238,6 +238,119 @@ export function EmployeeDeleteService(id) {
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 // EMPLOYEE_END
+
+
+// TECHNICALDRAWING
+export function TechnicalDrawingGetAllService() {
+    return axios.get(TECHNICALDRAWING_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingGetService(id) {
+    return axios.get(`${TECHNICALDRAWING_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingCreateService(data) {
+    return axios.post(TECHNICALDRAWING_CREATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingUpdateService(data) {
+    return axios.put(TECHNICALDRAWING_UPDATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingAddFileService(data) {
+    return axios.put(TECHNICALDRAWING_ADDFILE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingDeleteService(id) {
+    return axios.delete(`${TECHNICALDRAWING_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// TECHNICALDRAWING_END
+
+
+// TECHNICALDRAWING_FAILURE
+export function TechnicalDrawingFailureGetAllService() {
+    return axios.get(TECHNICALDRAWING_FAILURE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingFailureGetAllByDrawingService(id) {
+    return axios.get(`${TECHNICALDRAWING_FAILURE_GETALLBYDRAWING}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingFailureGetService(id) {
+    return axios.get(`${TECHNICALDRAWING_FAILURE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingFailureCreateService(data) {
+    return axios.post(TECHNICALDRAWING_FAILURE_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingFailureUpdateService(data) {
+    return axios.put(TECHNICALDRAWING_FAILURE_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingFailureDeleteService(id) {
+    return axios.delete(`${TECHNICALDRAWING_FAILURE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// TECHNICALDRAWING_FAILURE_END
+
+
+// TECHNICALDRAWING_SUCCESS
+export function TechnicalDrawingSuccessGetAllService() {
+    return axios.get(TECHNICALDRAWING_SUCCESS_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingSuccessGetAllByDrawingService(id) {
+    return axios.get(`${TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingSuccessGetService(id) {
+    return axios.get(`${TECHNICALDRAWING_SUCCESS_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingSuccessCreateService(data) {
+    return axios.post(TECHNICALDRAWING_SUCCESS_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingSuccessUpdateService(data) {
+    return axios.put(TECHNICALDRAWING_SUCCESS_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingSuccessDeleteService(id) {
+    return axios.delete(`${TECHNICALDRAWING_SUCCESS_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// TECHNICALDRAWING_SUCCESS_END
+
+
+// TECHNICALDRAWING_NOTE
+export function TechnicalDrawingNoteGetAllService() {
+    return axios.get(TECHNICALDRAWING_NOTE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingNoteGetAllByDrawingService(id) {
+    return axios.get(`${TECHNICALDRAWING_NOTE_GETALLBYDRAWING}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingNoteGetService(id) {
+    return axios.get(`${TECHNICALDRAWING_NOTE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingNoteCreateService(data) {
+    console.log("TechnicalDrawingNoteCreateService", data);
+    return axios.post(TECHNICALDRAWING_NOTE_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingNoteUpdateService(data) {
+    return axios.put(TECHNICALDRAWING_NOTE_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingNoteDeleteService(id) {
+    return axios.delete(`${TECHNICALDRAWING_NOTE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// TECHNICALDRAWING_NOTE_END
 
 
 // USER

@@ -121,6 +121,7 @@
     "no_files": "Dosya bulunamadı",
     "success_detail": "Başarılı Durum Detayı",
     "active": "Aktif",
+    "operator": "Operatör",
     "closed": "Kapalı",
     "technician": "Teknisyen",
     "part_code": "Parça Kodu",
@@ -130,6 +131,7 @@
     "edit": "Düzenle",
     "close_item": "Kaydı Kapat",
     "reactivate": "Yeniden Aktifleştir",
+    "inappropriateness": "Uygunsuzluk",
     "failure_detail": "Uygunsuzluk Detayı",
     "issue_timeline": "Sorun Zaman Çizelgesi",
     "issue_reported": "Sorun Bildirildi",
@@ -140,5 +142,6 @@
     "issue_has_been_resolved": "Sorun çözülmüştür",
     "mark_resolved": "Çözüldü Olarak İşaretle",
     "reopen_issue": "Sorunu Yeniden Aç",
+    "technical_drawing": "Teknik Çizim",
     "project_notes": "Proje Notları"
 }
