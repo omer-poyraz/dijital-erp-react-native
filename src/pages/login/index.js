@@ -9,8 +9,8 @@ import { colors } from '../../utilities/colors'
 import { loginData, resetLoginSuccess } from '../../redux/slices/loginSlice'
 
 const LoginPage = () => {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('SuperAdmin')
+    const [password, setPassword] = useState('DijitalErp123.')
     const [rememberMe, setRememberMe] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
 

@@ -18,7 +18,7 @@ const LeftMenu = () => {
 
     const { width } = useWindowDimensions();
 
-    const isTablet = width >= 600;
+    const isTablet = width >= 1100;
 
     const leftMenuWidth = isTablet ? '45%' : '80%';
 

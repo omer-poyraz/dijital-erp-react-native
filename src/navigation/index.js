@@ -32,6 +32,7 @@ const AuthStack = () => {
     return (
         <Stack.Navigator
             screenOptions={{
+                gestureEnabled: false,
                 headerShown: true,
                 headerTitleAlign: 'center',
                 headerStyle: {
@@ -48,38 +49,57 @@ const AuthStack = () => {
             <Stack.Screen
                 name="Login"
                 component={LoginPage}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, gestureEnabled: false, }}
             />
             <Stack.Screen
                 name="Language"
                 component={LanguagePage}
                 options={{
-                    title: t("language_sections")
+                    title: t("language_sections"),
+                    gestureEnabled: false,
                 }}
             />
             <Stack.Screen
                 name="AssemblyManualDetail"
                 component={AssemblyManualDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
             />
             <Stack.Screen
                 name="AssemblySuccessDetail"
                 component={AssemblySuccessDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
             />
             <Stack.Screen
                 name="AssemblyFailureDetail"
                 component={AssemblyFailureDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
             />
             <Stack.Screen
                 name="TechnicalDrawingDetail"
                 component={TechnicalDrawingDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
             />
             <Stack.Screen
                 name="TechnicalDrawingSuccessDetail"
                 component={TechnicalDrawingSuccessDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
             />
             <Stack.Screen
                 name="TechnicalDrawingFailureDetail"
                 component={TechnicalDrawingFailureDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
             />
         </Stack.Navigator>
     );
@@ -153,6 +173,7 @@ const AppStack = () => {
                     component={component}
                     options={{
                         title: title,
+                        gestureEnabled: false,
                     }}
                 />
             ))}
@@ -180,6 +201,6 @@ export default StackNavigator;
 const styles = StyleSheet.create({
     headerLeft: {
         marginLeft: 10,
-        marginRight: 10,
+        marginRight: 15,
     }
 });

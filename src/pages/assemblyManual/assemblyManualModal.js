@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
     headerContent: { flex: 1, },
     modalTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold', },
     serialText: { fontSize: 16, fontWeight: 'normal', },
-    closeBtn: { marginRight: 20, marginTop: 10 },
+    closeBtn: { marginRight: 30, marginLeft: 20, marginTop: 10 },
     close: { color: '#fff', },
     tabBar: { flexDirection: 'row', backgroundColor: '#f5f5f5', borderBottomWidth: 1, borderBottomColor: '#e0e0e0', },
     tab: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, },

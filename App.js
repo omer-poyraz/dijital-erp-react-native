@@ -13,6 +13,7 @@ import JobAndHold from './src/components/jobAndHold';
 import { changeLangs } from './src/redux/slices/langSlice';
 import './i18n';
 import { PaperProvider } from 'react-native-paper';
+import * as ScreenCapture from 'expo-screen-capture';
 
 enableScreens();
 
@@ -27,6 +28,10 @@ const LanguageInitializer = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+  }, []);
+
   return (
     <ErrorBoundary>
       <Provider store={store}>
@@ -50,9 +55,9 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%', 
-    height: '100%', 
-    backgroundColor: '#f5f5f5' 
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f5f5f5'
   },
 });
 

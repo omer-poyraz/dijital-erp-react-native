@@ -252,16 +252,16 @@ const ProjectTable = () => {
                                         <DataTable.Row key={item.id} style={[styles.tableRow, selectedProject?.id === item.id && styles.selectedRow]} onPress={() => handleRowPress(item)}>
                                             <DataTable.Cell style={styles.tableCell1}>
                                                 <View style={styles.avatarContainer}>
-                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.responible?.file}` }} />
-                                                    <Text style={styles.cellText}>{item.responible?.name} {item.responible?.surname}</Text>
+                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item?.personInCharge?.file}` }} />
+                                                    <Text style={styles.cellText}>{item?.personInCharge?.name} {item?.personInCharge?.surname}</Text>
                                                 </View>
                                             </DataTable.Cell>
-                                            <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item.projectName}</Text></DataTable.Cell>
-                                            <DataTable.Cell style={styles.tableCell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item?.projectName}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell3}><Text style={styles.cellText}>{item?.partCode}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.tableCell4}>
                                                 <View style={styles.avatarContainer}>
-                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.personInCharge?.file}` }} />
-                                                    <Text style={styles.cellText}>{item.personInCharge?.name} {item.personInCharge?.surname}</Text>
+                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item?.responible?.file}` }} />
+                                                    <Text style={styles.cellText}>{item?.responible?.name} {item?.responible?.surname}</Text>
                                                 </View>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={styles.tableCell5}><Text style={styles.cellText}>{item.serialNumber}</Text></DataTable.Cell>
@@ -374,7 +374,7 @@ const ProjectTable = () => {
                             subtitleStyle={styles.cardSubtitle}
                         />
                         <View style={styles.tableWrapper}>
-                            <ScrollView horizontal>
+                            <ScrollView horizontal={true}>
                                 <DataTable style={styles.table}>
                                     <DataTable.Header style={styles.table3Header}>
                                         {/* <DataTable.Title textStyle={styles.headerText} style={styles.column3Header1}>Uygunsuzluk Tespit</DataTable.Title> */}

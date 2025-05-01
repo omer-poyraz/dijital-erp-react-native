@@ -223,7 +223,7 @@ const ProjectTable = () => {
                         <ScrollView horizontal>
                             <DataTable style={styles.table}>
                                 <DataTable.Header style={styles.tableHeader}>
-                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader1}>Proje Sorumlusu</DataTable.Title>
+                                    <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader1}>Proje Yöneticisi</DataTable.Title>
                                     <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader2}>Proje Adı</DataTable.Title>
                                     <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader3}>DGT Kodu</DataTable.Title>
                                     <DataTable.Title textStyle={styles.headerText} style={styles.columnHeader4}>Sorumlu Kişi</DataTable.Title>
@@ -241,19 +241,19 @@ const ProjectTable = () => {
                                     const { progress, remainingDays, totalDays } = calculateProgress(item);
 
                                     return (
-                                        <DataTable.Row key={item.id} style={[styles.tableRow, selectedProject?.id === item.id && styles.selectedRow]} onPress={() => handleRowPress(item)}>
+                                        <DataTable.Row key={item.id} style={[styles.tableRow, selectedProject?.id === item?.id && styles.selectedRow]} onPress={() => handleRowPress(item)}>
                                             <DataTable.Cell style={styles.tableCell1}>
                                                 <View style={styles.avatarContainer}>
-                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.responible?.file}` }} />
-                                                    <Text style={styles.cellText}>{item.responible?.name} {item.responible?.surname}</Text>
-                                                </View>
+                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item?.personInCharge?.file}` }} />
+                                                    <Text style={styles.cellText}>{item?.personInCharge?.name} {item?.personInCharge?.surname}</Text>
+                                                </View>     
                                             </DataTable.Cell>
-                                            <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item.projectName}</Text></DataTable.Cell>
-                                            <DataTable.Cell style={styles.tableCell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item?.projectName}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.tableCell3}><Text style={styles.cellText}>{item?.partCode}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.tableCell4}>
                                                 <View style={styles.avatarContainer}>
-                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item.personInCharge?.file}` }} />
-                                                    <Text style={styles.cellText}>{item.personInCharge?.name} {item.personInCharge?.surname}</Text>
+                                                    <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item?.responible?.file}` }} />
+                                                    <Text style={styles.cellText}>{item?.responible?.name} {item?.responible?.surname}</Text>
                                                 </View>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={styles.tableCell5}><Text style={styles.cellText}>{item.serialNumber}</Text></DataTable.Cell>
