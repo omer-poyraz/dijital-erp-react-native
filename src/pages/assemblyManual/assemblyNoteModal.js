@@ -1,27 +1,33 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, ActivityIndicator, Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAssemblyNoteGetAllByManual } from '../../redux/slices/assemblyNoteGetAllByManualSlice'
 import { Ionicons } from '@expo/vector-icons'
-import { Card, Divider, TextInput, Badge, Avatar, Chip, Button, Switch } from 'react-native-paper'
+import { Card, Divider, Badge, Avatar, Chip } from 'react-native-paper'
 import { colors } from '../../utilities/colors'
 import { useTranslation } from 'react-i18next'
 import { fetchAssemblyNoteCreate } from '../../redux/slices/assemblyNoteCreateSlice'
 import { fetchAssemblyManualGet } from '../../redux/slices/assemblyManualGetSlice'
+import { URL } from '../../api'
+import { fetchAssemblyVisualNoteGetAllByDrawing } from '../../redux/slices/assemblyVisualNoteGetAllByDrawingSlice'
 
-const AssemblyNoteModal = ({ item, modal, setModal }) => {
+const AssemblyNoteModal = ({ item, modal, setModal, id }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const { data: notes, status } = useSelector(state => state.assemblyNoteGetAllByManual);
+    const { data: visualNotes, status: visualStatus } = useSelector(state => state.assemblyVisualNoteGetAllByDrawing);
     const [refreshing, setRefreshing] = useState(false);
-    const [noteText, setNoteText] = useState('');
     const [formData, setFormData] = useState({ note: "", description: "", status: true });
-    const [tab, setTab] = useState(true);
+    const [tab, setTab] = useState(0);
 
     const getData = async () => {
         if (item?.id) {
             await dispatch(fetchAssemblyNoteGetAllByManual({ id: item.id }));
         }
+    };
+
+    const getVisualNotes = async () => {
+        await dispatch(fetchAssemblyVisualNoteGetAllByDrawing({ id: item.id }));
     };
 
     const onRefresh = async () => {
@@ -33,6 +39,7 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
     useEffect(() => {
         if (modal && item?.id) {
             getData();
+            getVisualNotes();
         }
     }, [dispatch, modal, item?.id]);
 
@@ -41,8 +48,7 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
         await dispatch(fetchAssemblyManualGet({ id: item.id }));
         setFormData({ note: "", description: "", status: true, })
         getData();
-        setTab(true);
-        setNoteText('');
+        setTab(0);
     };
 
     const formatDate = (dateString) => {
@@ -82,20 +88,16 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
                         {formatDate(note.createdAt)}
                     </Badge>
                 </View>
-
                 <Divider style={styles.divider} />
-
                 <View style={styles.noteContent}>
                     <View style={styles.noteTitleContainer}>
                         <Ionicons name="document-text-outline" size={20} color={colors.primary} style={styles.noteIcon} />
                         <Text style={styles.noteTitle}>{note.partCode}</Text>
                     </View>
-
                     {note.description ? (
                         <Text style={styles.noteDescription}>{note.description}</Text>
                     ) : null}
                 </View>
-
                 <View style={styles.tagsContainer}>
                     <Chip
                         icon={note.status ? "check-circle" : "alert-circle"}
@@ -119,6 +121,17 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
         </View>
     );
 
+    // Görsel Notlar Grid
+    const renderVisualNoteItem = ({ item }) => (
+        <View style={styles.visualNoteItem}>
+            <Image
+                source={{ uri: item.files?.[0]?.startsWith('http') ? item.files[0] : `${URL}${item.files[0]}` }}
+                style={styles.visualNoteImage}
+                resizeMode="cover"
+            />
+        </View>
+    );
+
     return (
         <View style={[styles.page, modal ? { display: 'flex' } : { display: 'none' }]}>
             <View style={styles.modal}>
@@ -131,18 +144,17 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
                         <Text style={styles.projectName}>{item?.projectName}</Text>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity onPress={() => setTab(!tab)} style={styles.closeBtn}>
-                            <Ionicons name={tab ? 'add-outline' : 'list-outline'} size={28} style={styles.close} />
+                        <TouchableOpacity onPress={() => setTab(tab === 0 ? 1 : 0)} style={styles.closeBtn}>
+                            <Ionicons name={tab === 0 ? 'images-outline' : 'list-outline'} size={28} style={styles.close} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setModal(false)} style={styles.closeBtn}>
                             <Ionicons name='close' size={28} style={styles.close} />
                         </TouchableOpacity>
                     </View>
                 </View>
-
                 <View style={styles.modalContent}>
-                    {tab ? <>
-                        {status === 'loading' && !refreshing ? (
+                    {tab === 0 ? (
+                        status === 'loading' && !refreshing ? (
                             <View style={styles.loadingContainer}>
                                 <ActivityIndicator size="large" color={colors.primary} />
                                 <Text style={styles.loadingText}>{t('loading_notes')}</Text>
@@ -158,53 +170,30 @@ const AssemblyNoteModal = ({ item, modal, setModal }) => {
                                 onRefresh={onRefresh}
                                 refreshing={refreshing}
                             />
-                        )}
-                    </> : <>
-                        <Card style={styles.noteCard}>
-                            <Card.Content>
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("part_code")}
-                                    value={formData.partCode}
-                                    onChangeText={text => setFormData(prev => ({ ...prev, partCode: text }))}
-                                    multiline
-                                    numberOfLines={2}
-                                    style={styles.noteInput}
-                                    outlineColor={colors.primaryLight}
-                                    activeOutlineColor={colors.primary}
-                                    textColor={colors.primary}
-                                />
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("description")}
-                                    value={formData.description}
-                                    onChangeText={text => setFormData(prev => ({ ...prev, description: text }))}
-                                    multiline
-                                    numberOfLines={2}
-                                    style={styles.noteInput}
-                                    outlineColor={colors.primaryLight}
-                                    activeOutlineColor={colors.primary}
-                                    textColor={colors.primary}
-                                />
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-                                    <Text style={{ marginRight: 8 }}>{t('inappropriateness')}</Text>
-                                    <Switch
-                                        value={formData.status}
-                                        onValueChange={val => setFormData(prev => ({ ...prev, status: val }))}
-                                        color={colors.primary}
-                                    />
-                                </View>
-                                <Button
-                                    mode="contained"
-                                    onPress={() => handleSaveNote()}
-                                    style={styles.saveButton}
-                                    buttonColor={colors.primary}
-                                >
-                                    {t("save_note")}
-                                </Button>
-                            </Card.Content>
-                        </Card>
-                    </>}
+                        )
+                    ) : (
+                        visualStatus === 'loading' ? (
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="large" color={colors.primary} />
+                                <Text style={styles.loadingText}>{t('loading_notes')}</Text>
+                            </View>
+                        ) : (
+                            <FlatList
+                                data={tab === 0 ? notes : (visualNotes?.files || [])}
+                                renderItem={tab === 0 ? renderNoteItem : renderVisualNoteItem}
+                                keyExtractor={tab === 0 ? (item) => item.id.toString() : (_, idx) => idx.toString()}
+                                numColumns={tab === 0 ? 1 : 3}
+                                key={tab}
+                                contentContainerStyle={styles.visualNotesGrid}
+                                ListEmptyComponent={
+                                    <View style={styles.emptyContainer}>
+                                        <Ionicons name="images-outline" size={64} color="#ccc" />
+                                        <Text style={styles.emptyText}>{t('no_files')}</Text>
+                                    </View>
+                                }
+                            />
+                        )
+                    )}
                 </View>
             </View>
         </View>
@@ -248,6 +237,9 @@ const styles = StyleSheet.create({
     inactiveStatus: { borderColor: colors.warning, },
     emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, },
     emptyText: { marginTop: 16, fontSize: 16, color: '#888', textAlign: 'center', },
+    visualNotesGrid: { padding: 12, paddingBottom: 20 },
+    visualNoteItem: { flex: 1 / 3, aspectRatio: 1, margin: 4, borderRadius: 8, overflow: 'hidden', backgroundColor: '#eee' },
+    visualNoteImage: { width: '100%', height: '100%' },
 });
 
 export default AssemblyNoteModal;

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList, Alert } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList, TextInput, Alert } from 'react-native'
 import { colors } from '../../utilities/colors'
 import { Card, Divider, Chip, ActivityIndicator } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +12,8 @@ import { useNavigation } from '@react-navigation/native'
 import AssemblyNoteModal from './assemblyNoteModal'
 import PdfRendererView from 'react-native-pdf-renderer'
 import RNFS from 'react-native-fs'
+import ViewShot from 'react-native-view-shot'
+import { fetchAssemblyVisualNoteCreate } from '../../redux/slices/assemblyVisualNoteCreateSlice'
 
 const AssemblyManualDetailPage = ({ route }) => {
     const { id } = route.params;
@@ -23,6 +25,14 @@ const AssemblyManualDetailPage = ({ route }) => {
     const [imageLoading, setImageLoading] = useState({});
     const [downloading, setDownloading] = useState(false);
     const [localPdfPath, setLocalPdfPath] = useState(null);
+    const [screenshotUri, setScreenshotUri] = useState(null);
+    const [screenshotModal, setScreenshotModal] = useState(false);
+    const [notePoints, setNotePoints] = useState([]);
+    const [visualModal, setVisualModal] = useState(false);
+    const [addingNote, setAddingNote] = useState(false);
+    const [noteText, setNoteText] = useState('');
+    const [currentPoint, setCurrentPoint] = useState(null);
+    const previewRef = React.useRef();
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -35,6 +45,64 @@ const AssemblyManualDetailPage = ({ route }) => {
     const isPdfFile = (fileName) => {
         if (!fileName) return false;
         return fileName.toLowerCase().endsWith('.pdf');
+    };
+
+    const handleImagePress = (event) => {
+        const { locationX, locationY } = event.nativeEvent;
+        setCurrentPoint({ x: locationX, y: locationY });
+        setAddingNote(true);
+        setNoteText('');
+    };
+
+    const handleSaveNote = () => {
+        if (currentPoint && noteText.trim()) {
+            setNotePoints([...notePoints, { ...currentPoint, text: noteText }]);
+            setAddingNote(false);
+            setCurrentPoint(null);
+            setNoteText('');
+        }
+    };
+
+    const handleSaveScreenshotWithNotesAndSend = async () => {
+        if (previewRef.current) {
+            try {
+                const uri = await previewRef.current.capture();
+                setScreenshotUri(uri);
+                setScreenshotModal(true);
+
+                const fileName = `visual_note_${Date.now()}.jpg`;
+                const file = { uri, type: 'image/jpeg', name: fileName, };
+
+                const formData = { file: [file], };
+
+                await dispatch(fetchAssemblyVisualNoteCreate({ formData: formData, manualId: id }));
+
+                setCurrentPoint(null);
+                setAddingNote(false)
+                setNoteText('');
+                setNotePoints([]);
+                setScreenshotUri(null)
+                setScreenshotModal(false);
+                setVisualModal(false);
+                setVisualModal(true);
+
+                Alert.alert('Başarılı', 'Notlu görsel başarıyla gönderildi.');
+            } catch (e) {
+                Alert.alert('Ekran görüntüsü gönderilemedi', e.message);
+            }
+        }
+    };
+
+    const handleTakeScreenshot = async () => {
+        if (previewRef.current) {
+            try {
+                const uri = await previewRef.current.capture();
+                setScreenshotUri(uri);
+                setScreenshotModal(true);
+            } catch (e) {
+                Alert.alert('Ekran görüntüsü alınamadı', e.message);
+            }
+        }
     };
 
     const downloadAndShowPdf = async (remoteUrl) => {
@@ -60,6 +128,7 @@ const AssemblyManualDetailPage = ({ route }) => {
     const handleFileSelect = async (file) => {
         setLocalPdfPath(null);
         setSelectedImage(file);
+        setVisualModal(true);
         if (isPdfFile(file)) {
             const remoteUrl = file.startsWith('http') ? file : `${URL}${file}`;
             await downloadAndShowPdf(remoteUrl);
@@ -236,11 +305,16 @@ const AssemblyManualDetailPage = ({ route }) => {
                         <TouchableOpacity onPress={() => setNoteModal(true)} style={styles.closeBtn}>
                             <Ionicons name='chatbox-outline' size={28} style={styles.close} />
                         </TouchableOpacity>
+                        {visualModal ? (
+                            <TouchableOpacity onPress={handleTakeScreenshot} style={styles.closeBtn}>
+                                <Ionicons name='camera-outline' size={28} style={styles.close} />
+                            </TouchableOpacity>
+                        ) : null}
                     </View>
                 )
             }
         })
-    }, [navigation, id, data])
+    }, [navigation, id, data, selectedImage, visualModal])
 
     return (
         <View style={styles.page}>
@@ -295,13 +369,18 @@ const AssemblyManualDetailPage = ({ route }) => {
                                                 onPress={() => {
                                                     setSelectedImage(null);
                                                     setLocalPdfPath(null);
+                                                    setVisualModal(false);
                                                 }}
                                                 style={styles.closePreviewBtn}
                                             >
                                                 <Ionicons name="close-circle" size={24} color="#fff" />
                                             </TouchableOpacity>
                                         </View>
-                                        <View style={styles.pdfContainer}>
+                                        <ViewShot
+                                            ref={previewRef}
+                                            options={{ format: 'jpg', quality: 0.9, result: 'tmpfile' }}
+                                            style={styles.pdfContainer}
+                                        >
                                             {downloading ? (
                                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                                     <ActivityIndicator color={colors.primary} size="large" />
@@ -330,7 +409,7 @@ const AssemblyManualDetailPage = ({ route }) => {
                                                     resizeMode="contain"
                                                 />
                                             )}
-                                        </View>
+                                        </ViewShot>
                                     </View>
                                 ) : (
                                     <FlatList
@@ -359,7 +438,93 @@ const AssemblyManualDetailPage = ({ route }) => {
                     )}
                 </View>
             </View>
-            <AssemblyNoteModal modal={noteModal} item={data} setModal={setNoteModal} />
+            {screenshotModal && (
+                <View style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center', zIndex: 999
+                }}>
+                    <View style={{ width: '90%', height: '70%', backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' }}>
+                        <ViewShot
+                            ref={previewRef}
+                            options={{ format: 'jpg', quality: 0.9, result: 'tmpfile' }}
+                            style={{ flex: 1, width: '100%', height: '100%' }}
+                        >
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                style={{ flex: 1 }}
+                                onPress={handleImagePress}
+                            >
+                                <Image
+                                    source={{ uri: screenshotUri }}
+                                    style={{ width: '100%', height: '100%', resizeMode: 'contain', position: 'absolute' }}
+                                />
+                                {notePoints.map((point, idx) => (
+                                    <View
+                                        key={idx}
+                                        style={{
+                                            position: 'absolute',
+                                            left: point.x - 10,
+                                            top: point.y - 10,
+                                            backgroundColor: '#ffeb3b',
+                                            borderRadius: 8,
+                                            padding: 4,
+                                            minWidth: 40,
+                                            minHeight: 24,
+                                            zIndex: 10,
+                                        }}
+                                    >
+                                        <Text style={{ fontSize: 12, color: '#333' }}>{point.text}</Text>
+                                    </View>
+                                ))}
+                                {addingNote && currentPoint && (
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            left: currentPoint.x - 10,
+                                            top: currentPoint.y - 10,
+                                            backgroundColor: '#fff',
+                                            borderRadius: 8,
+                                            padding: 6,
+                                            minWidth: 120,
+                                            zIndex: 20,
+                                            elevation: 5,
+                                            borderWidth: 1,
+                                            borderColor: '#ccc'
+                                        }}
+                                    >
+                                        <TextInput
+                                            value={noteText}
+                                            onChangeText={setNoteText}
+                                            placeholder="Notunuzu yazın"
+                                            style={{ minHeight: 30, fontSize: 13, color: '#333' }}
+                                            multiline
+                                        />
+                                        <TouchableOpacity
+                                            onPress={handleSaveNote}
+                                            style={{ marginTop: 6, backgroundColor: colors.primary, borderRadius: 6, padding: 6, alignSelf: 'flex-end' }}
+                                        >
+                                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Tamamla</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                        </ViewShot>
+                        <TouchableOpacity
+                            onPress={handleSaveScreenshotWithNotesAndSend}
+                            style={{ position: 'absolute', bottom: 20, right: 20, backgroundColor: colors.primary, borderRadius: 20, padding: 10, zIndex: 100 }}
+                        >
+                            <Ionicons name="download-outline" size={28} color="#fff" />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setScreenshotModal(false)}
+                            style={{ position: 'absolute', top: 10, right: 10, backgroundColor: '#0008', borderRadius: 20, padding: 6 }}
+                        >
+                            <Ionicons name="close-circle" size={32} color="#fff" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+            <AssemblyNoteModal modal={noteModal} item={data} setModal={setNoteModal} id={id} />
         </View>
     );
 };

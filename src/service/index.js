@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE, TECHNICALDRAWING_ADDFILE, TECHNICALDRAWING_CREATE, TECHNICALDRAWING_DELETE, TECHNICALDRAWING_FAILURE_CREATE, TECHNICALDRAWING_FAILURE_DELETE, TECHNICALDRAWING_FAILURE_GET, TECHNICALDRAWING_FAILURE_GETALL, TECHNICALDRAWING_FAILURE_GETALLBYDRAWING, TECHNICALDRAWING_FAILURE_UPDATE, TECHNICALDRAWING_GET, TECHNICALDRAWING_GETALL, TECHNICALDRAWING_NOTE_CREATE, TECHNICALDRAWING_NOTE_DELETE, TECHNICALDRAWING_NOTE_GET, TECHNICALDRAWING_NOTE_GETALL, TECHNICALDRAWING_NOTE_GETALLBYDRAWING, TECHNICALDRAWING_NOTE_UPDATE, TECHNICALDRAWING_SUCCESS_CREATE, TECHNICALDRAWING_SUCCESS_DELETE, TECHNICALDRAWING_SUCCESS_GET, TECHNICALDRAWING_SUCCESS_GETALL, TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING, TECHNICALDRAWING_SUCCESS_UPDATE, TECHNICALDRAWING_UPDATE } from "../api";
+import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, ASSEMBLY_VISUAL_NOTE_CREATE, ASSEMBLY_VISUAL_NOTE_DELETE, ASSEMBLY_VISUAL_NOTE_GET, ASSEMBLY_VISUAL_NOTE_GETALL, ASSEMBLY_VISUAL_NOTE_GETALLBYDRAWING, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE, TECHNICALDRAWING_ADDFILE, TECHNICALDRAWING_CREATE, TECHNICALDRAWING_DELETE, TECHNICALDRAWING_FAILURE_CREATE, TECHNICALDRAWING_FAILURE_DELETE, TECHNICALDRAWING_FAILURE_GET, TECHNICALDRAWING_FAILURE_GETALL, TECHNICALDRAWING_FAILURE_GETALLBYDRAWING, TECHNICALDRAWING_FAILURE_UPDATE, TECHNICALDRAWING_GET, TECHNICALDRAWING_GETALL, TECHNICALDRAWING_NOTE_CREATE, TECHNICALDRAWING_NOTE_DELETE, TECHNICALDRAWING_NOTE_GET, TECHNICALDRAWING_NOTE_GETALL, TECHNICALDRAWING_NOTE_GETALLBYDRAWING, TECHNICALDRAWING_NOTE_UPDATE, TECHNICALDRAWING_SUCCESS_CREATE, TECHNICALDRAWING_SUCCESS_DELETE, TECHNICALDRAWING_SUCCESS_GET, TECHNICALDRAWING_SUCCESS_GETALL, TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING, TECHNICALDRAWING_SUCCESS_UPDATE, TECHNICALDRAWING_UPDATE, TECHNICALDRAWING_VISUAL_NOTE_CREATE, TECHNICALDRAWING_VISUAL_NOTE_DELETE, TECHNICALDRAWING_VISUAL_NOTE_GET, TECHNICALDRAWING_VISUAL_NOTE_GETALL, TECHNICALDRAWING_VISUAL_NOTE_GETALLBYDRAWING } from "../api";
 
 let token = "";
 let userId = "";
@@ -216,6 +216,30 @@ export function AssemblyNoteDeleteService(id) {
 // ASSEMBLY_NOTE_END
 
 
+// ASSEMBLY_VISUAL_NOTE
+export function AssemblyVisualNoteGetAllService() {
+    return axios.get(ASSEMBLY_VISUAL_NOTE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyVisualNoteGetAllByDrawingService(id) {
+    return axios.get(`${ASSEMBLY_VISUAL_NOTE_GETALLBYDRAWING}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyVisualNoteGetService(id) {
+    return axios.get(`${ASSEMBLY_VISUAL_NOTE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyVisualNoteCreateService(data) {
+    return axios.post(ASSEMBLY_VISUAL_NOTE_CREATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyVisualNoteDeleteService(id) {
+    return axios.delete(`${ASSEMBLY_VISUAL_NOTE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// ASSEMBLY_VISUAL_NOTE_END
+
+
 // EMPLOYEE
 export function EmployeeGetAllService() {
     return axios.get(EMPLOYEE_GETALL, header)
@@ -338,7 +362,6 @@ export function TechnicalDrawingNoteGetService(id) {
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 export function TechnicalDrawingNoteCreateService(data) {
-    console.log("TechnicalDrawingNoteCreateService", data);
     return axios.post(TECHNICALDRAWING_NOTE_CREATE, data, header)
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
@@ -351,6 +374,30 @@ export function TechnicalDrawingNoteDeleteService(id) {
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 // TECHNICALDRAWING_NOTE_END
+
+
+// TECHNICALDRAWING_VISUAL_NOTE
+export function TechnicalDrawingVisualNoteGetAllService() {
+    return axios.get(TECHNICALDRAWING_VISUAL_NOTE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingVisualNoteGetAllByDrawingService(id) {
+    return axios.get(`${TECHNICALDRAWING_VISUAL_NOTE_GETALLBYDRAWING}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingVisualNoteGetService(id) {
+    return axios.get(`${TECHNICALDRAWING_VISUAL_NOTE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingVisualNoteCreateService(data) {
+    return axios.post(TECHNICALDRAWING_VISUAL_NOTE_CREATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingVisualNoteDeleteService(id) {
+    return axios.delete(`${TECHNICALDRAWING_VISUAL_NOTE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// TECHNICALDRAWING_VISUAL_NOTE_END
 
 
 // USER

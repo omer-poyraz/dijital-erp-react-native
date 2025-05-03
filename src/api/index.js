@@ -1,4 +1,4 @@
-export const URL = 'http://192.168.1.5:5254/api'
+export const URL = 'http://192.168.222.60:5254/api'
 
 // AUTHENTICATION
 export const LOGIN = `${URL}/Authentication/Login`
@@ -36,6 +36,13 @@ export const ASSEMBLY_NOTE_GET = `${URL}/AssemblyNote/Get`;
 export const ASSEMBLY_NOTE_CREATE = `${URL}/AssemblyNote/Create`;
 export const ASSEMBLY_NOTE_UPDATE = `${URL}/AssemblyNote/Update`;
 export const ASSEMBLY_NOTE_DELETE = `${URL}/AssemblyNote/Delete`;
+
+// ASSEMBLY_VISUAL_NOTE
+export const ASSEMBLY_VISUAL_NOTE_GETALL = `${URL}/AssemblyVisualNote/GetAll`;
+export const ASSEMBLY_VISUAL_NOTE_GETALLBYDRAWING = `${URL}/AssemblyVisualNote/GetAllByDrawing`;
+export const ASSEMBLY_VISUAL_NOTE_GET = `${URL}/AssemblyVisualNote/Get`;
+export const ASSEMBLY_VISUAL_NOTE_CREATE = `${URL}/AssemblyVisualNote/Create`;
+export const ASSEMBLY_VISUAL_NOTE_DELETE = `${URL}/AssemblyVisualNote/Delete`;
 
 // EMPLOYEE
 export const EMPLOYEE_GETALL = `${URL}/Employee/GetAll`;
@@ -75,6 +82,13 @@ export const TECHNICALDRAWING_NOTE_GET = `${URL}/TechnicalDrawingNote/Get`;
 export const TECHNICALDRAWING_NOTE_CREATE = `${URL}/TechnicalDrawingNote/Create`;
 export const TECHNICALDRAWING_NOTE_UPDATE = `${URL}/TechnicalDrawingNote/Update`;
 export const TECHNICALDRAWING_NOTE_DELETE = `${URL}/TechnicalDrawingNote/Delete`;
+
+// TECHNICAL_DRAWING_VISUAL_NOTE
+export const TECHNICALDRAWING_VISUAL_NOTE_GETALL = `${URL}/TechnicalDrawingVisualNote/GetAll`;
+export const TECHNICALDRAWING_VISUAL_NOTE_GETALLBYDRAWING = `${URL}/TechnicalDrawingVisualNote/GetAllByDrawing`;
+export const TECHNICALDRAWING_VISUAL_NOTE_GET = `${URL}/TechnicalDrawingVisualNote/Get`;
+export const TECHNICALDRAWING_VISUAL_NOTE_CREATE = `${URL}/TechnicalDrawingVisualNote/Create`;
+export const TECHNICALDRAWING_VISUAL_NOTE_DELETE = `${URL}/TechnicalDrawingVisualNote/Delete`;
 
 // USER
 export const RESET_PASSWORD_SERVICE = `${URL}/User/ResetPassword`;
