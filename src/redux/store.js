@@ -68,6 +68,11 @@ import technicalDrawingVisualNoteGetAllByDrawingReducer from './slices/technical
 import technicalDrawingVisualNoteDeleteReducer from './slices/technicalDrawingVisualNoteDeleteSlice'
 import technicalDrawingNoteUpdateReducer from './slices/technicalDrawingNoteUpdateSlice'
 import technicalDrawingNoteDeleteReducer from './slices/technicalDrawingNoteDeleteSlice'
+import departmentGetAllReducer from './slices/departmentGetAllSlice'
+import departmentGetReducer from './slices/departmentGetSlice'
+import departmentCreateReducer from './slices/departmentCreateSlice'
+import departmentUpdateReducer from './slices/departmentUpdateSlice'
+import departmentDeleteReducer from './slices/departmentDeleteSlice'
 
 export const store = configureStore({
     reducer: {
@@ -101,6 +106,11 @@ export const store = configureStore({
         assemblySuccessUpdate: assemblySuccessUpdateReducer,
         assemblySuccessDelete: assemblySuccessDeleteReducer,
         auth: authReducer,
+        departmentGetAll: departmentGetAllReducer,
+        departmentGet: departmentGetReducer,
+        departmentCreate: departmentCreateReducer,
+        departmentUpdate: departmentUpdateReducer,
+        departmentDelete: departmentDeleteReducer,
         employeeGetAll: employeeGetAllReducer,
         employeeGet: employeeGetReducer,
         employeeCreate: employeeCreateReducer,

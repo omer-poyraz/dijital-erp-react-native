@@ -44,6 +44,13 @@ export const ASSEMBLY_VISUAL_NOTE_GET = `${URL}/AssemblyVisualNote/Get`;
 export const ASSEMBLY_VISUAL_NOTE_CREATE = `${URL}/AssemblyVisualNote/Create`;
 export const ASSEMBLY_VISUAL_NOTE_DELETE = `${URL}/AssemblyVisualNote/Delete`;
 
+// DEPARTMENT
+export const DEPARTMENT_GETALL = `${URL}/Department/GetAll`;
+export const DEPARTMENT_GET = `${URL}/Department/Get`;
+export const DEPARTMENT_CREATE = `${URL}/Department/Create`;
+export const DEPARTMENT_UPDATE = `${URL}/Department/Update`;
+export const DEPARTMENT_DELETE = `${URL}/Department/Delete`;
+
 // EMPLOYEE
 export const EMPLOYEE_GETALL = `${URL}/Employee/GetAll`;
 export const EMPLOYEE_GET = `${URL}/Employee/Get`;
