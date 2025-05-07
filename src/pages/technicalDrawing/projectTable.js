@@ -90,10 +90,10 @@ const ProjectTable = () => {
                 item.projectName.toLowerCase().includes(searchLower) ||
                 item.partCode.toLowerCase().includes(searchLower) ||
                 item.serialNumber.toLowerCase().includes(searchLower) ||
-                item.responible?.name.toLowerCase().includes(searchLower) ||
-                item.responible?.surname.toLowerCase().includes(searchLower) ||
-                item.personInCharge?.name.toLowerCase().includes(searchLower) ||
-                item.personInCharge?.surname.toLowerCase().includes(searchLower) ||
+                item.responible?.firstName.toLowerCase().includes(searchLower) ||
+                item.responible?.lastName.toLowerCase().includes(searchLower) ||
+                item.personInCharge?.firstName.toLowerCase().includes(searchLower) ||
+                item.personInCharge?.lastName.toLowerCase().includes(searchLower) ||
                 item.description.toLowerCase().includes(searchLower)
             );
         }
@@ -253,7 +253,7 @@ const ProjectTable = () => {
                                             <DataTable.Cell style={styles.tableCell1}>
                                                 <View style={styles.avatarContainer}>
                                                     <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item?.personInCharge?.file}` }} />
-                                                    <Text style={styles.cellText}>{item?.personInCharge?.name} {item?.personInCharge?.surname}</Text>
+                                                    <Text style={styles.cellText}>{item?.personInCharge?.firstName} {item?.personInCharge?.lastName}</Text>
                                                 </View>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={styles.tableCell2}><Text style={styles.cellText}>{item?.projectName}</Text></DataTable.Cell>
@@ -261,7 +261,7 @@ const ProjectTable = () => {
                                             <DataTable.Cell style={styles.tableCell4}>
                                                 <View style={styles.avatarContainer}>
                                                     <Avatar.Image size={40} style={styles.avatar} source={{ uri: `${URL}${item?.responible?.file}` }} />
-                                                    <Text style={styles.cellText}>{item?.responible?.name} {item?.responible?.surname}</Text>
+                                                    <Text style={styles.cellText}>{item?.responible?.firstName} {item?.responible?.lastName}</Text>
                                                 </View>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={styles.tableCell5}><Text style={styles.cellText}>{item.serialNumber}</Text></DataTable.Cell>
@@ -319,7 +319,7 @@ const ProjectTable = () => {
                     <Card style={[styles.card, styles.subCard]}>
                         <Card.Title
                             title="Başarılı Durumlar Listesi"
-                            subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
+                            subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.firstName} ${selectedProject.responible?.lastName}`}
                             titleStyle={styles.cardTitle}
                             subtitleStyle={styles.cardSubtitle}
                         />
@@ -338,7 +338,7 @@ const ProjectTable = () => {
 
                                     {selectedProject?.basariliDurumlar.slice(from2, to2).map((item) => (
                                         <DataTable.Row key={item.id} style={styles.table2Row} onPress={() => handleSuccessRowPress(item)}>
-                                            <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.operator ? item.operator?.name : item.user?.firstName} {item.operator ? item.operator?.surname : item.user?.lastName}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table2Cell1}><Text style={styles.cellText}>{item.operator ? item.operator?.firstName : item.user?.firstName} {item.operator ? item.operator?.lastName : item.user?.lastName}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell2}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table2Cell4}><StatusTag durum={Boolean(item.status)} /></DataTable.Cell>
@@ -369,7 +369,7 @@ const ProjectTable = () => {
                     <Card style={[styles.card, styles.subCard]}>
                         <Card.Title
                             title="Uygunsuzluk Tespit Listesi"
-                            subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.name} ${selectedProject.responible?.surname}`}
+                            subtitle={`${selectedProject.projectName} - ${selectedProject.responible?.firstName} ${selectedProject.responible?.lastName}`}
                             titleStyle={styles.cardTitle}
                             subtitleStyle={styles.cardSubtitle}
                         />
@@ -389,7 +389,7 @@ const ProjectTable = () => {
                                     {selectedProject?.basarisizDurumlar.slice(from3, to3).map((item) => (
                                         <DataTable.Row key={item.id} style={styles.table3Row} onPress={() => handleFailureRowPress(item)}>
                                             {/* <DataTable.Cell style={styles.table3Cell1}><Text style={styles.cellText}>{item.inappropriateness}</Text></DataTable.Cell> */}
-                                            <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.operator ? item.operator?.name : item.user?.firstName} {item.operator ? item.operator?.surname : item.user?.lastName}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell2}><Text style={styles.cellText}>{item.operator ? item.operator?.firstName : item.user?.firstName} {item.operator ? item.operator?.lastName : item.user?.lastName}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={Boolean(item.status)} /></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.productionQuantity}</Text></DataTable.Cell>

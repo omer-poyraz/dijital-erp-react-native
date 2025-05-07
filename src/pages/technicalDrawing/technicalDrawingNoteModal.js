@@ -39,7 +39,7 @@ const TechnicalDrawingNoteModal = ({ item, modal, setModal }) => {
     const handleSaveNote = async () => {
         await dispatch(fetchTechnicalDrawingNoteCreate({ formData: formData, manualId: item.id }));
         await dispatch(fetchTechnicalDrawingGet({ id: item.id }));
-        setFormData({ note: "", description: "", status: true, })
+        setFormData({ partCode: "", description: "", status: true, })
         getData();
         setTab(true);
         setNoteText('');

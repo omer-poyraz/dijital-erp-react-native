@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, ASSEMBLY_VISUAL_NOTE_CREATE, ASSEMBLY_VISUAL_NOTE_DELETE, ASSEMBLY_VISUAL_NOTE_GET, ASSEMBLY_VISUAL_NOTE_GETALL, ASSEMBLY_VISUAL_NOTE_GETALLBYDRAWING, DEPARTMENT_CREATE, DEPARTMENT_DELETE, DEPARTMENT_GET, DEPARTMENT_GETALL, DEPARTMENT_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, RESET_PASSWORD_SERVICE, TECHNICALDRAWING_ADDFILE, TECHNICALDRAWING_CREATE, TECHNICALDRAWING_DELETE, TECHNICALDRAWING_FAILURE_CREATE, TECHNICALDRAWING_FAILURE_DELETE, TECHNICALDRAWING_FAILURE_GET, TECHNICALDRAWING_FAILURE_GETALL, TECHNICALDRAWING_FAILURE_GETALLBYDRAWING, TECHNICALDRAWING_FAILURE_UPDATE, TECHNICALDRAWING_GET, TECHNICALDRAWING_GETALL, TECHNICALDRAWING_NOTE_CREATE, TECHNICALDRAWING_NOTE_DELETE, TECHNICALDRAWING_NOTE_GET, TECHNICALDRAWING_NOTE_GETALL, TECHNICALDRAWING_NOTE_GETALLBYDRAWING, TECHNICALDRAWING_NOTE_UPDATE, TECHNICALDRAWING_SUCCESS_CREATE, TECHNICALDRAWING_SUCCESS_DELETE, TECHNICALDRAWING_SUCCESS_GET, TECHNICALDRAWING_SUCCESS_GETALL, TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING, TECHNICALDRAWING_SUCCESS_UPDATE, TECHNICALDRAWING_UPDATE, TECHNICALDRAWING_VISUAL_NOTE_CREATE, TECHNICALDRAWING_VISUAL_NOTE_DELETE, TECHNICALDRAWING_VISUAL_NOTE_GET, TECHNICALDRAWING_VISUAL_NOTE_GETALL, TECHNICALDRAWING_VISUAL_NOTE_GETALLBYDRAWING } from "../api";
+import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_QUALITY_CREATE, ASSEMBLY_QUALITY_DELETE, ASSEMBLY_QUALITY_GET, ASSEMBLY_QUALITY_GETALL, ASSEMBLY_QUALITY_GETALLBYFAILURE, ASSEMBLY_QUALITY_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, ASSEMBLY_VISUAL_NOTE_CREATE, ASSEMBLY_VISUAL_NOTE_DELETE, ASSEMBLY_VISUAL_NOTE_GET, ASSEMBLY_VISUAL_NOTE_GETALL, ASSEMBLY_VISUAL_NOTE_GETALLBYDRAWING, DEPARTMENT_CREATE, DEPARTMENT_DELETE, DEPARTMENT_GET, DEPARTMENT_GETALL, DEPARTMENT_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, REGISTER, RESET_PASSWORD_SERVICE, TECHNICALDRAWING_ADDFILE, TECHNICALDRAWING_CREATE, TECHNICALDRAWING_DELETE, TECHNICALDRAWING_FAILURE_CREATE, TECHNICALDRAWING_FAILURE_DELETE, TECHNICALDRAWING_FAILURE_GET, TECHNICALDRAWING_FAILURE_GETALL, TECHNICALDRAWING_FAILURE_GETALLBYDRAWING, TECHNICALDRAWING_FAILURE_UPDATE, TECHNICALDRAWING_GET, TECHNICALDRAWING_GETALL, TECHNICALDRAWING_NOTE_CREATE, TECHNICALDRAWING_NOTE_DELETE, TECHNICALDRAWING_NOTE_GET, TECHNICALDRAWING_NOTE_GETALL, TECHNICALDRAWING_NOTE_GETALLBYDRAWING, TECHNICALDRAWING_NOTE_UPDATE, TECHNICALDRAWING_QUALITY_CREATE, TECHNICALDRAWING_QUALITY_DELETE, TECHNICALDRAWING_QUALITY_GET, TECHNICALDRAWING_QUALITY_GETALL, TECHNICALDRAWING_QUALITY_GETALLBYFAILURE, TECHNICALDRAWING_QUALITY_UPDATE, TECHNICALDRAWING_SUCCESS_CREATE, TECHNICALDRAWING_SUCCESS_DELETE, TECHNICALDRAWING_SUCCESS_GET, TECHNICALDRAWING_SUCCESS_GETALL, TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING, TECHNICALDRAWING_SUCCESS_UPDATE, TECHNICALDRAWING_UPDATE, TECHNICALDRAWING_VISUAL_NOTE_CREATE, TECHNICALDRAWING_VISUAL_NOTE_DELETE, TECHNICALDRAWING_VISUAL_NOTE_GET, TECHNICALDRAWING_VISUAL_NOTE_GETALL, TECHNICALDRAWING_VISUAL_NOTE_GETALLBYDRAWING, USER_DELETE, USER_GET, USER_GETALL, USER_UPDATE } from "../api";
 
 let token = "";
 let userId = "";
@@ -240,6 +240,34 @@ export function AssemblyVisualNoteDeleteService(id) {
 // ASSEMBLY_VISUAL_NOTE_END
 
 
+// ASSEMBLY_QUALITY
+export function AssemblyQualityGetAllService() {
+    return axios.get(ASSEMBLY_QUALITY_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyQualityGetAllByFailureService(id) {
+    return axios.get(`${ASSEMBLY_QUALITY_GETALLBYFAILURE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyQualityGetService(id) {
+    return axios.get(`${ASSEMBLY_QUALITY_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyQualityCreateService(data) {
+    return axios.post(ASSEMBLY_QUALITY_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyQualityUpdateService(data) {
+    return axios.put(ASSEMBLY_QUALITY_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function AssemblyQualityDeleteService(id) {
+    return axios.delete(`${ASSEMBLY_QUALITY_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// ASSEMBLY_QUALITY_END
+
+
 // DEPARTMENT
 export function DepartmentGetAllService() {
     return axios.get(DEPARTMENT_GETALL, header)
@@ -424,9 +452,62 @@ export function TechnicalDrawingVisualNoteDeleteService(id) {
 // TECHNICALDRAWING_VISUAL_NOTE_END
 
 
+// TECHNICALDRAWING_QUALITY
+export function TechnicalDrawingQualityGetAllService() {
+    return axios.get(TECHNICALDRAWING_QUALITY_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingQualityGetAllByFailureService(id) {
+    return axios.get(`${TECHNICALDRAWING_QUALITY_GETALLBYFAILURE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingQualityGetService(id) {
+    return axios.get(`${TECHNICALDRAWING_QUALITY_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingQualityCreateService(data) {
+    return axios.post(TECHNICALDRAWING_QUALITY_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingQualityUpdateService(data) {
+    return axios.put(TECHNICALDRAWING_QUALITY_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function TechnicalDrawingQualityDeleteService(id) {
+    return axios.delete(`${TECHNICALDRAWING_QUALITY_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// TECHNICALDRAWING_QUALITY_END
+
+
 // USER
 export function ResetPassordService(mail) {
     return axios.get(RESET_PASSWORD_SERVICE, { "mail": mail }, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+
+export function UserCreate(data) {
+    return axios.post(REGISTER, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+
+export function UserUpdate(data) {
+    return axios.put(USER_UPDATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+
+export function UserDelete(id) {
+    return axios.delete(`${USER_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+
+export function UserGetAll(search, pageNumber, pageSize) {
+    return axios.get(`${USER_GETALL}?searchTerm=${search}&pageNumber=${pageNumber}&pageSize=${pageSize}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+
+export function UserGet(id) {
+    return axios.get(`${USER_GET}/${id}`, header)
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 // USER_END

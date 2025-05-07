@@ -44,6 +44,14 @@ export const ASSEMBLY_VISUAL_NOTE_GET = `${URL}/AssemblyVisualNote/Get`;
 export const ASSEMBLY_VISUAL_NOTE_CREATE = `${URL}/AssemblyVisualNote/Create`;
 export const ASSEMBLY_VISUAL_NOTE_DELETE = `${URL}/AssemblyVisualNote/Delete`;
 
+// ASSEMBLY_QUALITY
+export const ASSEMBLY_QUALITY_GETALL = `${URL}/AssemblyQuality/GetAll`;
+export const ASSEMBLY_QUALITY_GETALLBYFAILURE = `${URL}/AssemblyQuality/GetAllByFailure`;
+export const ASSEMBLY_QUALITY_GET = `${URL}/AssemblyQuality/Get`;
+export const ASSEMBLY_QUALITY_CREATE = `${URL}/AssemblyQuality/Create`;
+export const ASSEMBLY_QUALITY_UPDATE = `${URL}/AssemblyQuality/Update`;
+export const ASSEMBLY_QUALITY_DELETE = `${URL}/AssemblyQuality/Delete`;
+
 // DEPARTMENT
 export const DEPARTMENT_GETALL = `${URL}/Department/GetAll`;
 export const DEPARTMENT_GET = `${URL}/Department/Get`;
@@ -97,5 +105,17 @@ export const TECHNICALDRAWING_VISUAL_NOTE_GET = `${URL}/TechnicalDrawingVisualNo
 export const TECHNICALDRAWING_VISUAL_NOTE_CREATE = `${URL}/TechnicalDrawingVisualNote/Create`;
 export const TECHNICALDRAWING_VISUAL_NOTE_DELETE = `${URL}/TechnicalDrawingVisualNote/Delete`;
 
+// TECHNICALDRAWING_QUALITY
+export const TECHNICALDRAWING_QUALITY_GETALL = `${URL}/TechnicalDrawingQuality/GetAll`;
+export const TECHNICALDRAWING_QUALITY_GETALLBYFAILURE = `${URL}/TechnicalDrawingQuality/GetAllByFailure`;
+export const TECHNICALDRAWING_QUALITY_GET = `${URL}/TechnicalDrawingQuality/Get`;
+export const TECHNICALDRAWING_QUALITY_CREATE = `${URL}/TechnicalDrawingQuality/Create`;
+export const TECHNICALDRAWING_QUALITY_UPDATE = `${URL}/TechnicalDrawingQuality/Update`;
+export const TECHNICALDRAWING_QUALITY_DELETE = `${URL}/TechnicalDrawingQuality/Delete`;
+
 // USER
 export const RESET_PASSWORD_SERVICE = `${URL}/User/ResetPassword`;
+export const USER_UPDATE = `${URL}/User/Update`;
+export const USER_DELETE = `${URL}/User/Delete`;
+export const USER_GETALL = `${URL}/User/GetAll`;
+export const USER_GET = `${URL}/User/Get`;

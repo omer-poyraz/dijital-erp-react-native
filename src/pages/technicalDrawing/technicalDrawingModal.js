@@ -172,14 +172,14 @@ const TechnicalDrawingDetailPage = ({ route }) => {
                                         <Text style={styles.infoLabel}>{t('operator')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="person" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{`${data?.responible?.name} ${data?.responible?.surname}` || '-'}</Text>
+                                            <Text style={styles.infoValue}>{`${data?.responible?.firstName} ${data?.responible?.lastName}` || '-'}</Text>
                                         </View>
                                     </View>
                                     <View style={styles.infoItem}>
                                         <Text style={styles.infoLabel}>{t('responsible')}</Text>
                                         <View style={styles.infoValueContainer}>
                                             <Ionicons name="people" size={16} color={colors.primary} />
-                                            <Text style={styles.infoValue}>{`${data?.personInCharge?.name} ${data?.personInCharge?.surname}` || '-'}</Text>
+                                            <Text style={styles.infoValue}>{`${data?.personInCharge?.firstName} ${data?.personInCharge?.lastName}` || '-'}</Text>
                                         </View>
                                     </View>
                                 </View>

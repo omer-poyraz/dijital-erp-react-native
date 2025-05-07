@@ -73,6 +73,23 @@ import departmentGetReducer from './slices/departmentGetSlice'
 import departmentCreateReducer from './slices/departmentCreateSlice'
 import departmentUpdateReducer from './slices/departmentUpdateSlice'
 import departmentDeleteReducer from './slices/departmentDeleteSlice'
+import assemblyQualityGetAllByFailureReducer from './slices/assemblyQualityGetAllByFailureSlice'
+import assemblyQualityGetAllReducer from './slices/assemblyQualityGetAllSlice'
+import assemblyQualityDeleteReducer from './slices/assemblyQualityDeleteSlice'
+import assemblyQualityGetReducer from './slices/assemblyQualityGetSlice'
+import assemblyQualityCreateReducer from './slices/assemblyQualityCreateSlice'
+import assemblyQualityUpdateReducer from './slices/assemblyQualityUpdateSlice'
+import technicalDrawingQualityGetAllByFailureReducer from './slices/technicalDrawingQualityGetAllByFailureSlice'
+import technicalDrawingQualityGetAllReducer from './slices/technicalDrawingQualityGetAllSlice'
+import technicalDrawingQualityDeleteReducer from './slices/technicalDrawingQualityDeleteSlice'
+import technicalDrawingQualityGetReducer from './slices/technicalDrawingQualityGetSlice'
+import technicalDrawingQualityCreateReducer from './slices/technicalDrawingQualityCreateSlice'
+import technicalDrawingQualityUpdateReducer from './slices/technicalDrawingQualityUpdateSlice'
+import userGetAllReducer from './slices/userGetAllSlice'
+import userGetReducer from './slices/userGetSlice'
+import userCreateReducer from './slices/userCreateSlice'
+import userUpdateReducer from './slices/userUpdateSlice'
+import userDeleteReducer from './slices/userDeleteSlice'
 
 export const store = configureStore({
     reducer: {
@@ -105,6 +122,12 @@ export const store = configureStore({
         assemblySuccessCreate: assemblySuccessCreateReducer,
         assemblySuccessUpdate: assemblySuccessUpdateReducer,
         assemblySuccessDelete: assemblySuccessDeleteReducer,
+        assemblyQualityGetAllByFailure: assemblyQualityGetAllByFailureReducer,
+        assemblyQualityGetAll: assemblyQualityGetAllReducer,
+        assemblyQualityGet: assemblyQualityGetReducer,
+        assemblyQualityCreate: assemblyQualityCreateReducer,
+        assemblyQualityUpdate: assemblyQualityUpdateReducer,
+        assemblyQualityDelete: assemblyQualityDeleteReducer,
         auth: authReducer,
         departmentGetAll: departmentGetAllReducer,
         departmentGet: departmentGetReducer,
@@ -150,6 +173,17 @@ export const store = configureStore({
         technicalDrawingSuccessCreate: technicalDrawingSuccessCreateReducer,
         technicalDrawingSuccessUpdate: technicalDrawingSuccessUpdateReducer,
         technicalDrawingSuccessDelete: technicalDrawingSuccessDeleteReducer,
+        technicalDrawingQualityGetAllByFailure: technicalDrawingQualityGetAllByFailureReducer,
+        technicalDrawingQualityGetAll: technicalDrawingQualityGetAllReducer,
+        technicalDrawingQualityGet: technicalDrawingQualityGetReducer,
+        technicalDrawingQualityCreate: technicalDrawingQualityCreateReducer,
+        technicalDrawingQualityUpdate: technicalDrawingQualityUpdateReducer,
+        technicalDrawingQualityDelete: technicalDrawingQualityDeleteReducer,
+        userGetAll: userGetAllReducer,
+        userGet: userGetReducer,
+        userCreate: userCreateReducer,
+        userUpdate: userUpdateReducer,
+        userDelete: userDeleteReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

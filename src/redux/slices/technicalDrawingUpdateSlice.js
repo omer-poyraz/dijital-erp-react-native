@@ -18,6 +18,7 @@ export const fetchTechnicalDrawingUpdate = createAsyncThunk(
         data.append("PartCode", formData.partCode)
         data.append("ResponibleID", formData.responibleID)
         data.append("PersonInChargeID", formData.personInChargeID)
+        data.append("QualityOfficerID", formData.qualityOfficerID)
         data.append("SerialNumber", formData.serialNumber)
         data.append("ProductionQuantity", formData.productionQuantity)
         data.append("Time", formData.time)

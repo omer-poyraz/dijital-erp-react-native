@@ -17,6 +17,7 @@ export const fetchAssemblyManualUpdate = createAsyncThunk(
         data.append("PartCode", formData.partCode)
         data.append("Responible", formData.responible)
         data.append("PersonInCharge", formData.personInCharge)
+        data.append("QualityOfficerID", formData.qualityOfficerID)
         data.append("SerialNumber", formData.serialNumber)
         data.append("ProductionQuantity", formData.productionQuantity)
         data.append("Time", formData.time)

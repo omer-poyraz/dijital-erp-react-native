@@ -1,13 +1,16 @@
 import { Ionicons } from '@expo/vector-icons'
-import React, { useEffect } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, Modal, FlatList, Alert } from 'react-native'
 import { colors } from '../../utilities/colors'
-import { Card, Divider, List } from 'react-native-paper'
+import { Card, Divider, List, TextInput, Button } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
 import StatusTag from './statusTag'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchTechnicalDrawingFailureGet } from '../../redux/slices/technicalDrawingFailureGetSlice'
 import { useNavigation } from '@react-navigation/native'
+import { fetchTechnicalDrawingQualityGetAllByFailure } from '../../redux/slices/technicalDrawingQualityGetAllByFailureSlice'
+import { fetchTechnicalDrawingQualityCreate } from '../../redux/slices/technicalDrawingQualityCreateSlice'
+import { fetchTechnicalDrawingQualityDelete } from '../../redux/slices/technicalDrawingQualityDeleteSlice'
 
 const TechnicalDrawingFailureDetailPage = ({ route }) => {
     const { id } = route.params;
@@ -15,12 +18,26 @@ const TechnicalDrawingFailureDetailPage = ({ route }) => {
     const data = useSelector(state => state.technicalDrawingFailureGet.data);
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    const [qualityModal, setQualityModal] = useState(false);
+    const [desc, setDesc] = useState('');
+    const [note, setNote] = useState('');
+    const [loading, setLoading] = useState(false);
+    const qualityList = useSelector(state => state.technicalDrawingQualityGetAllByFailure.data);
+    const qualityStatus = useSelector(state => state.technicalDrawingQualityGetAllByFailure.status);
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
         return date.toLocaleDateString('tr-TR');
     };
+
+    const getQualityList = async () => {
+        await dispatch(fetchTechnicalDrawingQualityGetAllByFailure({ id }));
+    };
+
+    useEffect(() => {
+        if (qualityModal) getQualityList();
+    }, [qualityModal]);
 
     const getData = async () => {
         await dispatch(fetchTechnicalDrawingFailureGet({ id: id }));
@@ -35,6 +52,9 @@ const TechnicalDrawingFailureDetailPage = ({ route }) => {
             headerRight: () => {
                 return (
                     <View style={styles.headerRight}>
+                        <TouchableOpacity onPress={() => setQualityModal(true)} style={styles.closeBtn}>
+                            <Ionicons name='glasses-outline' size={28} style={styles.close} />
+                        </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
                             <Ionicons name='chevron-back-outline' size={28} style={styles.close} />
                         </TouchableOpacity>
@@ -43,6 +63,62 @@ const TechnicalDrawingFailureDetailPage = ({ route }) => {
             }
         })
     }, [id, data, navigation])
+
+    const handleAddQuality = async () => {
+        if (!desc.trim() && !note.trim()) {
+            Alert.alert(t('error'), t('please_fill_fields'));
+            return;
+        }
+        setLoading(true);
+        await dispatch(fetchTechnicalDrawingQualityCreate({
+            formData: {
+                description: desc,
+                note: note,
+                technicalDrawingFailureStateID: id
+            }
+        }));
+        setDesc('');
+        setNote('');
+        await getQualityList();
+        setLoading(false);
+    };
+
+    const handleDeleteQuality = async (qualityId) => {
+        Alert.alert(
+            t('delete'),
+            t('are_you_sure'),
+            [
+                { text: t('cancel'), style: 'cancel' },
+                {
+                    text: t('delete'),
+                    style: 'destructive',
+                    onPress: async () => {
+                        setLoading(true);
+                        await dispatch(fetchTechnicalDrawingQualityDelete({ id: qualityId }));
+                        await getQualityList();
+                        setLoading(false);
+                    }
+                }
+            ]
+        );
+    };
+
+    const renderQualityItem = ({ item }) => (
+        <Card style={styles.qualityCard} elevation={2}>
+            <Card.Content>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.qualityDesc}>{item.description}</Text>
+                        <Text style={styles.qualityNote}>{item.note}</Text>
+                        <Text style={styles.qualityDate}>{item.createdAt}</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => handleDeleteQuality(item.id)} style={styles.deleteBtn}>
+                        <Ionicons name="trash-outline" size={22} color={colors.error} />
+                    </TouchableOpacity>
+                </View>
+            </Card.Content>
+        </Card>
+    );
 
     return (
         <View style={styles.page}>
@@ -76,7 +152,7 @@ const TechnicalDrawingFailureDetailPage = ({ route }) => {
                                         title={t('operator')}
                                         description={
                                             data?.operator
-                                                ? `${data.operator.name || ''} ${data.operator.surname || ''}`.trim()
+                                                ? `${data.operator.firstName || ''} ${data.operator.lastName || ''}`.trim()
                                                 : data?.user
                                                     ? `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim()
                                                     : '-'
@@ -184,6 +260,64 @@ const TechnicalDrawingFailureDetailPage = ({ route }) => {
                     </ScrollView>
                 </View>
             </View>
+
+            <Modal
+                visible={qualityModal}
+                animationType="slide"
+                transparent
+                onRequestClose={() => setQualityModal(false)}
+            >
+                <View style={styles.qualityModalOverlay}>
+                    <View style={styles.qualityModal}>
+                        <View style={styles.qualityModalHeader}>
+                            <Text style={styles.qualityModalTitle}>{t('quality_explanations')}</Text>
+                            <TouchableOpacity onPress={() => setQualityModal(false)}>
+                                <Ionicons name="close" size={28} color={colors.primary} />
+                            </TouchableOpacity>
+                        </View>
+                        <Divider style={{ marginBottom: 8 }} />
+                        <FlatList
+                            data={qualityList || []}
+                            renderItem={renderQualityItem}
+                            keyExtractor={item => item.id?.toString()}
+                            ListEmptyComponent={
+                                <View style={{ alignItems: 'center', marginVertical: 24 }}>
+                                    <Ionicons name="information-circle-outline" size={48} color="#ccc" />
+                                    <Text style={{ color: '#888', marginTop: 8 }}>{t('no_quality_explanation')}</Text>
+                                </View>
+                            }
+                            style={{ flexGrow: 0, maxHeight: 220 }}
+                        />
+                        <Divider style={{ marginVertical: 8 }} />
+                        <TextInput
+                            label={t('quality_description')}
+                            value={desc}
+                            onChangeText={setDesc}
+                            mode="outlined"
+                            style={{ marginBottom: 8 }}
+                            multiline
+                        />
+                        <TextInput
+                            label={t('quality_note')}
+                            value={note}
+                            onChangeText={setNote}
+                            mode="outlined"
+                            style={{ marginBottom: 8 }}
+                            multiline
+                        />
+                        <Button
+                            mode="contained"
+                            onPress={handleAddQuality}
+                            loading={loading}
+                            disabled={loading}
+                            style={{ marginTop: 8, borderRadius: 8 }}
+                            buttonColor={colors.primary}
+                        >
+                            {t('add')}
+                        </Button>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -195,7 +329,7 @@ const styles = StyleSheet.create({
     headerContent: { flex: 1, flexDirection: 'row', alignItems: 'center', },
     modalTitle: { color: '#000', fontSize: 18, fontWeight: 'bold', flex: 1, },
     statusBadge: { backgroundColor: 'rgba(255,255,255,0.3)', color: '#000', },
-    closeBtn: { marginRight: 20, marginTop: 10 },
+    closeBtn: { marginRight: 30, marginTop: 10 },
     close: { color: '#fff', },
     modalContent: { flex: 1, backgroundColor: '#f9f9f9', },
     contentScroll: { flex: 1, padding: 12, },
@@ -206,6 +340,7 @@ const styles = StyleSheet.create({
     headerStatusContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', },
     dateText: { fontSize: 12, color: '#888', },
     divider: { height: 1, backgroundColor: '#e0e0e0', marginVertical: 16, },
+    headerRight: { display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row' },
     itemDivider: { height: 1, backgroundColor: '#f0f0f0', },
     listTitle: { fontSize: 12, color: '#888', },
     listDescription: { fontSize: 16, color: '#333', },
@@ -230,6 +365,15 @@ const styles = StyleSheet.create({
     timelineText: { fontSize: 14, color: '#555', },
     buttonsContainer: { flexDirection: 'row', marginTop: 8, marginBottom: 20, justifyContent: 'space-between', },
     actionButton: { flex: 1, marginHorizontal: 4, },
+    qualityModalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
+    qualityModal: { width: '90%', maxWidth: 500, backgroundColor: '#fff', borderRadius: 14, padding: 18, elevation: 8 },
+    qualityModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    qualityModalTitle: { fontSize: 18, fontWeight: 'bold', color: colors.primary },
+    qualityCard: { marginBottom: 10, borderRadius: 8, backgroundColor: '#f8f8f8' },
+    qualityDesc: { fontSize: 15, fontWeight: 'bold', color: colors.primaryDark },
+    qualityNote: { fontSize: 14, color: '#444', marginTop: 2 },
+    qualityDate: { fontSize: 12, color: '#888', marginTop: 2 },
+    deleteBtn: { padding: 8 },
 });
 
 export default TechnicalDrawingFailureDetailPage;

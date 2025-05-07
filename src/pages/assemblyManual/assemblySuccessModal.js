@@ -80,7 +80,7 @@ const AssemblySuccessDetailPage = ({ route }) => {
                                         title={t('technician')}
                                         description={
                                             data?.technician
-                                                ? `${data.technician.name || ''} ${data.technician.surname || ''}`.trim()
+                                                ? `${data.technician.firstName || ''} ${data.technician.lastName || ''}`.trim()
                                                 : data?.user
                                                     ? `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim()
                                                     : '-'

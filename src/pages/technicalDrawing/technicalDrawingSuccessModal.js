@@ -80,7 +80,7 @@ const TechnicalDrawingSuccessDetailPage = ({ route }) => {
                                         title={t('operator')}
                                         description={
                                             data?.operator
-                                                ? `${data.operator.name || ''} ${data.operator.surname || ''}`.trim()
+                                                ? `${data.operator.firstName || ''} ${data.operator.lastName || ''}`.trim()
                                                 : data?.user
                                                     ? `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim()
                                                     : '-'
