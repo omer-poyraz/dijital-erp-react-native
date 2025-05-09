@@ -52,9 +52,6 @@ const TechnicalDrawingFailureDetailPage = ({ route }) => {
             headerRight: () => {
                 return (
                     <View style={styles.headerRight}>
-                        <TouchableOpacity onPress={() => setQualityModal(true)} style={styles.closeBtn}>
-                            <Ionicons name='glasses-outline' size={28} style={styles.close} />
-                        </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
                             <Ionicons name='chevron-back-outline' size={28} style={styles.close} />
                         </TouchableOpacity>

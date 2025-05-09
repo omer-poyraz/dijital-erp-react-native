@@ -13,12 +13,13 @@ export const ASSEMBLY_MANUAL_UPDATE = `${URL}/AssemblyManuel/Update`;
 export const ASSEMBLY_MANUAL_ADDFILE = `${URL}/AssemblyManuel/AddFile`;
 export const ASSEMBLY_MANUAL_DELETE = `${URL}/AssemblyManuel/Delete`;
 
-// ASSEMBLY_MANUAL
+// ASSEMBLY_FAILURE
 export const ASSEMBLY_FAILURE_GETALL = `${URL}/AssemblyFailureState/GetAll`;
 export const ASSEMBLY_FAILURE_GETALLBYMANUAL = `${URL}/AssemblyFailureState/GetAllByManual`;
 export const ASSEMBLY_FAILURE_GET = `${URL}/AssemblyFailureState/Get`;
 export const ASSEMBLY_FAILURE_CREATE = `${URL}/AssemblyFailureState/Create`;
 export const ASSEMBLY_FAILURE_UPDATE = `${URL}/AssemblyFailureState/Update`;
+export const ASSEMBLY_FAILURE_DESCRIPTION = `${URL}/AssemblyFailureState/QualityDescription`;
 export const ASSEMBLY_FAILURE_DELETE = `${URL}/AssemblyFailureState/Delete`;
 
 // ASSEMBLY_SUCCESS
@@ -80,6 +81,7 @@ export const TECHNICALDRAWING_FAILURE_GETALLBYDRAWING = `${URL}/TechnicalDrawing
 export const TECHNICALDRAWING_FAILURE_GET = `${URL}/TechnicalDrawingFailureState/Get`;
 export const TECHNICALDRAWING_FAILURE_CREATE = `${URL}/TechnicalDrawingFailureState/Create`;
 export const TECHNICALDRAWING_FAILURE_UPDATE = `${URL}/TechnicalDrawingFailureState/Update`;
+export const TECHNICALDRAWING_FAILURE_DESCRIPTION = `${URL}/TechnicalDrawingFailureState/QualityDescription`;
 export const TECHNICALDRAWING_FAILURE_DELETE = `${URL}/TechnicalDrawingFailureState/Delete`;
 
 // TECHNICAL_DRAWING_SUCCESS

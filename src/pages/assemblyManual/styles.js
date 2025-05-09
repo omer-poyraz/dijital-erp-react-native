@@ -101,5 +101,11 @@ export const styles = StyleSheet.create({
     uploadingText: { marginTop: 10, fontSize: 16, color: colors.primary, },
     noteModalBtn: { borderColor: colors.primary, borderWidth: 1, backgroundColor: 'transparent', borderRadius: 4, paddingVertical: 8, paddingHorizontal: 16, },
     noteModalBtnTxt: { color: colors.primary, },
-    noteHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }
+    noteHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' },
+    qualityModalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'center', alignItems: 'center', padding: 16, },
+    qualityModalBox: { width: '95%', maxWidth: 400, backgroundColor: '#fff', borderRadius: 18, padding: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.18, shadowRadius: 12, elevation: 10, },
+    qualityModalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, },
+    qualityModalTitle: { fontSize: 20, fontWeight: 'bold', color: colors.primary, },
+    qualityModalInput: { marginBottom: 18, backgroundColor: '#f8f8f8', borderRadius: 8, fontSize: 16, minHeight: 60, },
+    qualityModalButton: { borderRadius: 8, marginTop: 4, },
 });

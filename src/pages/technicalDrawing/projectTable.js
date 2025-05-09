@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
-import { DataTable, Text, Card, Button, TextInput, Portal, Modal, Avatar, Switch } from 'react-native-paper';
+import { useState, useEffect } from 'react';
+import { View, ScrollView, Modal, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { DataTable, Text, Card, Button, TextInput, Portal, Avatar, Switch, Divider } from 'react-native-paper';
 import { colors } from '../../utilities/colors';
 import { useTranslation } from 'react-i18next';
 import StatusTag from './statusTag';
@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { fetchTechnicalDrawingNoteCreate } from '../../redux/slices/technicalDrawingNoteCreateSlice';
 import { fetchTechnicalDrawingGet } from '../../redux/slices/technicalDrawingGetSlice';
 import { fetchTechnicalDrawingAddFile } from '../../redux/slices/technicalDrawingAddFileSlice';
+import { fetchTechnicalDrawingQualityDescription } from '../../redux/slices/technicalDrawingQualityDescriptionSlice';
 
 const ProjectTable = () => {
     const [selectedProject, setSelectedProject] = useState(null);
@@ -28,6 +29,10 @@ const ProjectTable = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [searchText, setSearchText] = useState('');
     const [filteredData, setFilteredData] = useState(null);
+    const [qualityNoteModal, setQualityNoteModal] = useState(false);
+    const [qualityNoteText, setQualityNoteText] = useState('');
+    const [selectedFailureId, setSelectedFailureId] = useState(null);
+    const [qualityNoteLoading, setQualityNoteLoading] = useState(false);
     const technicalDrawingGetAll = useSelector(state => state.technicalDrawingGetAll.data);
     const [formData, setFormData] = useState({ note: "", description: "", status: true, partCode: "" });
     const { t } = useTranslation()
@@ -383,6 +388,8 @@ const ProjectTable = () => {
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header4}>Durumu</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header5}>Bekleyen Adet</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>Açıklama</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>Kalite Notu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>Kalite Notu Tarihi</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>Tarih</DataTable.Title>
                                     </DataTable.Header>
 
@@ -394,6 +401,43 @@ const ProjectTable = () => {
                                             <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={Boolean(item.status)} /></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.productionQuantity}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.quantityDescription}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 120 }}>
+                                                {item.qualityOfficerDescription ? (
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text style={[styles.cellText, { flex: 1 }]} numberOfLines={1}>
+                                                            {item.qualityOfficerDescription}
+                                                        </Text>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setSelectedFailureId(item.id);
+                                                                setQualityNoteText(item.qualityOfficerDescription);
+                                                                setQualityNoteModal(true);
+                                                            }}
+                                                            style={{ marginLeft: 8, padding: 4 }}
+                                                        >
+                                                            <Ionicons name="pencil" size={20} color={colors.primary} />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                ) : (
+                                                    <TouchableOpacity
+                                                        onPress={() => {
+                                                            setSelectedFailureId(item.id);
+                                                            setQualityNoteText('');
+                                                            setQualityNoteModal(true);
+                                                        }}
+                                                        style={{ padding: 4, backgroundColor: colors.primary, borderRadius: 6 }}
+                                                    >
+                                                        <Text style={{ color: '#fff', fontSize: 13 }}>Not Ekle</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 140 }}>
+                                                <Text style={styles.cellText}>
+                                                    {item.qualityDescriptionDate
+                                                        ? new Date(item.qualityDescriptionDate).toLocaleDateString('tr-TR')
+                                                        : '-'}
+                                                </Text>
+                                            </DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell7}><Text style={styles.cellText}>{new Date(item.date).toLocaleDateString("tr-TR")}</Text></DataTable.Cell>
                                         </DataTable.Row>
                                     ))}
@@ -499,7 +543,76 @@ const ProjectTable = () => {
                     </Card>
                 )}
             </ScrollView>
-        </View>
+            <Portal>
+                <Modal
+                    visible={qualityNoteModal}
+                    onDismiss={() => setQualityNoteModal(false)}
+                    contentContainerStyle={styles.qualityModalBox}
+                >
+                    <View style={styles.qualityModalOverlay}>
+                        <View style={styles.qualityModalBox}>
+                            <View style={styles.qualityModalHeader}>
+                                <Text style={styles.qualityModalTitle}>
+                                    {selectedFailureId && qualityNoteText
+                                        ? t('update_quality_note')
+                                        : t('add_quality_note')}
+                                </Text>
+                                <TouchableOpacity onPress={() => setQualityNoteModal(false)}>
+                                    <Ionicons name="close" size={28} color={colors.primary} />
+                                </TouchableOpacity>
+                            </View>
+                            <Divider style={{ marginVertical: 8 }} />
+                            <Text style={{ color: '#888', marginBottom: 8, fontSize: 14 }}>
+                                {t('quality_note_modal_info')}
+                            </Text>
+                            <TextInput
+                                label={t('quality_note')}
+                                value={qualityNoteText}
+                                onChangeText={setQualityNoteText}
+                                mode="outlined"
+                                style={styles.qualityModalInput}
+                                multiline
+                                outlineColor={colors.primaryLight}
+                                activeOutlineColor={colors.primary}
+                                textColor={colors.primary}
+                                placeholder={t('write_quality_note')}
+                                numberOfLines={4}
+                            />
+                            <Button
+                                mode="contained"
+                                onPress={async () => {
+                                    if (!qualityNoteText.trim()) {
+                                        Alert.alert(t('error'), t('please_fill_fields'));
+                                        return;
+                                    }
+                                    setQualityNoteLoading(true);
+                                    const formData = {
+                                        qualityOfficerDescription: qualityNoteText,
+                                        qualityDescriptionDate: new Date().toISOString()
+                                    };
+                                    await dispatch(fetchTechnicalDrawingQualityDescription({ formData, id: selectedFailureId }));
+                                    const updated = await dispatch(fetchTechnicalDrawingGet({ id: selectedProject.id }));
+                                    if (updated.payload) {
+                                        setSelectedProject(updated.payload);
+                                    }
+                                    setQualityNoteLoading(false);
+                                    setQualityNoteModal(false);
+                                    Alert.alert(t('success'), t('quality_note_updated'));
+                                }}
+                                loading={qualityNoteLoading}
+                                disabled={qualityNoteLoading}
+                                style={styles.qualityModalButton}
+                                buttonColor={colors.primary}
+                                contentStyle={{ height: 48 }}
+                                labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
+                            >
+                                {selectedFailureId && qualityNoteText ? t('update') : t('add')}
+                            </Button>
+                        </View>
+                    </View>
+                </Modal>
+            </Portal>
+        </View >
     );
 };
 

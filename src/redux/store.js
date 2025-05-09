@@ -79,12 +79,14 @@ import assemblyQualityDeleteReducer from './slices/assemblyQualityDeleteSlice'
 import assemblyQualityGetReducer from './slices/assemblyQualityGetSlice'
 import assemblyQualityCreateReducer from './slices/assemblyQualityCreateSlice'
 import assemblyQualityUpdateReducer from './slices/assemblyQualityUpdateSlice'
+import assemblyQualityDescriptionReducer from './slices/assemblyQualityDescriptionSlice'
 import technicalDrawingQualityGetAllByFailureReducer from './slices/technicalDrawingQualityGetAllByFailureSlice'
 import technicalDrawingQualityGetAllReducer from './slices/technicalDrawingQualityGetAllSlice'
 import technicalDrawingQualityDeleteReducer from './slices/technicalDrawingQualityDeleteSlice'
 import technicalDrawingQualityGetReducer from './slices/technicalDrawingQualityGetSlice'
 import technicalDrawingQualityCreateReducer from './slices/technicalDrawingQualityCreateSlice'
 import technicalDrawingQualityUpdateReducer from './slices/technicalDrawingQualityUpdateSlice'
+import technicalDrawingQualityDescriptionReducer from './slices/technicalDrawingQualityDescriptionSlice'
 import userGetAllReducer from './slices/userGetAllSlice'
 import userGetReducer from './slices/userGetSlice'
 import userCreateReducer from './slices/userCreateSlice'
@@ -128,6 +130,7 @@ export const store = configureStore({
         assemblyQualityCreate: assemblyQualityCreateReducer,
         assemblyQualityUpdate: assemblyQualityUpdateReducer,
         assemblyQualityDelete: assemblyQualityDeleteReducer,
+        assemblyQualityDescription: assemblyQualityDescriptionReducer,
         auth: authReducer,
         departmentGetAll: departmentGetAllReducer,
         departmentGet: departmentGetReducer,
@@ -179,6 +182,7 @@ export const store = configureStore({
         technicalDrawingQualityCreate: technicalDrawingQualityCreateReducer,
         technicalDrawingQualityUpdate: technicalDrawingQualityUpdateReducer,
         technicalDrawingQualityDelete: technicalDrawingQualityDeleteReducer,
+        technicalDrawingQualityDescription: technicalDrawingQualityDescriptionReducer,
         userGetAll: userGetAllReducer,
         userGet: userGetReducer,
         userCreate: userCreateReducer,
