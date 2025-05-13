@@ -1,4 +1,3 @@
-import React from 'react'
 import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
 import { changeStatusLeftMenu, closeLeftMenu } from '../../redux/slices/leftMenuSlice'
 import { closeJobAndHold, openJobAndHold } from '../../redux/slices/jobAndHoldSlice'
@@ -67,6 +66,10 @@ const LeftMenu = () => {
                     <LeftMenuItem icon='egg-outline' text={t("job_holder_info")} funct={holderModal} />
                     <LeftMenuItem icon='construct-outline' text={t("assembly_manual")} funct={() => { navigate.navigate("AssemblyManual"); closeModal() }} />
                     <LeftMenuItem icon='color-palette-outline' text={t("technical_drawing")} funct={() => { navigate.navigate("TechnicalDrawing"); closeModal() }} />
+                    <LeftMenuItem icon='battery-half-outline' text={t("cmm")} funct={() => { navigate.navigate("CMM"); closeModal() }} />
+                    <LeftMenuItem icon='battery-half-outline' text={"Kalite Montaj"} funct={() => { navigate.navigate("CMM"); closeModal() }} />
+                    <LeftMenuItem icon='battery-half-outline' text={"Kalite CNC Üretim"} funct={() => { navigate.navigate("CMM"); closeModal() }} />
+                    <LeftMenuItem icon='battery-half-outline' text={"Kalite CMM"} funct={() => { navigate.navigate("CMM"); closeModal() }} />
 
                     <View style={style.space30}></View>
                     <Text style={style.leftMenuLabel}>{t("products2")}</Text>

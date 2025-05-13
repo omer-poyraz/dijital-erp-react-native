@@ -1,4 +1,4 @@
-export const URL = 'http://192.168.222.60:5254/api'
+export const URL = 'http://192.168.143.219:5254/api'
 
 // AUTHENTICATION
 export const LOGIN = `${URL}/Authentication/Login`
@@ -52,6 +52,47 @@ export const ASSEMBLY_QUALITY_GET = `${URL}/AssemblyQuality/Get`;
 export const ASSEMBLY_QUALITY_CREATE = `${URL}/AssemblyQuality/Create`;
 export const ASSEMBLY_QUALITY_UPDATE = `${URL}/AssemblyQuality/Update`;
 export const ASSEMBLY_QUALITY_DELETE = `${URL}/AssemblyQuality/Delete`;
+
+// CMM
+export const CMM_GETALL = `${URL}/CMM/GetAll`;
+export const CMM_GET = `${URL}/CMM/Get`;
+export const CMM_CREATE = `${URL}/CMM/Create`;
+export const CMM_UPDATE = `${URL}/CMM/Update`;
+export const CMM_ADDFILE = `${URL}/CMM/AddFile`;
+export const CMM_ADDRESULTFILE = `${URL}/CMM/AddResultFile`;
+export const CMM_DELETE = `${URL}/CMM/Delete`;
+
+// CMMMODULE
+export const CMMMODULE_GETALL = `${URL}/CMMModule/GetAll`;
+export const CMMMODULE_GET = `${URL}/CMMModule/Get`;
+export const CMMMODULE_CREATE = `${URL}/CMMModule/Create`;
+export const CMMMODULE_UPDATE = `${URL}/CMMModule/Update`;
+export const CMMMODULE_DELETE = `${URL}/CMMModule/Delete`;
+
+// CMMFAILURESTATE
+export const CMMFAILURESTATE_GETALL = `${URL}/CMMFailureState/GetAll`;
+export const CMMFAILURESTATE_GETALLBYMANUAL = `${URL}/CMMFailureState/GetAllByManual`;
+export const CMMFAILURESTATE_GET = `${URL}/CMMFailureState/Get`;
+export const CMMFAILURESTATE_CREATE = `${URL}/CMMFailureState/Create`;
+export const CMMFAILURESTATE_UPDATE = `${URL}/CMMFailureState/Update`;
+export const CMMFAILURE_DESCRIPTION = `${URL}/CMMFailureState/QualityDescription`;
+export const CMMFAILURESTATE_DELETE = `${URL}/CMMFailureState/Delete`;
+
+// CMMSUCCESSSTATE
+export const CMMSUCCESSSTATE_GETALL = `${URL}/CMMSuccessState/GetAll`;
+export const CMMSUCCESSSTATE_GETALLBYMANUAL = `${URL}/CMMSuccessState/GetAllByManual`;
+export const CMMSUCCESSSTATE_GET = `${URL}/CMMSuccessState/Get`;
+export const CMMSUCCESSSTATE_CREATE = `${URL}/CMMSuccessState/Create`;
+export const CMMSUCCESSSTATE_UPDATE = `${URL}/CMMSuccessState/Update`;
+export const CMMSUCCESSSTATE_DELETE = `${URL}/CMMSuccessState/Delete`;
+
+// CMMNOTE
+export const CMMNOTE_GETALL = `${URL}/CMMNote/GetAll`;
+export const CMMNOTE_GETALLBYMANUAL = `${URL}/CMMNote/GetAllByManual`;
+export const CMMNOTE_GET = `${URL}/CMMNote/Get`;
+export const CMMNOTE_CREATE = `${URL}/CMMNote/Create`;
+export const CMMNOTE_UPDATE = `${URL}/CMMNote/Update`;
+export const CMMNOTE_DELETE = `${URL}/CMMNote/Delete`;
 
 // DEPARTMENT
 export const DEPARTMENT_GETALL = `${URL}/Department/GetAll`;

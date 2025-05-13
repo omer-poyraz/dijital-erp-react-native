@@ -153,5 +153,9 @@
     "quality_explanations": "Quality Explanations",
     "reopen_issue": "Reopen Issue",
     "technical_drawing": "Technical Drawing",
-    "project_notes": "Project Notes"
+    "project_notes": "Project Notes",
+    "cmm": "CMM",
+    "cmm_desc": "Manage and monitor CMM operations here.",
+    "cmm_list": "CMM List",
+    "cmm_personel": "CMM Personel"
 }

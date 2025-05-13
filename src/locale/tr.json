@@ -154,5 +154,10 @@
     "mark_resolved": "Çözüldü Olarak İşaretle",
     "reopen_issue": "Sorunu Yeniden Aç",
     "technical_drawing": "Teknik Resim",
-    "project_notes": "Proje Notları"
+    "project_notes": "Proje Notları",
+    "measuring_person": "Ölçüm Yapan Kişi",
+    "cmm": "CMM",
+    "cmm_desc": "CMM yönetimi ve izleme işlemlerini buradan yapabilirsiniz.",
+    "cmm_list": "CMM Listesi",
+    "cmm_personel": "CMM Personel"
 }

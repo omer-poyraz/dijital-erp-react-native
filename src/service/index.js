@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_DESCRIPTION, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_QUALITY_CREATE, ASSEMBLY_QUALITY_DELETE, ASSEMBLY_QUALITY_GET, ASSEMBLY_QUALITY_GETALL, ASSEMBLY_QUALITY_GETALLBYFAILURE, ASSEMBLY_QUALITY_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, ASSEMBLY_VISUAL_NOTE_CREATE, ASSEMBLY_VISUAL_NOTE_DELETE, ASSEMBLY_VISUAL_NOTE_GET, ASSEMBLY_VISUAL_NOTE_GETALL, ASSEMBLY_VISUAL_NOTE_GETALLBYDRAWING, DEPARTMENT_CREATE, DEPARTMENT_DELETE, DEPARTMENT_GET, DEPARTMENT_GETALL, DEPARTMENT_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, REGISTER, RESET_PASSWORD_SERVICE, TECHNICALDRAWING_ADDFILE, TECHNICALDRAWING_CREATE, TECHNICALDRAWING_DELETE, TECHNICALDRAWING_FAILURE_CREATE, TECHNICALDRAWING_FAILURE_DELETE, TECHNICALDRAWING_FAILURE_DESCRIPTION, TECHNICALDRAWING_FAILURE_GET, TECHNICALDRAWING_FAILURE_GETALL, TECHNICALDRAWING_FAILURE_GETALLBYDRAWING, TECHNICALDRAWING_FAILURE_UPDATE, TECHNICALDRAWING_GET, TECHNICALDRAWING_GETALL, TECHNICALDRAWING_NOTE_CREATE, TECHNICALDRAWING_NOTE_DELETE, TECHNICALDRAWING_NOTE_GET, TECHNICALDRAWING_NOTE_GETALL, TECHNICALDRAWING_NOTE_GETALLBYDRAWING, TECHNICALDRAWING_NOTE_UPDATE, TECHNICALDRAWING_QUALITY_CREATE, TECHNICALDRAWING_QUALITY_DELETE, TECHNICALDRAWING_QUALITY_GET, TECHNICALDRAWING_QUALITY_GETALL, TECHNICALDRAWING_QUALITY_GETALLBYFAILURE, TECHNICALDRAWING_QUALITY_UPDATE, TECHNICALDRAWING_SUCCESS_CREATE, TECHNICALDRAWING_SUCCESS_DELETE, TECHNICALDRAWING_SUCCESS_GET, TECHNICALDRAWING_SUCCESS_GETALL, TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING, TECHNICALDRAWING_SUCCESS_UPDATE, TECHNICALDRAWING_UPDATE, TECHNICALDRAWING_VISUAL_NOTE_CREATE, TECHNICALDRAWING_VISUAL_NOTE_DELETE, TECHNICALDRAWING_VISUAL_NOTE_GET, TECHNICALDRAWING_VISUAL_NOTE_GETALL, TECHNICALDRAWING_VISUAL_NOTE_GETALLBYDRAWING, USER_DELETE, USER_GET, USER_GETALL, USER_UPDATE } from "../api";
+import { ASSEMBLY_FAILURE_CREATE, ASSEMBLY_FAILURE_DELETE, ASSEMBLY_FAILURE_DESCRIPTION, ASSEMBLY_FAILURE_GET, ASSEMBLY_FAILURE_GETALL, ASSEMBLY_FAILURE_GETALLBYMANUAL, ASSEMBLY_FAILURE_UPDATE, ASSEMBLY_MANUAL_ADDFILE, ASSEMBLY_MANUAL_CREATE, ASSEMBLY_MANUAL_DELETE, ASSEMBLY_MANUAL_GET, ASSEMBLY_MANUAL_GETALL, ASSEMBLY_MANUAL_UPDATE, ASSEMBLY_NOTE_CREATE, ASSEMBLY_NOTE_DELETE, ASSEMBLY_NOTE_GET, ASSEMBLY_NOTE_GETALL, ASSEMBLY_NOTE_GETALLBYMANUAL, ASSEMBLY_NOTE_UPDATE, ASSEMBLY_QUALITY_CREATE, ASSEMBLY_QUALITY_DELETE, ASSEMBLY_QUALITY_GET, ASSEMBLY_QUALITY_GETALL, ASSEMBLY_QUALITY_GETALLBYFAILURE, ASSEMBLY_QUALITY_UPDATE, ASSEMBLY_SUCCESS_CREATE, ASSEMBLY_SUCCESS_DELETE, ASSEMBLY_SUCCESS_GET, ASSEMBLY_SUCCESS_GETALL, ASSEMBLY_SUCCESS_GETALLBYMANUAL, ASSEMBLY_SUCCESS_UPDATE, ASSEMBLY_VISUAL_NOTE_CREATE, ASSEMBLY_VISUAL_NOTE_DELETE, ASSEMBLY_VISUAL_NOTE_GET, ASSEMBLY_VISUAL_NOTE_GETALL, ASSEMBLY_VISUAL_NOTE_GETALLBYDRAWING, CMM_ADDFILE, CMM_ADDRESULTFILE, CMM_CREATE, CMM_DELETE, CMM_GET, CMM_GETALL, CMM_UPDATE, CMMFAILURE_DESCRIPTION, CMMFAILURESTATE_CREATE, CMMFAILURESTATE_DELETE, CMMFAILURESTATE_GET, CMMFAILURESTATE_GETALL, CMMFAILURESTATE_GETALLBYMANUAL, CMMFAILURESTATE_UPDATE, CMMMODULE_CREATE, CMMMODULE_DELETE, CMMMODULE_GET, CMMMODULE_GETALL, CMMMODULE_UPDATE, CMMNOTE_CREATE, CMMNOTE_DELETE, CMMNOTE_GET, CMMNOTE_GETALL, CMMNOTE_GETALLBYMANUAL, CMMNOTE_UPDATE, CMMSUCCESSSTATE_CREATE, CMMSUCCESSSTATE_DELETE, CMMSUCCESSSTATE_GET, CMMSUCCESSSTATE_GETALL, CMMSUCCESSSTATE_GETALLBYMANUAL, CMMSUCCESSSTATE_UPDATE, DEPARTMENT_CREATE, DEPARTMENT_DELETE, DEPARTMENT_GET, DEPARTMENT_GETALL, DEPARTMENT_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_DELETE, EMPLOYEE_GET, EMPLOYEE_GETALL, EMPLOYEE_UPDATE, LOGIN, REGISTER, RESET_PASSWORD_SERVICE, TECHNICALDRAWING_ADDFILE, TECHNICALDRAWING_CREATE, TECHNICALDRAWING_DELETE, TECHNICALDRAWING_FAILURE_CREATE, TECHNICALDRAWING_FAILURE_DELETE, TECHNICALDRAWING_FAILURE_DESCRIPTION, TECHNICALDRAWING_FAILURE_GET, TECHNICALDRAWING_FAILURE_GETALL, TECHNICALDRAWING_FAILURE_GETALLBYDRAWING, TECHNICALDRAWING_FAILURE_UPDATE, TECHNICALDRAWING_GET, TECHNICALDRAWING_GETALL, TECHNICALDRAWING_NOTE_CREATE, TECHNICALDRAWING_NOTE_DELETE, TECHNICALDRAWING_NOTE_GET, TECHNICALDRAWING_NOTE_GETALL, TECHNICALDRAWING_NOTE_GETALLBYDRAWING, TECHNICALDRAWING_NOTE_UPDATE, TECHNICALDRAWING_QUALITY_CREATE, TECHNICALDRAWING_QUALITY_DELETE, TECHNICALDRAWING_QUALITY_GET, TECHNICALDRAWING_QUALITY_GETALL, TECHNICALDRAWING_QUALITY_GETALLBYFAILURE, TECHNICALDRAWING_QUALITY_UPDATE, TECHNICALDRAWING_SUCCESS_CREATE, TECHNICALDRAWING_SUCCESS_DELETE, TECHNICALDRAWING_SUCCESS_GET, TECHNICALDRAWING_SUCCESS_GETALL, TECHNICALDRAWING_SUCCESS_GETALLBYDRAWING, TECHNICALDRAWING_SUCCESS_UPDATE, TECHNICALDRAWING_UPDATE, TECHNICALDRAWING_VISUAL_NOTE_CREATE, TECHNICALDRAWING_VISUAL_NOTE_DELETE, TECHNICALDRAWING_VISUAL_NOTE_GET, TECHNICALDRAWING_VISUAL_NOTE_GETALL, TECHNICALDRAWING_VISUAL_NOTE_GETALLBYDRAWING, USER_DELETE, USER_GET, USER_GETALL, USER_UPDATE } from "../api";
 
 let token = "";
 let userId = "";
@@ -270,6 +270,150 @@ export function AssemblyQualityDeleteService(id) {
         .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
 }
 // ASSEMBLY_QUALITY_END
+
+
+// CMM
+export function CMMGetAllService() {
+    return axios.get(CMM_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMGetService(id) {
+    return axios.get(`${CMM_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMCreateService(data) {
+    return axios.post(CMM_CREATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMUpdateService(data) {
+    return axios.put(CMM_UPDATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMAddFileService(data) {
+    return axios.put(CMM_ADDFILE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMAddResultFileService(data) {
+    return axios.put(CMM_ADDRESULTFILE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMDeleteService(id) {
+    return axios.delete(`${CMM_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// CMM_END
+
+
+// CMM_FAILURE
+export function CMMFailureGetAllService() {
+    return axios.get(CMMFAILURESTATE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMFailureGetAllByManualService(id) {
+    return axios.get(`${CMMFAILURESTATE_GETALLBYMANUAL}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMFailureGetService(id) {
+    return axios.get(`${CMMFAILURESTATE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMFailureCreateService(data) {
+    return axios.post(CMMFAILURESTATE_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMFailureUpdateService(data) {
+    return axios.put(CMMFAILURESTATE_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMFailureQualityDescriptionService(data) {
+    return axios.put(CMMFAILURE_DESCRIPTION, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMFailureDeleteService(id) {
+    return axios.delete(`${CMMFAILURESTATE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// CMM_FAILURE_END
+
+
+// CMM_SUCCESS
+export function CMMSuccessGetAllService() {
+    return axios.get(CMMSUCCESSSTATE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMSuccessGetAllByManualService(id) {
+    return axios.get(`${CMMSUCCESSSTATE_GETALLBYMANUAL}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMSuccessGetService(id) {
+    return axios.get(`${CMMSUCCESSSTATE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMSuccessCreateService(data) {
+    return axios.post(CMMSUCCESSSTATE_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMSuccessUpdateService(data) {
+    return axios.put(CMMSUCCESSSTATE_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMSuccessDeleteService(id) {
+    return axios.delete(`${CMMSUCCESSSTATE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// CMM_SUCCESS_END
+
+
+// CMM_MODULE
+export function CMMModuleGetAllService() {
+    return axios.get(CMMMODULE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMModuleGetService(id) {
+    return axios.get(`${CMMMODULE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMModuleCreateService(data) {
+    return axios.post(CMMMODULE_CREATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMModuleUpdateService(data) {
+    return axios.put(CMMMODULE_UPDATE, data, headerFormData)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMModuleDeleteService(id) {
+    return axios.delete(`${CMMMODULE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// CMM_MODULE_END
+
+
+// CMM_NOTE
+export function CMMNoteGetAllService() {
+    return axios.get(CMMNOTE_GETALL, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMNoteGetAllByManualService(id) {
+    return axios.get(`${CMMNOTE_GETALLBYMANUAL}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMNoteGetService(id) {
+    return axios.get(`${CMMNOTE_GET}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMNoteCreateService(data) {
+    return axios.post(CMMNOTE_CREATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMNoteUpdateService(data) {
+    return axios.put(CMMNOTE_UPDATE, data, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+export function CMMNoteDeleteService(id) {
+    return axios.delete(`${CMMNOTE_DELETE}/${id}`, header)
+        .then(res => res.data).catch(er => { console.log(er.response.data); return er.response.data })
+}
+// CMM_NOTE_END
 
 
 // DEPARTMENT

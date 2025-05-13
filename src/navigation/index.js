@@ -1,6 +1,6 @@
 import { changeStatusLeftMenu } from '../redux/slices/leftMenuSlice';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import ProductDetailPage from '../pages/productDetail';
 import ErrorBoundary from '../utilities/errorBoundary';
 import CalculationPage from '../pages/calculation';
@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import LanguagePage from '../pages/language';
 import ProductPage from '../pages/product';
 import { useDispatch, useSelector } from 'react-redux';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import 'react-native-gesture-handler';
 import HomePage from '../pages/home';
 import LoginPage from '../pages/login';
@@ -23,6 +23,10 @@ import AssemblySuccessDetailPage from '../pages/assemblyManual/assemblySuccessMo
 import TechnicalDrawingSuccessDetailPage from '../pages/technicalDrawing/technicalDrawingSuccessModal';
 import AssemblyFailureDetailPage from '../pages/assemblyManual/assemblyFailureModal';
 import TechnicalDrawingFailureDetailPage from '../pages/technicalDrawing/technicalDrawingFailureModal';
+import CMMDetailPage from '../pages/cmm/cmmModal';
+import CMMSuccessDetailPage from '../pages/cmm/cmmSuccessModal';
+import CMMFailureDetailPage from '../pages/cmm/cmmFailureModal';
+import CMMPage from '../pages/cmm';
 
 const Stack = createStackNavigator();
 
@@ -101,6 +105,27 @@ const AuthStack = () => {
                     gestureEnabled: false,
                 }}
             />
+            <Stack.Screen
+                name="CMMDetail"
+                component={CMMDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Stack.Screen
+                name="CMMSuccessDetail"
+                component={CMMSuccessDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Stack.Screen
+                name="CMMFailureDetail"
+                component={CMMFailureDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
         </Stack.Navigator>
     );
 };
@@ -124,6 +149,10 @@ const AppStack = () => {
         { name: "TechnicalDrawingDetail", title: t("product_detail"), component: TechnicalDrawingDetailPage },
         { name: "TechnicalDrawingSuccessDetail", title: t("product_detail"), component: TechnicalDrawingSuccessDetailPage },
         { name: "TechnicalDrawingFailureDetail", title: t("product_detail"), component: TechnicalDrawingFailureDetailPage },
+        { name: "CMM", title: t("cmm"), component: CMMPage },
+        { name: "CMMDetail", title: t("cmm_detail"), component: CMMDetailPage },
+        { name: "CMMSuccessDetail", title: t("cmm_detail"), component: CMMSuccessDetailPage },
+        { name: "CMMFailureDetail", title: t("cmm_detail"), component: CMMFailureDetailPage },
     ], [t, i18n.language]);
 
     return (
