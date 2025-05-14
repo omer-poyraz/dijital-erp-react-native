@@ -157,5 +157,14 @@
     "cmm": "CMM",
     "cmm_desc": "Manage and monitor CMM operations here.",
     "cmm_list": "CMM List",
-    "cmm_personel": "CMM Personel"
+    "cmm_personel": "CMM Personel",
+    "assembly_failure": "Assembly Failure",
+    "technical_drawing_failure": "Technical Drawing Failure",
+    "failure_list": "Failure List",
+    "cnc_production": "CNC Production Technical Drawing Failure",
+    "technical_drawing_cmm": "Technical Drawing Failure CMM",
+    "add_cmm_note": "Add CMM Note",
+    "cmm_note_modal_info": "Please write a CMM note",
+    "cmm_note": "CMM Note",
+    "date": "Date"
 }

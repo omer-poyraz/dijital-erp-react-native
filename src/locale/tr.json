@@ -159,5 +159,14 @@
     "cmm": "CMM",
     "cmm_desc": "CMM yönetimi ve izleme işlemlerini buradan yapabilirsiniz.",
     "cmm_list": "CMM Listesi",
-    "cmm_personel": "CMM Personel"
+    "cmm_personel": "CMM Personel",
+    "assembly_failure": "Montaj Hataları",
+    "technical_drawing_failure": "Teknik Çizim Hataları",
+    "failure_list": "Hata Listesi",
+    "cnc_production": "CNC Üretim Teknik Resim Hataları",
+    "technical_drawing_cmm": "Teknik Resim Hataları CMM",
+    "add_cmm_note": "CMM Notu Ekle",
+    "cmm_note_modal_info": "Lütfen CMM notu ekleyin",
+    "cmm_note": "CMM Notu",
+    "date": "Tarih"
 }

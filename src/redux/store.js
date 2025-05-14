@@ -14,6 +14,7 @@ import assemblyManualUpdateReducer from './slices/assemblyManualUpdateSlice'
 import assemblyManualAddFileReducer from './slices/assemblyManualAddFileSlice'
 import assemblyManualDeleteReducer from './slices/assemblyManualDeleteSlice'
 import assemblyFailureGetAllReducer from './slices/assemblyFailureGetAllSlice'
+import assemblyFailureGetAllByQualityReducer from './slices/assemblyFailureGetAllByQualitySlice'
 import assemblyFailureGetAllByManualReducer from './slices/assemblyFailureGetAllByManualSlice'
 import assemblyFailureGetReducer from './slices/assemblyFailureGetSlice'
 import assemblyFailureCreateReducer from './slices/assemblyFailureCreateSlice'
@@ -77,12 +78,14 @@ import technicalDrawingAddFileReducer from './slices/technicalDrawingAddFileSlic
 import technicalDrawingCreateReducer from './slices/technicalDrawingCreateSlice'
 import technicalDrawingUpdateReducer from './slices/technicalDrawingUpdateSlice'
 import technicalDrawingDeleteReducer from './slices/technicalDrawingDeleteSlice'
+import technicalDrawingCMMDescriptionReducer from './slices/technicalDrawingCMMDescriptionSlice'
 import technicalDrawingFailureGetAllReducer from './slices/technicalDrawingFailureGetAllSlice'
 import technicalDrawingFailureGetAllByDrawingReducer from './slices/technicalDrawingFailureGetAllByDrawingSlice'
 import technicalDrawingFailureGetReducer from './slices/technicalDrawingFailureGetSlice'
 import technicalDrawingFailureCreateReducer from './slices/technicalDrawingFailureCreateSlice'
 import technicalDrawingFailureUpdateReducer from './slices/technicalDrawingFailureUpdateSlice'
 import technicalDrawingFailureDeleteReducer from './slices/technicalDrawingFailureDeleteSlice'
+import technicalDrawingFailureGetAllByCMMReducer from './slices/technicalDrawingFailureGetAllByCMMSlice'
 import technicalDrawingSuccessGetAllReducer from './slices/technicalDrawingSuccessGetAllSlice'
 import technicalDrawingSuccessGetAllByDrawingReducer from './slices/technicalDrawingSuccessGetAllByDrawingSlice'
 import technicalDrawingSuccessGetReducer from './slices/technicalDrawingSuccessGetSlice'
@@ -94,6 +97,7 @@ import technicalDrawingNoteGetAllByDrawingReducer from './slices/technicalDrawin
 import technicalDrawingNoteGetReducer from './slices/technicalDrawingNoteGetSlice'
 import technicalDrawingNoteCreateReducer from './slices/technicalDrawingNoteCreateSlice'
 import technicalDrawingVisualNoteCreateReducer from './slices/technicalDrawingVisualNoteCreateSlice'
+import technicalDrawingFailureGetAllByQualityReducer from './slices/technicalDrawingFailureGetAllByQualitySlice'
 import technicalDrawingVisualNoteGetReducer from './slices/technicalDrawingVisualNoteGetSlice'
 import technicalDrawingVisualNoteGetAllByDrawingReducer from './slices/technicalDrawingVisualNoteGetAllByDrawingSlice'
 import technicalDrawingVisualNoteDeleteReducer from './slices/technicalDrawingVisualNoteDeleteSlice'
@@ -155,6 +159,7 @@ export const store = configureStore({
         assemblySuccessCreate: assemblySuccessCreateReducer,
         assemblySuccessUpdate: assemblySuccessUpdateReducer,
         assemblySuccessDelete: assemblySuccessDeleteReducer,
+        assemblyFailureGetAllByQuality: assemblyFailureGetAllByQualityReducer,
         assemblyQualityGetAllByFailure: assemblyQualityGetAllByFailureReducer,
         assemblyQualityGetAll: assemblyQualityGetAllReducer,
         assemblyQualityGet: assemblyQualityGetReducer,
@@ -222,13 +227,16 @@ export const store = configureStore({
         technicalDrawingFailureCreate: technicalDrawingFailureCreateReducer,
         technicalDrawingFailureUpdate: technicalDrawingFailureUpdateReducer,
         technicalDrawingFailureDelete: technicalDrawingFailureDeleteReducer,
+        technicalDrawingFailureGetAllByCMM: technicalDrawingFailureGetAllByCMMReducer,
         technicalDrawingNoteGetAll: technicalDrawingNoteGetAllReducer,
         technicalDrawingNoteGetAllByDrawing: technicalDrawingNoteGetAllByDrawingReducer,
         technicalDrawingNoteGet: technicalDrawingNoteGetReducer,
         technicalDrawingNoteCreate: technicalDrawingNoteCreateReducer,
+        technicalDrawingCMMDescription: technicalDrawingCMMDescriptionReducer,
         technicalDrawingVisualNoteCreate: technicalDrawingVisualNoteCreateReducer,
         technicalDrawingVisualNoteGet: technicalDrawingVisualNoteGetReducer,
         technicalDrawingVisualNoteGetAllByDrawing: technicalDrawingVisualNoteGetAllByDrawingReducer,
+        technicalDrawingFailureGetAllByQuality: technicalDrawingFailureGetAllByQualityReducer,
         technicalDrawingVisualNoteDelete: technicalDrawingVisualNoteDeleteReducer,
         technicalDrawingNoteUpdate: technicalDrawingNoteUpdateReducer,
         technicalDrawingNoteDelete: technicalDrawingNoteDeleteReducer,

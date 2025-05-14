@@ -27,6 +27,10 @@ import CMMDetailPage from '../pages/cmm/cmmModal';
 import CMMSuccessDetailPage from '../pages/cmm/cmmSuccessModal';
 import CMMFailureDetailPage from '../pages/cmm/cmmFailureModal';
 import CMMPage from '../pages/cmm';
+import AssemblyQualityPage from '../pages/assemblyQuality';
+import CNCProductionPage from '../pages/cncproduction';
+import AssemblyCMMPage from '../pages/technicalDrawingCMM';
+import TechnicalDrawingCMMPage from '../pages/technicalDrawingCMM';
 
 const Stack = createStackNavigator();
 
@@ -80,6 +84,27 @@ const AuthStack = () => {
             <Stack.Screen
                 name="AssemblyFailureDetail"
                 component={AssemblyFailureDetailPage}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Stack.Screen
+                name="AssemblyQuality"
+                component={AssemblyQualityPage}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Stack.Screen
+                name="AssemblyCMM"
+                component={AssemblyCMMPage}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Stack.Screen
+                name="CNCProduction"
+                component={CNCProductionPage}
                 options={{
                     gestureEnabled: false,
                 }}
@@ -143,12 +168,15 @@ const AppStack = () => {
         { name: "Language", title: t("language_sections"), component: LanguagePage },
         { name: "Product", title: t("products"), component: ProductPage },
         { name: "ProductDetail", title: t("product_detail"), component: ProductDetailPage },
+        { name: "TechnicalDrawingCMM", title: t("technical_drawing_cmm"), component: TechnicalDrawingCMMPage },
         { name: "AssemblyManualDetail", title: t("product_detail"), component: AssemblyManualDetailPage },
+        { name: "AssemblyQuality", title: t("assembly_failure"), component: AssemblyQualityPage },
         { name: "AssemblySuccessDetail", title: t("product_detail"), component: AssemblySuccessDetailPage },
         { name: "AssemblyFailureDetail", title: t("product_detail"), component: AssemblyFailureDetailPage },
         { name: "TechnicalDrawingDetail", title: t("product_detail"), component: TechnicalDrawingDetailPage },
         { name: "TechnicalDrawingSuccessDetail", title: t("product_detail"), component: TechnicalDrawingSuccessDetailPage },
         { name: "TechnicalDrawingFailureDetail", title: t("product_detail"), component: TechnicalDrawingFailureDetailPage },
+        { name: "CNCProduction", title: t("cnc_production"), component: CNCProductionPage },
         { name: "CMM", title: t("cmm"), component: CMMPage },
         { name: "CMMDetail", title: t("cmm_detail"), component: CMMDetailPage },
         { name: "CMMSuccessDetail", title: t("cmm_detail"), component: CMMSuccessDetailPage },

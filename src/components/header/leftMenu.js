@@ -67,9 +67,9 @@ const LeftMenu = () => {
                     <LeftMenuItem icon='construct-outline' text={t("assembly_manual")} funct={() => { navigate.navigate("AssemblyManual"); closeModal() }} />
                     <LeftMenuItem icon='color-palette-outline' text={t("technical_drawing")} funct={() => { navigate.navigate("TechnicalDrawing"); closeModal() }} />
                     <LeftMenuItem icon='battery-half-outline' text={t("cmm")} funct={() => { navigate.navigate("CMM"); closeModal() }} />
-                    <LeftMenuItem icon='battery-half-outline' text={"Kalite Montaj"} funct={() => { navigate.navigate("CMM"); closeModal() }} />
-                    <LeftMenuItem icon='battery-half-outline' text={"Kalite CNC Üretim"} funct={() => { navigate.navigate("CMM"); closeModal() }} />
-                    <LeftMenuItem icon='battery-half-outline' text={"Kalite CMM"} funct={() => { navigate.navigate("CMM"); closeModal() }} />
+                    <LeftMenuItem icon='battery-half-outline' text={"Kalite Montaj"} funct={() => { navigate.navigate("AssemblyQuality"); closeModal() }} />
+                    <LeftMenuItem icon='battery-half-outline' text={"Kalite CNC Üretim"} funct={() => { navigate.navigate("CNCProduction"); closeModal() }} />
+                    <LeftMenuItem icon='battery-half-outline' text={"Kalite CMM"} funct={() => { navigate.navigate("TechnicalDrawingCMM"); closeModal() }} />
 
                     <View style={style.space30}></View>
                     <Text style={style.leftMenuLabel}>{t("products2")}</Text>

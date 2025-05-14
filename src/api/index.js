@@ -17,6 +17,7 @@ export const ASSEMBLY_MANUAL_DELETE = `${URL}/AssemblyManuel/Delete`;
 export const ASSEMBLY_FAILURE_GETALL = `${URL}/AssemblyFailureState/GetAll`;
 export const ASSEMBLY_FAILURE_GETALLBYMANUAL = `${URL}/AssemblyFailureState/GetAllByManual`;
 export const ASSEMBLY_FAILURE_GET = `${URL}/AssemblyFailureState/Get`;
+export const ASSEMBLY_FAILURE_GETQUALITYOFFICER = `${URL}/AssemblyFailureState/GetQualityOfficer`;
 export const ASSEMBLY_FAILURE_CREATE = `${URL}/AssemblyFailureState/Create`;
 export const ASSEMBLY_FAILURE_UPDATE = `${URL}/AssemblyFailureState/Update`;
 export const ASSEMBLY_FAILURE_DESCRIPTION = `${URL}/AssemblyFailureState/QualityDescription`;
@@ -120,9 +121,12 @@ export const TECHNICALDRAWING_DELETE = `${URL}/TechnicalDrawing/Delete`;
 export const TECHNICALDRAWING_FAILURE_GETALL = `${URL}/TechnicalDrawingFailureState/GetAll`;
 export const TECHNICALDRAWING_FAILURE_GETALLBYDRAWING = `${URL}/TechnicalDrawingFailureState/GetAllByDrawing`;
 export const TECHNICALDRAWING_FAILURE_GET = `${URL}/TechnicalDrawingFailureState/Get`;
+export const TECHNICALDRAWING_FAILURE_GETQUALITYOFFICER = `${URL}/TechnicalDrawingFailureState/GetQualityOfficer`;
+export const TECHNICALDRAWING_FAILURE_GETCMMUSER = `${URL}/TechnicalDrawingFailureState/GetCMMUser`;
 export const TECHNICALDRAWING_FAILURE_CREATE = `${URL}/TechnicalDrawingFailureState/Create`;
 export const TECHNICALDRAWING_FAILURE_UPDATE = `${URL}/TechnicalDrawingFailureState/Update`;
 export const TECHNICALDRAWING_FAILURE_DESCRIPTION = `${URL}/TechnicalDrawingFailureState/QualityDescription`;
+export const TECHNICALDRAWING_FAILURE_CMMDESCRIPTION = `${URL}/TechnicalDrawingFailureState/CMMDescription`;
 export const TECHNICALDRAWING_FAILURE_DELETE = `${URL}/TechnicalDrawingFailureState/Delete`;
 
 // TECHNICAL_DRAWING_SUCCESS
