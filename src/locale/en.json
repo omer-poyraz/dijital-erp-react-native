@@ -166,5 +166,10 @@
     "add_cmm_note": "Add CMM Note",
     "cmm_note_modal_info": "Please write a CMM note",
     "cmm_note": "CMM Note",
-    "date": "Date"
+    "date": "Date",
+    "update_cmm_note": "Update CMM Note",
+    "cmm_note_updated": "CMM note updated",
+    "write_cmm_note": "Write CMM Note",
+    "cmm_note_date": "CMM Note Date",
+    "update": "Update"
 }

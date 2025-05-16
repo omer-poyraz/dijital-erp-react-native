@@ -168,5 +168,10 @@
     "add_cmm_note": "CMM Notu Ekle",
     "cmm_note_modal_info": "Lütfen CMM notu ekleyin",
     "cmm_note": "CMM Notu",
-    "date": "Tarih"
+    "date": "Tarih",
+    "update_cmm_note": "CMM Notunu Güncelle",
+    "cmm_note_updated": "CMM notu güncellendi",
+    "write_cmm_note": "CMM Notu Yaz",
+    "cmm_note_date": "CMM Notu Tarihi",
+    "update": "Güncelle"
 }

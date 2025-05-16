@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, ScrollView, Modal, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
-import { DataTable, Text, Card, Button, TextInput, Portal, Avatar, Switch, Divider } from 'react-native-paper';
+import { View, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { DataTable, Text, Card, Modal, Button, TextInput, Portal, Avatar, Switch, Divider } from 'react-native-paper';
 import { colors } from '../../utilities/colors';
 import { useTranslation } from 'react-i18next';
 import StatusTag from './statusTag';
@@ -16,6 +16,7 @@ import { fetchTechnicalDrawingNoteCreate } from '../../redux/slices/technicalDra
 import { fetchTechnicalDrawingGet } from '../../redux/slices/technicalDrawingGetSlice';
 import { fetchTechnicalDrawingAddFile } from '../../redux/slices/technicalDrawingAddFileSlice';
 import { fetchTechnicalDrawingQualityDescription } from '../../redux/slices/technicalDrawingQualityDescriptionSlice';
+import { fetchTechnicalDrawingCMMDescription } from '../../redux/slices/technicalDrawingCMMDescriptionSlice';
 
 const ProjectTable = () => {
     const [selectedProject, setSelectedProject] = useState(null);
@@ -33,6 +34,10 @@ const ProjectTable = () => {
     const [qualityNoteText, setQualityNoteText] = useState('');
     const [selectedFailureId, setSelectedFailureId] = useState(null);
     const [qualityNoteLoading, setQualityNoteLoading] = useState(false);
+    const [cmmNoteModal, setCmmNoteModal] = useState(false);
+    const [cmmNoteText, setCmmNoteText] = useState('');
+    const [selectedCmmFailureId, setSelectedCmmFailureId] = useState(null);
+    const [cmmNoteLoading, setCmmNoteLoading] = useState(false);
     const technicalDrawingGetAll = useSelector(state => state.technicalDrawingGetAll.data);
     const [formData, setFormData] = useState({ note: "", description: "", status: true, partCode: "" });
     const { t } = useTranslation()
@@ -390,6 +395,8 @@ const ProjectTable = () => {
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>Açıklama</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>Kalite Notu</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>Kalite Notu Tarihi</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>CMM Notu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>CMM Notu Tarihi</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>Tarih</DataTable.Title>
                                     </DataTable.Header>
 
@@ -410,8 +417,9 @@ const ProjectTable = () => {
                                                         <TouchableOpacity
                                                             onPress={() => {
                                                                 setSelectedFailureId(item.id);
-                                                                setQualityNoteText(item.qualityOfficerDescription);
-                                                                setQualityNoteModal(true);
+                                                                setQualityNoteText(item.qualityOfficerDescription || '');
+                                                                setQualityNoteModal(false);
+                                                                setTimeout(() => setQualityNoteModal(true), 50);
                                                             }}
                                                             style={{ marginLeft: 8, padding: 4 }}
                                                         >
@@ -435,6 +443,44 @@ const ProjectTable = () => {
                                                 <Text style={styles.cellText}>
                                                     {item.qualityDescriptionDate
                                                         ? new Date(item.qualityDescriptionDate).toLocaleDateString('tr-TR')
+                                                        : '-'}
+                                                </Text>
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 120 }}>
+                                                {item.cmmDescription ? (
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text style={[styles.cellText, { flex: 1 }]} numberOfLines={1}>
+                                                            {item.cmmDescription}
+                                                        </Text>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setSelectedCmmFailureId(item.id);
+                                                                setCmmNoteText(item.cmmDescription || '');
+                                                                setCmmNoteModal(false);
+                                                                setTimeout(() => setCmmNoteModal(true), 50);
+                                                            }}
+                                                            style={{ marginLeft: 8, padding: 4 }}
+                                                        >
+                                                            <Ionicons name="pencil" size={20} color={colors.primary} />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                ) : (
+                                                    <TouchableOpacity
+                                                        onPress={() => {
+                                                            setSelectedCmmFailureId(item.id);
+                                                            setCmmNoteText('');
+                                                            setCmmNoteModal(true);
+                                                        }}
+                                                        style={{ padding: 4, backgroundColor: colors.primary, borderRadius: 6 }}
+                                                    >
+                                                        <Text style={{ color: '#fff', fontSize: 13 }}>CMM Notu Ekle</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 140 }}>
+                                                <Text style={styles.cellText}>
+                                                    {item.cmmDescriptionDate
+                                                        ? new Date(item.cmmDescriptionDate).toLocaleDateString('tr-TR')
                                                         : '-'}
                                                 </Text>
                                             </DataTable.Cell>
@@ -546,73 +592,144 @@ const ProjectTable = () => {
             <Portal>
                 <Modal
                     visible={qualityNoteModal}
-                    onDismiss={() => setQualityNoteModal(false)}
+                    onDismiss={() => {
+                        setQualityNoteModal(false);
+                        setQualityNoteText('');
+                        setSelectedFailureId(null);
+                    }}
                     contentContainerStyle={styles.qualityModalBox}
                 >
-                    <View style={styles.qualityModalOverlay}>
-                        <View style={styles.qualityModalBox}>
-                            <View style={styles.qualityModalHeader}>
-                                <Text style={styles.qualityModalTitle}>
-                                    {selectedFailureId && qualityNoteText
-                                        ? t('update_quality_note')
-                                        : t('add_quality_note')}
-                                </Text>
-                                <TouchableOpacity onPress={() => setQualityNoteModal(false)}>
-                                    <Ionicons name="close" size={28} color={colors.primary} />
-                                </TouchableOpacity>
-                            </View>
-                            <Divider style={{ marginVertical: 8 }} />
-                            <Text style={{ color: '#888', marginBottom: 8, fontSize: 14 }}>
-                                {t('quality_note_modal_info')}
-                            </Text>
-                            <TextInput
-                                label={t('quality_note')}
-                                value={qualityNoteText}
-                                onChangeText={setQualityNoteText}
-                                mode="outlined"
-                                style={styles.qualityModalInput}
-                                multiline
-                                outlineColor={colors.primaryLight}
-                                activeOutlineColor={colors.primary}
-                                textColor={colors.primary}
-                                placeholder={t('write_quality_note')}
-                                numberOfLines={4}
-                            />
-                            <Button
-                                mode="contained"
-                                onPress={async () => {
-                                    if (!qualityNoteText.trim()) {
-                                        Alert.alert(t('error'), t('please_fill_fields'));
-                                        return;
-                                    }
-                                    setQualityNoteLoading(true);
-                                    const formData = {
-                                        qualityOfficerDescription: qualityNoteText,
-                                        qualityDescriptionDate: new Date().toISOString()
-                                    };
-                                    await dispatch(fetchTechnicalDrawingQualityDescription({ formData, id: selectedFailureId }));
-                                    const updated = await dispatch(fetchTechnicalDrawingGet({ id: selectedProject.id }));
-                                    if (updated.payload) {
-                                        setSelectedProject(updated.payload);
-                                    }
-                                    setQualityNoteLoading(false);
-                                    setQualityNoteModal(false);
-                                    Alert.alert(t('success'), t('quality_note_updated'));
-                                }}
-                                loading={qualityNoteLoading}
-                                disabled={qualityNoteLoading}
-                                style={styles.qualityModalButton}
-                                buttonColor={colors.primary}
-                                contentStyle={{ height: 48 }}
-                                labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
-                            >
-                                {selectedFailureId && qualityNoteText ? t('update') : t('add')}
-                            </Button>
-                        </View>
+                    <View style={styles.qualityModalHeader}>
+                        <Text style={styles.qualityModalTitle}>
+                            {selectedFailureId && qualityNoteText
+                                ? t('update_quality_note')
+                                : t('add_quality_note')}
+                        </Text>
+                        <TouchableOpacity onPress={() => {
+                            setQualityNoteModal(false);
+                            setQualityNoteText('');
+                            setSelectedFailureId(null);
+                        }}>
+                            <Ionicons name="close" size={28} color={colors.primary} />
+                        </TouchableOpacity>
                     </View>
+                    <Divider style={{ marginVertical: 8 }} />
+                    <Text style={{ color: '#888', marginBottom: 8, fontSize: 14 }}>
+                        {t('quality_note_modal_info')}
+                    </Text>
+                    <TextInput
+                        label={t('quality_note')}
+                        value={qualityNoteText}
+                        onChangeText={setQualityNoteText}
+                        mode="outlined"
+                        style={styles.qualityModalInput}
+                        multiline
+                        outlineColor={colors.primaryLight}
+                        activeOutlineColor={colors.primary}
+                        textColor={colors.primary}
+                        placeholder={t('write_quality_note')}
+                        numberOfLines={4}
+                    />
+                    <Button
+                        mode="contained"
+                        onPress={async () => {
+                            if (!qualityNoteText.trim()) {
+                                Alert.alert(t('error'), t('please_fill_fields'));
+                                return;
+                            }
+                            setQualityNoteLoading(true);
+                            const formData = {
+                                qualityOfficerDescription: qualityNoteText,
+                                qualityDescriptionDate: new Date().toISOString()
+                            };
+                            await dispatch(fetchTechnicalDrawingQualityDescription({ formData, id: selectedFailureId }));
+                            const updated = await dispatch(fetchTechnicalDrawingGet({ id: selectedProject.id }));
+                            if (updated.payload) {
+                                setSelectedProject(updated.payload);
+                            }
+                            setQualityNoteLoading(false);
+                            setQualityNoteModal(false);
+                            setQualityNoteText('');
+                            setSelectedFailureId(null);
+                            Alert.alert(t('success'), t('quality_note_updated'));
+                        }}
+                        loading={qualityNoteLoading}
+                        disabled={qualityNoteLoading}
+                        style={styles.qualityModalButton}
+                        buttonColor={colors.primary}
+                        contentStyle={{ height: 48 }}
+                        labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
+                    >
+                        {selectedFailureId && qualityNoteText ? t('update') : t('add')}
+                    </Button>
                 </Modal>
             </Portal>
-        </View >
+            <Portal>
+                <Modal
+                    visible={cmmNoteModal}
+                    onDismiss={() => setCmmNoteModal(false)}
+                    contentContainerStyle={styles.qualityModalBox}
+                >
+                    <View style={styles.qualityModalHeader}>
+                        <Text style={styles.qualityModalTitle}>
+                            {selectedCmmFailureId && cmmNoteText
+                                ? t('update_cmm_note')
+                                : t('add_cmm_note')}
+                        </Text>
+                        <TouchableOpacity onPress={() => setCmmNoteModal(false)}>
+                            <Ionicons name="close" size={28} color={colors.primary} />
+                        </TouchableOpacity>
+                    </View>
+                    <Divider style={{ marginVertical: 8 }} />
+                    <Text style={{ color: '#888', marginBottom: 8, fontSize: 14 }}>
+                        {t('cmm_note_modal_info')}
+                    </Text>
+                    <TextInput
+                        label={t('cmm_note')}
+                        value={cmmNoteText}
+                        onChangeText={setCmmNoteText}
+                        mode="outlined"
+                        style={styles.qualityModalInput}
+                        multiline
+                        outlineColor={colors.primaryLight}
+                        activeOutlineColor={colors.primary}
+                        textColor={colors.primary}
+                        placeholder={t('write_cmm_note')}
+                        numberOfLines={4}
+                    />
+                    <Button
+                        mode="contained"
+                        onPress={async () => {
+                            if (!cmmNoteText.trim()) {
+                                Alert.alert(t('error'), t('please_fill_fields'));
+                                return;
+                            }
+                            setCmmNoteLoading(true);
+                            const formData = {
+                                cmmDescription: cmmNoteText,
+                                cmmDescriptionDate: new Date().toISOString()
+                            };
+                            await dispatch(fetchTechnicalDrawingCMMDescription({ formData, id: selectedCmmFailureId }));
+                            const updated = await dispatch(fetchTechnicalDrawingGet({ id: selectedProject.id }));
+                            if (updated.payload) {
+                                setSelectedProject(updated.payload);
+                            }
+                            setCmmNoteLoading(false);
+                            setCmmNoteModal(false);
+                            Alert.alert(t('success'), t('cmm_note_updated'));
+                        }}
+                        loading={cmmNoteLoading}
+                        disabled={cmmNoteLoading}
+                        style={styles.qualityModalButton}
+                        buttonColor={colors.primary}
+                        contentStyle={{ height: 48 }}
+                        labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
+                    >
+                        {selectedCmmFailureId && cmmNoteText ? t('update') : t('add')}
+                    </Button>
+                </Modal>
+            </Portal>
+        </View>
     );
 };
 
