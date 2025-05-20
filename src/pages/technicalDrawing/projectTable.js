@@ -394,8 +394,10 @@ const ProjectTable = () => {
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header5}>Bekleyen Adet</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>Açıklama</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>Kalite Notu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>Kalite Sorumlusu</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>Kalite Notu Tarihi</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>CMM Notu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>CMM Sorumlusu</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>CMM Notu Tarihi</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>Tarih</DataTable.Title>
                                     </DataTable.Header>
@@ -407,7 +409,7 @@ const ProjectTable = () => {
                                             <DataTable.Cell style={styles.table3Cell3}><Text style={styles.cellText}>{item.partCode}</Text></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell4}><StatusTag durum={Boolean(item.status)} /></DataTable.Cell>
                                             <DataTable.Cell style={styles.table3Cell5}><Text style={styles.cellText}>{item.productionQuantity}</Text></DataTable.Cell>
-                                            <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.quantityDescription}</Text></DataTable.Cell>
+                                            <DataTable.Cell style={styles.table3Cell6}><Text style={styles.cellText}>{item.description}</Text></DataTable.Cell>
                                             <DataTable.Cell style={{ minWidth: 120 }}>
                                                 {item.qualityOfficerDescription ? (
                                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -438,6 +440,9 @@ const ProjectTable = () => {
                                                         <Text style={{ color: '#fff', fontSize: 13 }}>Not Ekle</Text>
                                                     </TouchableOpacity>
                                                 )}
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 120 }}>
+                                                <Text style={styles.cellText}>{item?.qualityOfficer?.firstName} {item?.qualityOfficer?.lastName}</Text>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={{ minWidth: 140 }}>
                                                 <Text style={styles.cellText}>
@@ -476,6 +481,9 @@ const ProjectTable = () => {
                                                         <Text style={{ color: '#fff', fontSize: 13 }}>CMM Notu Ekle</Text>
                                                     </TouchableOpacity>
                                                 )}
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 120 }}>
+                                                <Text style={styles.cellText}>{item?.cmmUser?.firstName} {item?.cmmUser?.lastName}</Text>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={{ minWidth: 140 }}>
                                                 <Text style={styles.cellText}>

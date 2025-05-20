@@ -171,5 +171,8 @@
     "cmm_note_updated": "CMM note updated",
     "write_cmm_note": "Write CMM Note",
     "cmm_note_date": "CMM Note Date",
-    "update": "Update"
+    "update": "Update",
+    "quality_note_date": "Quality Note Date",
+    "quality_officer": "Quality Officer",
+    "cmm_user": "CMM User"
 }

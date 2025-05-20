@@ -1,4 +1,4 @@
-export const URL = 'http://192.168.113.60:5254/api'
+export const URL = 'http://192.168.1.4:5254/api'
 
 // AUTHENTICATION
 export const LOGIN = `${URL}/Authentication/Login`

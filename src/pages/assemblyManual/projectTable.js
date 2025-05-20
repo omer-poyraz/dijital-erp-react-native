@@ -390,6 +390,7 @@ const ProjectTable = () => {
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header5}>Bekleyen Adet</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>Açıklama</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>Kalite Notu</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>Kalite Sorumlusu</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>Kalite Notu Tarihi</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>Tarih</DataTable.Title>
                                     </DataTable.Header>
@@ -430,6 +431,9 @@ const ProjectTable = () => {
                                                         <Text style={{ color: '#fff', fontSize: 13 }}>Not Ekle</Text>
                                                     </TouchableOpacity>
                                                 )}
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 120 }}>
+                                                <Text style={styles.cellText}>{item?.qualityOfficer?.firstName} {item?.qualityOfficer?.lastName}</Text>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={{ minWidth: 140 }}>
                                                 <Text style={styles.cellText}>

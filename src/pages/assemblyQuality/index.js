@@ -117,6 +117,7 @@ const AssemblyQualityPage = () => {
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header5}>{t("pending_qty")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>{t("description")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>{t("quality_note")}</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>{t("quality_officer")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>{t("quality_note_date")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>{t("date")}</DataTable.Title>
                                     </DataTable.Header>
@@ -161,6 +162,9 @@ const AssemblyQualityPage = () => {
                                                         <Text style={{ color: '#fff', fontSize: 13 }}>{t("add_note")}</Text>
                                                     </TouchableOpacity>
                                                 )}
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 140 }}>
+                                                <Text style={styles.cellText}>{item?.qualityOfficer?.firstName} {item?.qualityOfficer?.lastName}</Text>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={{ minWidth: 140 }}>
                                                 <Text style={styles.cellText}>

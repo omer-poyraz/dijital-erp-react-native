@@ -117,6 +117,7 @@ const TechnicalDrawingCMMPage = () => {
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header5}>{t("pending_qty")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header6}>{t("description")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 120 }}>{t("cmm_note")}</DataTable.Title>
+                                        <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>{t("cmm_user")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={{ minWidth: 140 }}>{t("cmm_note_date")}</DataTable.Title>
                                         <DataTable.Title textStyle={styles.headerText} style={styles.column3Header7}>{t("date")}</DataTable.Title>
                                     </DataTable.Header>
@@ -161,6 +162,9 @@ const TechnicalDrawingCMMPage = () => {
                                                         <Text style={{ color: '#fff', fontSize: 13 }}>{t("add_note")}</Text>
                                                     </TouchableOpacity>
                                                 )}
+                                            </DataTable.Cell>
+                                            <DataTable.Cell style={{ minWidth: 120 }}>
+                                                <Text style={styles.cellText}>{item?.cmmUser?.firstName} {item?.cmmUser?.lastName}</Text>
                                             </DataTable.Cell>
                                             <DataTable.Cell style={{ minWidth: 140 }}>
                                                 <Text style={styles.cellText}>

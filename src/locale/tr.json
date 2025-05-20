@@ -173,5 +173,8 @@
     "cmm_note_updated": "CMM notu güncellendi",
     "write_cmm_note": "CMM Notu Yaz",
     "cmm_note_date": "CMM Notu Tarihi",
-    "update": "Güncelle"
+    "update": "Güncelle",
+    "quality_note_date": "Kalite Notu Tarihi",
+    "quality_officer": "Kalite Sorumlusu",
+    "cmm_user": "CMM Sorumlusu"
 }
