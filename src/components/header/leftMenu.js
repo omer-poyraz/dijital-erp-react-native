@@ -24,6 +24,10 @@ const LeftMenu = () => {
     const handleLogout = () => {
         dispatch(logoutUser());
         dispatch(closeLeftMenu());
+        navigate.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+        });
     };
 
     const LeftMenuItem = ({ icon, text, funct }) => {
